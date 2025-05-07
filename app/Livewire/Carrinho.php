@@ -9,6 +9,7 @@ class Carrinho extends Component
 {
     public $carrinho = [];
     public $total = 0;
+    public $desconto_total = 0; // <- adiciona esta linha
 
     public function mount()
     {
@@ -54,6 +55,21 @@ class Carrinho extends Component
 
     public function render()
     {
-        return view('livewire.carrinho');
+        // Passando o valor do total do carrinho para a view
+        return view('livewire.carrinho', [
+            'totalCarrinho' => $this->total
+        ]);
     }
+
+    public function fecharVenda()
+    {
+        // Aqui você pode salvar os dados no banco, limpar o carrinho, etc.
+
+        // Exemplo básico:
+        session()->forget('carrinho'); // limpa o carrinho
+        $this->atualizarCarrinho(); // atualiza o estado do componente
+        session()->flash('message', 'Venda finalizada com sucesso!');
+    }
+
+        
 }

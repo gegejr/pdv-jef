@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
 
         // Redirecionar com base na função do usuário
         if (auth::user()->role === 'admin') {
-            return redirect()->route('dashboard'); // Redireciona para o painel admin
+            return redirect()->route('painel'); // Redireciona para o painel admin
         }
 
         return redirect()->route('home'); // Redireciona para o home para usuários comuns
