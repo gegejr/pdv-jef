@@ -53,7 +53,7 @@
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300">
                     <h3 class="text-lg font-semibold text-gray-700">Relatório de Vendas</h3>
-                    <p class="text-3xl font-bold text-yellow-600">Ver Relatório</p>
+                    <a href="{{ route('relatorio-vendas') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded"><p class="text-3xl font-bold text-yellow-600">Ver Relatório</p></a>
                 </div>
             </div>
 

@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Produto;
 use App\Livewire\ProdutoForm;
 use App\Livewire\ProdutoLista;
 use App\Livewire\Carrinho;
@@ -13,9 +12,17 @@ use Illuminate\Http\Request;
 
 // Página inicial
 Route::get('/', function () {
-    return view('welcome');
-});
+    /** @var \Illuminate\Contracts\Auth\Guard $auth */
+    $auth = auth();
 
+    if ($auth->check()) {
+        return redirect()->route('painel');
+    }
+
+    return view('auth.login');
+})->name('login'); // Define nome para rota de login
+
+// Painel principal (dashboard)
 Route::get('/painel', function (Request $request) {
     $inicio = $request->input('inicio');
     $fim = $request->input('fim');
@@ -23,30 +30,25 @@ Route::get('/painel', function (Request $request) {
     $query = Venda::query();
 
     if ($inicio && $fim) {
-        $query->whereBetween('created_at', [$inicio . ' 00:00:00', $fim . ' 23:59:59']);
+        $query->whereBetween('created_at', ["$inicio 00:00:00", "$fim 23:59:59"]);
     }
 
     $totalVendas = $query->sum('total');
     $numeroVendas = $query->count();
 
-    // Últimas Vendas
     $ultimasVendas = $query->orderBy('created_at', 'desc')->limit(5)->get();
 
-    // Dados para o gráfico
-    // Dados para o gráfico (use nova query)
     $vendasPorData = Venda::selectRaw('DATE(created_at) as data, SUM(total) as total')
-    ->when($inicio && $fim, function ($q) use ($inicio, $fim) {
-        $q->whereBetween('created_at', [$inicio . ' 00:00:00', $fim . ' 23:59:59']);
-    })
-    ->groupBy('data')
-    ->orderBy('data')
-    ->get();
+        ->when($inicio && $fim, fn($q) => $q->whereBetween('created_at', ["$inicio 00:00:00", "$fim 23:59:59"]))
+        ->groupBy('data')
+        ->orderBy('data')
+        ->get();
 
     $datas = $vendasPorData->pluck('data');
     $valores = $vendasPorData->pluck('total');
 
     return view('painel', compact('totalVendas', 'numeroVendas', 'inicio', 'fim', 'ultimasVendas', 'datas', 'valores'));
-})->middleware(['auth'])->name('painel');
+})->middleware('auth')->name('painel');
 
 // Perfil do usuário
 Route::middleware('auth')->group(function () {
@@ -55,19 +57,26 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Autenticação
+// Autenticação (rotas geradas pelo Laravel Breeze / Fortify / Jetstream)
 require __DIR__.'/auth.php';
 
 // Produtos
-Route::get('/produtos', ProdutoForm::class)->name('produtos');
-Route::get('/produtos/lista', ProdutoLista::class)->name('produtos.lista');
-Route::get('/produtos/adicionar', ProdutoForm::class)->name('adicionar-produto');  // Rota para Adicionar Produto
+Route::middleware('auth')->group(function () {
+    Route::get('/produtos', ProdutoForm::class)->name('produtos');
+    Route::get('/produtos/lista', ProdutoLista::class)->name('produtos.lista');
+    Route::get('/produtos/adicionar', ProdutoForm::class)->name('adicionar-produto');
+});
 
 // Carrinho
-Route::get('/carrinho', Carrinho::class)->name('carrinho');
+Route::middleware('auth')->get('/carrinho', Carrinho::class)->name('carrinho');
 
 // Fechar venda
-Route::get('/fechar-venda', FecharVenda::class)->name('fechar-venda')->middleware('auth');
+Route::middleware('auth')->get('/fechar-venda', FecharVenda::class)->name('fechar-venda');
 
 // Relatório de vendas
-Route::get('/relatorio-vendas', RelatorioVendas::class)->name('relatorio-vendas')->middleware('auth');
+Route::middleware('auth')->get('/relatorio-vendas', RelatorioVendas::class)->name('relatorio-vendas');
+
+// Caixa e Sangria
+Route::middleware('auth')->get('/caixa-sangria', \App\Livewire\CaixaSangria::class)->name('caixa-sangria');
+
+

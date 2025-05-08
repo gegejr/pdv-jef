@@ -37,13 +37,13 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('painel'); // Redireciona para o painel admin
         }
 
-        return redirect()->route('home'); // Redireciona para o home para usuários comuns
+        return redirect()->route('painel'); // Redireciona para o home para usuários comuns
     }
 
     return back()->withErrors([
         'email' => 'As credenciais fornecidas estão incorretas.',
     ]);
-}
+}   
 
 
     /**

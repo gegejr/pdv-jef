@@ -4,14 +4,18 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Venda;
-use App\Models\ItemVenda;
+use App\Models\Caixa;
 
 class RelatorioVendas extends Component
 {
     public $data_inicial, $data_final, $metodo_pagamento, $caixa_id;
     public $vendaSelecionada = null; // Para armazenar a venda selecionada
+    public $exibirImpressao = false; // Flag para controlar a exibição do relatório de impressão
 
-    protected $listeners = ['filtrarRelatorio'];
+    protected $listeners = [
+        'filtrarRelatorio',
+        'imprimir-relatorio' => 'imprimirRelatorio',
+    ];
 
     public function render()
     {
@@ -26,28 +30,43 @@ class RelatorioVendas extends Component
         }
 
         if ($this->metodo_pagamento) {
-            $query->where('metodo_pagamento', $this->metodo_pagamento);
+            $query->whereHas('pagamentos', function ($q) {
+                $q->where('tipo', $this->metodo_pagamento);
+            });
         }
 
         if ($this->caixa_id) {
             $query->where('caixa_id', $this->caixa_id);
         }
 
-        $vendas = $query->with('usuario', 'caixa')->get(); // Relacionamento de vendas com usuário e caixa
+        $vendas = $query->with('caixa')->get();
+        $caixas = Caixa::all();
 
-        return view('livewire.relatorio-vendas', compact('vendas'));
+        return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));
+    }
+
+    public function detalhesVenda($vendaId)
+    {
+        $this->vendaSelecionada = Venda::with('itens.produto', 'pagamentos')->find($vendaId);
     }
 
     public function filtrarRelatorio()
     {
-        $this->render();
+        // Apenas um gatilho para Livewire atualizar o componente
     }
 
-    // Método para selecionar a venda e exibir os detalhes
-    public function detalhesVenda($vendaId)
+    public function mostrarImpressao()
     {
-        $this->vendaSelecionada = Venda::with('itens.produto')
-                                        ->where('id', $vendaId)
-                                        ->first();
+        $this->exibirImpressao = true;
+    }
+
+    public function esconderImpressao()
+    {
+        $this->exibirImpressao = false;
+    }
+
+    public function imprimirRelatorio()
+    {
+        $this->js('window.dispatchEvent(new CustomEvent("imprimir-pagina"))');
     }
 }
