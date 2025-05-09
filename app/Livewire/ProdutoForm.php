@@ -5,20 +5,25 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Produto;
+use App\Livewire\ProdutoLista;
 
 class ProdutoForm extends Component
 {
     use WithFileUploads;
 
     public $produto_id;
+    public $produtoId;
     public $nome, $codigo_barras, $descricao, $valor, $estoque, $desconto_padrao = 0, $imagem, $imagem_existente;
 
     protected $listeners = ['editarProduto'];
 
+    // Editar produto
     public function editarProduto($id)
     {
+        $this->produtoId = $id;  // Guardar o ID do produto a ser editado
         $produto = Produto::findOrFail($id);
-        $this->produto_id = $produto->id;
+    
+        // Preencher os campos do formulário com os dados do produto
         $this->nome = $produto->nome;
         $this->codigo_barras = $produto->codigo_barras;
         $this->descricao = $produto->descricao;
@@ -26,8 +31,12 @@ class ProdutoForm extends Component
         $this->estoque = $produto->estoque;
         $this->desconto_padrao = $produto->desconto_padrao;
         $this->imagem_existente = $produto->imagem;
+    
+        // Emitir o evento para abrir o modal
+        $this->dispatch('openModal');
     }
 
+    // Função de salvar (para cadastro e edição)
     public function salvar()
     {
         $this->validate([
@@ -39,11 +48,13 @@ class ProdutoForm extends Component
             'desconto_padrao' => 'nullable|numeric|min:0'
         ]);
 
-        $caminhoImagem = $this->imagem 
-            ? $this->imagem->store('produtos', 'public') 
+        // Verifica se foi enviado uma imagem nova
+        $caminhoImagem = $this->imagem
+            ? $this->imagem->store('produtos', 'public')
             : $this->imagem_existente;
 
         if ($this->produto_id) {
+            // Edição de produto
             $produto = Produto::findOrFail($this->produto_id);
             $produto->update([
                 'nome' => $this->nome,
@@ -57,6 +68,7 @@ class ProdutoForm extends Component
 
             session()->flash('sucesso', 'Produto atualizado com sucesso!');
         } else {
+            // Cadastro de novo produto
             Produto::create([
                 'nome' => $this->nome,
                 'codigo_barras' => $this->codigo_barras,
@@ -70,12 +82,28 @@ class ProdutoForm extends Component
             session()->flash('sucesso', 'Produto cadastrado com sucesso!');
         }
 
+        // Resetando os dados após a ação
         $this->reset(['nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'produto_id', 'imagem_existente', 'desconto_padrao']);
-        $this->dispatch('produtoAtualizado'); // opcional para atualizar a lista
+        $this->dispatch('produtoAtualizado'); // opcional para atualizar a lista de produtos
     }
 
+    // Função render para mostrar o formulário
     public function render()
     {
         return view('livewire.produto-form');
+    }
+
+    // Função para fechar o modal e resetar os dados
+    public function fecharModal()
+    {
+        $this->reset(['produto_id', 'nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'imagem_existente', 'desconto_padrao']);
+    }
+
+    // Função chamada ao iniciar o componente, caso passe um id, edita o produto
+    public function mount($id = null)
+    {
+        if ($id) {
+            $this->editarProduto($id);
+        }
     }
 }

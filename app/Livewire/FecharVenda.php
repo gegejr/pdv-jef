@@ -33,8 +33,8 @@ class FecharVenda extends Component
         // Criando a venda
         $venda = Venda::create([
             'user_id' => Auth::id(),
-            'total' => $this->total - $this->desconto_total,
-            'desconto_total' => $this->desconto_total,
+            'total' => $this->total - floatval($this->desconto_total),
+            'desconto_total' => floatval($this->desconto_total),
             'caixa_id' => $this->caixa_id,
         ]);
 

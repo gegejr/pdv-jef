@@ -9,6 +9,9 @@ use App\Livewire\RelatorioVendas;
 use App\Livewire\FecharVenda;
 use App\Models\Venda;
 use Illuminate\Http\Request;
+use App\Livewire\CaixaSangria;
+use App\Models\Caixa;
+
 
 // Página inicial
 Route::get('/', function () {
@@ -22,7 +25,6 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login'); // Define nome para rota de login
 
-// Painel principal (dashboard)
 Route::get('/painel', function (Request $request) {
     $inicio = $request->input('inicio');
     $fim = $request->input('fim');
@@ -47,7 +49,22 @@ Route::get('/painel', function (Request $request) {
     $datas = $vendasPorData->pluck('data');
     $valores = $vendasPorData->pluck('total');
 
-    return view('painel', compact('totalVendas', 'numeroVendas', 'inicio', 'fim', 'ultimasVendas', 'datas', 'valores'));
+    // 🔽 Adiciona o histórico de caixas fechados
+    $historicoCaixas = Caixa::whereNotNull('fechado_em')
+        ->orderByDesc('fechado_em')
+        ->limit(10)
+        ->get();
+
+    return view('painel', compact(
+        'totalVendas',
+        'numeroVendas',
+        'inicio',
+        'fim',
+        'ultimasVendas',
+        'datas',
+        'valores',
+        'historicoCaixas' // <-- aqui
+    ));
 })->middleware('auth')->name('painel');
 
 // Perfil do usuário
@@ -65,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/produtos', ProdutoForm::class)->name('produtos');
     Route::get('/produtos/lista', ProdutoLista::class)->name('produtos.lista');
     Route::get('/produtos/adicionar', ProdutoForm::class)->name('adicionar-produto');
+    Route::get('/produtos/editar/{id}', ProdutoForm::class)->name('produto-edit');
 });
 
 // Carrinho

@@ -1,4 +1,4 @@
-<div id="sidebar" class="bg-white w-64 min-h-screen shadow-md transition-all duration-300 fixed inset-0 md:relative md:inset-auto">
+<div id="sidebar" class="bg-white w-64 h-screen shadow-md fixed top-0 left-0 z-40 transition-all duration-300">
     <div class="p-4 border-b font-bold text-xl text-center">
         JEF-Sys
     </div>

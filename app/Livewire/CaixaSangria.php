@@ -15,6 +15,12 @@ class CaixaSangria extends Component
     public $caixa;
 
     // Método para abrir o caixa
+    public function index()
+    {
+        $caixa = Caixa::whereNull('fechado_em')->first(); // ou qualquer lógica para obter o caixa
+        return view('painel', compact('caixa')); // Passando a variável para a view
+    }
+
     public function abrirCaixa()
     {
         $user_id = auth()->id();
@@ -93,9 +99,9 @@ class CaixaSangria extends Component
         }
     }
 
-    // Renderizar a view
+    // Passar os dados do caixa para a view
     public function render()
     {
-        return view('livewire.caixa-sangria');
+        return view('livewire.caixa-sangria', ['caixa' => $this->caixa]);
     }
 }

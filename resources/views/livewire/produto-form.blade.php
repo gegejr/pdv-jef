@@ -1,4 +1,5 @@
-<div class="flex">
+<div class="ml-64 pt-[72px] p-6">
+    <div class="flex">
     <!-- Menu lateral -->
     <x-sidebar />
 
@@ -11,7 +12,13 @@
             <form wire:submit.prevent="salvar">
                 @csrf
 
-                <h2 class="text-xl font-bold mb-4">Cadastrar Produto</h2>
+                <h2 class="text-xl font-bold mb-4">
+                    @if($produto_id)
+                        Editar Produto
+                    @else
+                        Cadastrar Produto
+                    @endif
+                </h2>
 
                 @if (session()->has('sucesso'))
                     <div class="bg-green-100 text-green-800 p-2 rounded mb-4">
@@ -63,8 +70,15 @@
                     @endif
                 </div>
 
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Salvar</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">
+                    @if($produto_id)
+                        Atualizar Produto
+                    @else
+                        Cadastrar Produto
+                    @endif
+                </button>
             </form>
         </div>
+    </div>
     </div>
 </div>

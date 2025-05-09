@@ -20,34 +20,35 @@ class RelatorioVendas extends Component
     public function render()
     {
         $query = Venda::query();
-
+    
         if ($this->data_inicial) {
-            $query->where('created_at', '>=', $this->data_inicial);
+            $query->where('created_at', '>=', $this->data_inicial . ' 00:00:00');
         }
-
+    
         if ($this->data_final) {
-            $query->where('created_at', '<=', $this->data_final);
+            $query->where('created_at', '<=', $this->data_final . ' 23:59:59');
         }
-
+    
         if ($this->metodo_pagamento) {
             $query->whereHas('pagamentos', function ($q) {
                 $q->where('tipo', $this->metodo_pagamento);
             });
         }
-
+    
         if ($this->caixa_id) {
             $query->where('caixa_id', $this->caixa_id);
         }
-
-        $vendas = $query->with('caixa')->get();
+    
+        $vendas = $query->with(['caixa', 'pagamentos'])->get();
         $caixas = Caixa::all();
-
+    
         return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));
     }
 
     public function detalhesVenda($vendaId)
     {
-        $this->vendaSelecionada = Venda::with('itens.produto', 'pagamentos')->find($vendaId);
+        $this->vendaSelecionada = Venda::with('itens.produto', 'pagamentos', 'caixa')->find($vendaId);
+
     }
 
     public function filtrarRelatorio()

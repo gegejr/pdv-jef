@@ -7,6 +7,7 @@
     @livewireStyles
 </head>
 <body class="bg-gray-100">
+<div class="ml-64 pt-[72px] p-6">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <x-sidebar />
@@ -60,7 +61,7 @@
             <!-- Últimas Vendas -->
             <h2 class="text-2xl font-semibold mt-8 mb-4">Últimas Vendas</h2>
 
-            <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg shadow-md">
+            <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg shadow-md mb-8">
                 <thead>
                     <tr class="bg-gray-100">
                         <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">ID Venda</th>
@@ -79,8 +80,40 @@
                         </tr>
                     @endforeach
                 </tbody>
-        </table>
+            </table>
+
+            <!-- Últimos Caixas Fechados -->
+            <h2 class="text-2xl font-semibold mt-8 mb-4">Últimos Caixas Fechados</h2>
+
+            <table class="min-w-full table-auto bg-white border border-gray-200 rounded-lg shadow-md">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">ID Caixa</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">Usuário</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">Valor Inicial</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">Valor Final</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-600">Fechado em</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($historicoCaixas as $caixa)
+                        <tr class="border-b">
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $caixa->id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $caixa->user->name ?? 'N/A' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">R$ {{ number_format($caixa->valor_inicial, 2, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">R$ {{ number_format($caixa->valor_final, 2, ',', '.') }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ \Carbon\Carbon::parse($caixa->fechado_em)->format('d/m/Y H:i') }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Nenhum caixa fechado encontrado.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
-@livewireScripts
+    @livewireScripts
+</body>
+</html>

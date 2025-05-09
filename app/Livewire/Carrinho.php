@@ -6,14 +6,17 @@ use Livewire\Component;
 use App\Models\Produto;
 use App\Models\Caixa;
 use App\Models\Venda;
-use App\Models\Pagamento;  // Certifique-se de incluir o modelo Pagamento
+use App\Models\Pagamento;
 
 class Carrinho extends Component
 {
     public $carrinho = [];
     public $total = 0;
     public $desconto_total = 0;
-    public $metodo_pagamento;  // <-- Adiciona essa linha para a propriedade do método de pagamento
+    public $metodo_pagamento;
+
+    public $mensagem_erro = null;
+    public $mensagem_sucesso = null;
 
     public function mount()
     {
@@ -60,7 +63,12 @@ class Carrinho extends Component
     public function render()
     {
         return view('livewire.carrinho', [
-            'totalCarrinho' => $this->total
+            'totalCarrinho' => $this->total,
+            'carrinho' => $this->carrinho,
+            'mensagem_erro' => $this->mensagem_erro,
+            'mensagem_sucesso' => $this->mensagem_sucesso,
+            'total' => $this->total,
+            'desconto_total' => $this->desconto_total,
         ]);
     }
 
@@ -74,68 +82,61 @@ class Carrinho extends Component
     }
 
     public function fecharVenda()
-{
-    $user_id = auth()->id();
+    {
+        $user_id = auth()->id();
 
-    $caixa = Caixa::where('user_id', $user_id)->whereNull('fechado_em')->first();
+        // Verificação de estoque
+        foreach ($this->carrinho as $item) {
+            $produto = Produto::find($item['produto']->id);
+            if (!$produto) {
+                session()->flash('error', 'Produto não encontrado: ' . $item['produto']->nome);
+                return;
+            }
 
-    if (!$caixa) {
-        $caixa = $this->abrirCaixa(0, $user_id);
-    }
+            if ($produto->estoque < $item['quantidade']) {
+                session()->flash('error', 'Estoque insuficiente para o produto "' . $produto->nome . '". Disponível: ' . $produto->estoque);
+                return;
+            }
+        }
 
-    // Criar a venda
-    $venda = Venda::create([
-        'user_id' => $user_id,
-        'caixa_id' => $caixa->id,
-        'total' => $this->total,
-        'desconto_total' => $this->desconto_total,
-    ]);
+        $caixa = Caixa::where('user_id', $user_id)->whereNull('fechado_em')->first();
 
-    // Registrar os itens da venda
-    foreach ($this->carrinho as $item) {
-        $venda->itemVendas()->create([
-            'produto_id' => $item['produto']->id,
-            'quantidade' => $item['quantidade'],
-            'valor_unitario' => $item['produto']->valor,
-            'desconto' => $item['desconto'] ?? 0,
+        if (!$caixa) {
+            $caixa = $this->abrirCaixa(0, $user_id);
+        }
+
+        $venda = Venda::create([
+            'user_id' => $user_id,
+            'caixa_id' => $caixa->id,
+            'total' => $this->total,
+            'desconto_total' => $this->desconto_total,
         ]);
+
+        foreach ($this->carrinho as $item) {
+            $produto = Produto::find($item['produto']->id);
+            $produto->estoque -= $item['quantidade'];
+            $produto->save();
+
+            $venda->itemVendas()->create([
+                'produto_id' => $item['produto']->id,
+                'quantidade' => $item['quantidade'],
+                'valor_unitario' => $item['produto']->valor,
+                'desconto' => $item['desconto'] ?? 0,
+            ]);
+        }
+
+        // Aqui você pode salvar o pagamento com $this->metodo_pagamento se desejar
+        Pagamento::create([
+            'venda_id' => $venda->id,
+            'metodo' => $this->metodo_pagamento,
+            'valor' => $this->total - $this->desconto_total,
+        ]);
+
+        session()->forget('carrinho');
+        $this->atualizarCarrinho();
+        $this->desconto_total = 0;
+        $this->metodo_pagamento = null;
+
+        session()->flash('message', 'Venda finalizada com sucesso!');
     }
-
-    // Registrar o pagamento
-    $metodoPagamento = $this->metodo_pagamento;  // Método de pagamento selecionado
-    $valorPagamento = $this->total;  // Valor do pagamento
-
-    // Verificar se o tipo de pagamento está presente
-    if (empty($metodoPagamento)) {
-        session()->flash('error', 'O tipo de pagamento é obrigatório.');
-        return;
-    }
-
-    // Aqui, você pode adicionar um log para garantir que o tipo de pagamento está correto
-    \Log::info('Método de pagamento selecionado: ' . $metodoPagamento);
-
-    // Criar o pagamento
-    $pagamento = Pagamento::create([
-        'venda_id' => $venda->id,
-        'tipo' => $metodoPagamento,
-        'valor' => $valorPagamento,
-    ]);
-
-    // Atualizar o caixa
-    $caixa->valor_inicial += $this->total;
-    $caixa->save();
-
-    // Limpar o carrinho da sessão
-    session()->forget('carrinho');
-    $this->carrinho = []; // Atualiza a variável carrinho no componente
-
-    // Atualizar o total após limpar o carrinho
-    $this->total = 0;
-    $this->desconto_total = 0;
-
-    // Garantir que a tela seja atualizada
-    $this->atualizarCarrinho();
-
-    session()->flash('message', 'Venda finalizada com sucesso!');
-}
 }
