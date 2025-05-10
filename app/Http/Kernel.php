@@ -39,8 +39,8 @@ class Kernel extends HttpKernel
      * Middlewares individuais que podem ser usados por nome nas rotas
      */
     protected $routeMiddleware = [
-        'admin' => \App\Http\Middleware\IsAdmin::class, // <- aqui entra o seu middleware
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\IsAdmin::class,
+        'admin.only' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 }

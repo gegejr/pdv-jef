@@ -51,6 +51,23 @@
             </svg>
             Caixa/Sangria
         </a>
+        <div x-data="{ open: false }" class="relative">
+            <button @click="open = !open" class="flex items-center space-x-2 p-2 rounded hover:bg-gray-100 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6V4m0 16v-2m8-6h-2M6 12H4m15.364-4.636l-1.414 1.414M6.05 17.95l-1.414-1.414M17.95 17.95l-1.414-1.414M6.05 6.05L4.636 7.464" />
+                </svg>
+                <span class="text-gray-700">Configurações</span>
+            </button>
 
+            <!-- Dropdown -->
+            <div x-show="open" @click.away="open = false" class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                <a href="{{ route('usuarios.criar') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    Criar Usuário
+                </a>
+                <!-- Você pode adicionar mais opções aqui futuramente -->
+            </div>
+        </div>
     </nav>
+    
 </div>

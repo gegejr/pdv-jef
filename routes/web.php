@@ -11,7 +11,7 @@ use App\Models\Venda;
 use Illuminate\Http\Request;
 use App\Livewire\CaixaSangria;
 use App\Models\Caixa;
-
+use App\Http\Controllers\UserController;
 
 // Página inicial
 Route::get('/', function () {
@@ -98,3 +98,12 @@ Route::middleware('auth')->get('/relatorio-vendas', RelatorioVendas::class)->nam
 Route::middleware('auth')->get('/caixa-sangria', \App\Livewire\CaixaSangria::class)->name('caixa-sangria');
 
 
+
+Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('index');
+    Route::get('/criar', [UserController::class, 'create'])->name('criar');
+    Route::post('/', [UserController::class, 'store'])->name('store');
+    Route::get('/editar/{id}', [UserController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [UserController::class, 'update'])->name('update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+});
