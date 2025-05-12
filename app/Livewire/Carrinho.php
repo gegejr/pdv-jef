@@ -14,10 +14,11 @@ class Carrinho extends Component
     public $total = 0;
     public $desconto_total = 0;
     public $metodo_pagamento;
-
+    public $busca_produto = '';
+    public $campo_visivel = false;
     public $mensagem_erro = null;
     public $mensagem_sucesso = null;
-
+    public $sugestoes = [];
     public function mount()
     {
         $this->atualizarCarrinho();
@@ -81,62 +82,153 @@ class Carrinho extends Component
         ]);
     }
 
-    public function fecharVenda()
-    {
-        $user_id = auth()->id();
+public function fecharVenda()
+{
+    $user_id = auth()->id();
 
-        // Verificação de estoque
-        foreach ($this->carrinho as $item) {
-            $produto = Produto::find($item['produto']->id);
-            if (!$produto) {
-                session()->flash('error', 'Produto não encontrado: ' . $item['produto']->nome);
-                return;
-            }
-
-            if ($produto->estoque < $item['quantidade']) {
-                session()->flash('error', 'Estoque insuficiente para o produto "' . $produto->nome . '". Disponível: ' . $produto->estoque);
-                return;
-            }
+    // Verificação de estoque
+    foreach ($this->carrinho as $item) {
+        $produto = Produto::find($item['produto']->id);
+        if (!$produto) {
+            session()->flash('error', 'Produto não encontrado: ' . $item['produto']->nome);
+            return;
         }
 
-        $caixa = Caixa::where('user_id', $user_id)->whereNull('fechado_em')->first();
-
-        if (!$caixa) {
-            $caixa = $this->abrirCaixa(0, $user_id);
+        if ($produto->estoque < $item['quantidade']) {
+            session()->flash('error', 'Estoque insuficiente para o produto "' . $produto->nome . '". Disponível: ' . $produto->estoque);
+            return;
         }
-
-        $venda = Venda::create([
-            'user_id' => $user_id,
-            'caixa_id' => $caixa->id,
-            'total' => $this->total, // <- CORRETO
-            'desconto_total' => $this->desconto_total,
-        ]);
-
-        foreach ($this->carrinho as $item) {
-            $produto = Produto::find($item['produto']->id);
-            $produto->estoque -= $item['quantidade'];
-            $produto->save();
-
-            $venda->itemVendas()->create([
-                'produto_id' => $item['produto']->id,
-                'quantidade' => $item['quantidade'],
-                'valor_unitario' => $item['produto']->valor,
-                'desconto' => $item['desconto'] ?? 0,
-            ]);
-        }
-
-        // Aqui você pode salvar o pagamento com $this->metodo_pagamento se desejar
-        Pagamento::create([
-            'venda_id' => $venda->id,
-            'tipo' => $this->metodo_pagamento,
-            'valor' => $this->total - $this->desconto_total,
-        ]);
-
-        session()->forget('carrinho');
-        $this->atualizarCarrinho();
-        $this->desconto_total = 0;
-        $this->metodo_pagamento = null;
-
-        session()->flash('message', 'Venda finalizada com sucesso!');
     }
+
+    $caixa = Caixa::where('user_id', $user_id)->whereNull('fechado_em')->first();
+
+    if (!$caixa) {
+        $caixa = $this->abrirCaixa(0, $user_id);
+    }
+
+    $venda = Venda::create([
+        'user_id' => $user_id,
+        'caixa_id' => $caixa->id,
+        'total' => $this->total,
+        'desconto_total' => $this->desconto_total,
+    ]);
+
+    foreach ($this->carrinho as $item) {
+        $produto = Produto::find($item['produto']->id);
+        $produto->estoque -= $item['quantidade'];
+        $produto->save();
+
+        $venda->itemVendas()->create([
+            'produto_id' => $item['produto']->id,
+            'quantidade' => $item['quantidade'],
+            'valor_unitario' => $item['produto']->valor,
+            'desconto' => $item['desconto'] ?? 0,
+        ]);
+    }
+
+    if (empty($this->metodo_pagamento)) {
+        session()->flash('error', 'Método de pagamento não selecionado.');
+        return;
+    }
+
+    Pagamento::create([
+        'venda_id' => $venda->id,
+        'tipo' => $this->metodo_pagamento,
+        'valor' => $this->total - $this->desconto_total,
+    ]);
+
+    session()->forget('carrinho');
+    $this->atualizarCarrinho();
+    $this->desconto_total = 0;
+    $this->metodo_pagamento = null;
+
+    session()->flash('message', 'Venda finalizada com sucesso!');
+
+    // Gerar e imprimir o cupom - redireciona para a rota de impressão
+    return redirect()->route('imprimir.cupom', ['venda_id' => $venda->id]);
+}
+
+
+    public function toggleCampoBusca()
+    {
+        $this->campo_visivel = !$this->campo_visivel;
+    }
+
+    public function adicionarProduto()
+    {
+        $produto = Produto::where('id', $this->busca_produto)
+            ->orWhere('codigo_barras', $this->busca_produto)
+            ->orWhere('nome', 'like', '%' . $this->busca_produto . '%')
+            ->first();
+
+        if (!$produto) {
+            session()->flash('error', 'Produto não encontrado.');
+            return;
+        }
+
+        $carrinho = session()->get('carrinho', []);
+
+        if (isset($carrinho[$produto->id])) {
+            $carrinho[$produto->id]['quantidade'] += 1;
+        } else {
+            $carrinho[$produto->id] = [
+                'produto' => $produto,
+                'quantidade' => 1,
+                'valor_total' => $produto->valor,
+                'desconto' => 0
+            ];
+        }
+
+        session()->put('carrinho', $carrinho);
+        $this->busca_produto = '';
+        $this->atualizarCarrinho();
+        session()->flash('message', 'Produto adicionado ao carrinho.');
+    }
+
+
+    public function updatedBuscaProduto()
+    {
+    $this->sugestoes = Produto::where('nome', 'like', '%' . $this->busca_produto . '%')
+        ->orWhere('codigo_barras', 'like', '%' . $this->busca_produto . '%')
+        ->limit(10)
+        ->get()
+        ->toArray();
+    }    
+
+    public function selecionarProduto($input)
+    {
+        // Agora, $input é o valor do texto digitado
+        $produto = Produto::where('codigo_barras', $input)
+                        ->orWhere('nome', 'like', '%' . $input . '%')
+                        ->first();
+
+        if (!$produto) {
+            session()->flash('error', 'Produto não encontrado.');
+            return;
+        }
+
+        $carrinho = session()->get('carrinho', []);
+
+        if (isset($carrinho[$produto->id])) {
+            $carrinho[$produto->id]['quantidade'] += 1;
+        } else {
+            $carrinho[$produto->id] = [
+                'produto' => $produto,
+                'quantidade' => 1,
+                'valor_total' => $produto->valor,
+                'desconto' => 0
+            ];
+        }
+
+        session()->put('carrinho', $carrinho);
+
+        // Limpar sugestões e campo de busca
+        $this->busca_produto = '';
+        $this->sugestoes = [];
+
+        $this->atualizarCarrinho();
+        session()->flash('message', 'Produto adicionado ao carrinho.');
+    }
+
+
 }

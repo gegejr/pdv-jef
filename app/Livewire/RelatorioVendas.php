@@ -39,7 +39,7 @@ class RelatorioVendas extends Component
             $query->where('caixa_id', $this->caixa_id);
         }
     
-        $vendas = $query->with(['caixa', 'pagamentos', 'user'])->get();
+        $vendas = $query->with(['caixa', 'pagamentos', 'user'])->paginate(10);
         $caixas = Caixa::all();
     
         return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));

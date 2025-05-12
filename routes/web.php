@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use App\Livewire\CaixaSangria;
 use App\Models\Caixa;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\CupomController;
 // Página inicial
 Route::get('/', function () {
     /** @var \Illuminate\Contracts\Auth\Guard $auth */
@@ -107,3 +107,5 @@ Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function
     Route::put('/{id}', [UserController::class, 'update'])->name('update');
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 });
+
+Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->name('imprimir.cupom');
