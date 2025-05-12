@@ -63,7 +63,7 @@
 
         <!-- ÁREA A SER IMPRESSA -->
         <div class="print-area">
-            <div class="overflow-x-auto bg-white shadow rounded-lg">
+            <div class="overflow-x-auto bg-white shadow rounded-lg max-w-full">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -71,6 +71,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Caixa</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                         </tr>
@@ -86,6 +87,7 @@
                                         <p>{{ ucfirst($pagamento->tipo) }} - R$ {{ number_format($pagamento->valor, 2, ',', '.') }}</p>
                                     @endforeach
                                 </td>
+                                <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->user->name ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->caixa->nome }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
                                     <button wire:click="detalhesVenda({{ $venda->id }})" class="text-blue-500 hover:text-blue-700">Ver detalhes</button>
@@ -111,7 +113,12 @@
                 </div>
                 <div class="mt-4">
                     <p><strong>Total da Venda:</strong> R$ {{ number_format($vendaSelecionada->total, 2, ',', '.') }}</p>
-                    <p><strong>Método de Pagamento:</strong> {{ $vendaSelecionada->metodo_pagamento }}</p>
+                    <p><strong>Método de Pagamento:</strong></p>
+                        <ul class="list-disc pl-6">
+                            @foreach($vendaSelecionada->pagamentos as $pagamento)
+                                <li>{{ ucfirst($pagamento->tipo) }} - R$ {{ number_format($pagamento->valor, 2, ',', '.') }}</li>
+                            @endforeach
+                        </ul>
                 </div>
             </div>
         @endif

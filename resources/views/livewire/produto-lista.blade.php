@@ -43,7 +43,16 @@
                             <td class="p-2 border text-center">{{ $produto->nome }}</td>
                             <td class="p-2 border text-center">{{ $produto->codigo_barras }}</td>
                             <td class="p-2 border text-center">R$ {{ number_format($produto->valor, 2, ',', '.') }}</td>
-                            <td class="p-2 border text-center">{{ $produto->estoque }}</td>
+                            <td class="p-2 border text-center">
+                                @if ($produto->estoque < 5)
+                                    <span class="text-red-600 font-semibold">
+                                        {{ $produto->estoque }} <br>
+                                        <small>Estoque baixo! <br> Faça pedido</small>
+                                    </span>
+                                @else
+                                    {{ $produto->estoque }}
+                                @endif
+                            </td>
                             <td class="p-2 border text-center">
                                 <div class="flex justify-center items-center space-x-2">
                                     <button wire:click="editarProduto({{ $produto->id }})" class="flex items-center p-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">

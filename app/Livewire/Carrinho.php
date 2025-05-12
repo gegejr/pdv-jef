@@ -108,7 +108,7 @@ class Carrinho extends Component
         $venda = Venda::create([
             'user_id' => $user_id,
             'caixa_id' => $caixa->id,
-            'total' => $this->total,
+            'total' => $this->total, // <- CORRETO
             'desconto_total' => $this->desconto_total,
         ]);
 
@@ -128,7 +128,7 @@ class Carrinho extends Component
         // Aqui você pode salvar o pagamento com $this->metodo_pagamento se desejar
         Pagamento::create([
             'venda_id' => $venda->id,
-            'metodo' => $this->metodo_pagamento,
+            'tipo' => $this->metodo_pagamento,
             'valor' => $this->total - $this->desconto_total,
         ]);
 
