@@ -40,8 +40,11 @@ Route::get('/painel', function (Request $request) {
     $totalVendas = $query->sum('total');
     $numeroVendas = $query->count();
 
-    $ultimasVendas = $query->orderBy('created_at', 'desc')->limit(5)->get();
-
+    $ultimasVendas = \App\Models\Venda::with('user') // garante que o nome do usuário apareça
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+        
     $vendasPorData = Venda::selectRaw('DATE(created_at) as data, SUM(total) as total')
         ->when($inicio && $fim, fn($q) => $q->whereBetween('created_at', ["$inicio 00:00:00", "$fim 23:59:59"]))
         ->groupBy('data')

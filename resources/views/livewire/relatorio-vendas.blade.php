@@ -97,7 +97,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-4">
+            <div class="mt-4 ">
              {{ $vendas->links('pagination::tailwind') }}
             </div>
         </div>

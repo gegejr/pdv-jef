@@ -42,4 +42,7 @@
             </table>
         </div>
     </div>
+    <div class="mt-4 ">
+        {{ $perdas->links('pagination::tailwind') }}
+    </div>
 </div>

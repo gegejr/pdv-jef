@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/Manaus', // ou America/Sao_Paulo, America/Boa_Vista, conforme tua região
 
     /*
     |--------------------------------------------------------------------------

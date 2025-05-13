@@ -6,10 +6,13 @@ use Livewire\Component;
 use App\Models\ProdutoPerda;
 use App\Models\Produto;
 use App\Livewire\ProdutoLista;
+use Livewire\WithPagination;
 
 class ProdutoPerdaLista extends Component
 {
+    use WithPagination;
     public $produto_id;
+    protected $paginationTheme = 'tailwind';
 
     protected $listeners = ['atualizarListaPerdas'];
 
@@ -27,10 +30,14 @@ class ProdutoPerdaLista extends Component
 
     public function render()
     {
-        // Se $produto_id for definido, filtra. Senão, mostra todas.
-        $perdas = $this->produto_id
-            ? ProdutoPerda::where('produto_id', $this->produto_id)->get()
-            : ProdutoPerda::all();
+        $query = ProdutoPerda::query();
+
+        // Se tiver produto_id, aplica o filtro
+        if ($this->produto_id) {
+            $query->where('produto_id', $this->produto_id);
+        }
+
+        $perdas = $query->latest()->paginate(10);
 
         return view('livewire.produto-perda-lista', compact('perdas'));
     }
