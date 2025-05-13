@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Produto;
 use App\Livewire\ProdutoLista;
+use App\Models\ProdutoPerda;
 
 class ProdutoForm extends Component
 {
@@ -16,7 +17,9 @@ class ProdutoForm extends Component
     public $nome, $codigo_barras, $descricao, $valor, $estoque, $desconto_padrao = 0, $imagem, $imagem_existente;
 
     protected $listeners = ['editarProduto'];
-
+    public $registrar_perda = false;
+    public $quantidade_perda;
+    public $motivo_perda;
     // Editar produto
     public function editarProduto($id)
     {
@@ -45,7 +48,9 @@ class ProdutoForm extends Component
             'valor' => 'required|numeric|min:0',
             'estoque' => 'required|integer|min:0',
             'imagem' => 'nullable|image|max:2048',
-            'desconto_padrao' => 'nullable|numeric|min:0'
+            'desconto_padrao' => 'nullable|numeric|min:0',
+            'quantidade_perda' => 'nullable|integer|min:1',
+            'motivo_perda' => 'nullable|in:quebra,descarte,perda',
         ]);
 
         // Verifica se foi enviado uma imagem nova
@@ -66,6 +71,19 @@ class ProdutoForm extends Component
                 'desconto_padrao' => $this->desconto_padrao ?? 0,
             ]);
 
+            // Registra a perda, caso haja
+            if ($this->registrar_perda && $this->quantidade_perda > 0) {
+                ProdutoPerda::create([
+                    'produto_id' => $produto->id,
+                    'quantidade' => $this->quantidade_perda,
+                    'valor' => $produto->valor * $this->quantidade_perda,
+                    'motivo' => $this->motivo_perda,
+                ]);
+
+                // Atualiza o estoque
+                $produto->decrement('estoque', $this->quantidade_perda);
+            }
+
             session()->flash('sucesso', 'Produto atualizado com sucesso!');
         } else {
             // Cadastro de novo produto
@@ -83,9 +101,10 @@ class ProdutoForm extends Component
         }
 
         // Resetando os dados após a ação
-        $this->reset(['nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'produto_id', 'imagem_existente', 'desconto_padrao']);
+        $this->reset(['nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'produto_id', 'imagem_existente', 'desconto_padrao', 'quantidade_perda', 'motivo_perda']);
         $this->dispatch('produtoAtualizado'); // opcional para atualizar a lista de produtos
     }
+
 
     // Função render para mostrar o formulário
     public function render()

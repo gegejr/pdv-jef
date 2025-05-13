@@ -16,7 +16,9 @@ class ProdutoLista extends Component
     public $produtoId; // Para armazenar o ID do produto a ser editado
     public $nome, $codigo_barras, $descricao, $valor, $estoque, $desconto_padrao, $imagem;
     public $imagem_existente; // Para armazenar a imagem existente
-
+    public $registrar_perda = false;
+    public $quantidade_perda;
+    public $motivo_perda;
     protected $paginationTheme = 'tailwind';
 
     protected $listeners = ['editarProduto']; // Adicionando o listener para o evento
@@ -89,6 +91,8 @@ class ProdutoLista extends Component
             'estoque' => 'required|integer',
             'desconto_padrao' => 'nullable|numeric',
             'imagem' => 'nullable|image|max:2048',
+            'quantidade_perda' => 'nullable|integer|min:1',
+            'motivo_perda' => 'nullable|in:quebra,descarte,perda',
         ]);
 
         // Se for carregada uma nova imagem, processa a imagem
@@ -110,9 +114,26 @@ class ProdutoLista extends Component
             'imagem' => $this->imagem ?: $produto->imagem,
         ]);
 
+        // Registrar a perda
+        if ($this->registrar_perda && $this->quantidade_perda > 0 && $this->motivo_perda) {
+            \App\Models\ProdutoPerda::create([
+                'produto_id' => $produto->id,
+                'quantidade' => $this->quantidade_perda,
+                'valor' => $produto->valor * $this->quantidade_perda,
+                'motivo' => $this->motivo_perda,
+            ]);
+
+            // Decrementa o estoque do produto
+            $produto->decrement('estoque', $this->quantidade_perda);
+
+            // Emitir o evento para atualizar a lista de perdas
+        $this->dispatch('atualizarListaPerdas', $produto->id)->to('produto-perda-lista');
+        }
+
         session()->flash('sucesso', 'Produto atualizado com sucesso.');
         return redirect()->route('produtos.lista'); // com “s”
     }
+
 
     public function render()
     {
@@ -125,6 +146,10 @@ class ProdutoLista extends Component
 
     public function fecharModal()
     {
-        $this->reset(['produtoId', 'nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'imagem_existente', 'desconto_padrao']);
+        $this->reset([
+            'produtoId', 'nome', 'codigo_barras', 'descricao',
+            'valor', 'estoque', 'imagem', 'imagem_existente',
+            'desconto_padrao', 'registrar_perda', 'quantidade_perda', 'motivo_perda'
+        ]);
     }
 }

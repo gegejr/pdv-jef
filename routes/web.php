@@ -13,6 +13,8 @@ use App\Livewire\CaixaSangria;
 use App\Models\Caixa;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CupomController;
+use App\Livewire\ProdutoPerdaLista;
+
 // Página inicial
 Route::get('/', function () {
     /** @var \Illuminate\Contracts\Auth\Guard $auth */
@@ -83,6 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/produtos/lista', ProdutoLista::class)->name('produtos.lista');
     Route::get('/produtos/adicionar', ProdutoForm::class)->name('adicionar-produto');
     Route::get('/produtos/editar/{id}', ProdutoForm::class)->name('produto-edit');
+    Route::get('produtos/perda/lista/{produto_id?}', ProdutoPerdaLista::class)->name('produtos-perda-lista');
 });
 
 // Carrinho
@@ -109,3 +112,4 @@ Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function
 });
 
 Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->name('imprimir.cupom');
+

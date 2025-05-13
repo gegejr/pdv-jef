@@ -1,3 +1,4 @@
+
 <div class="ml-64 pt-[72px] p-6">
     <div class="flex">
         <!-- Menu lateral -->
@@ -91,60 +92,96 @@
             </div>
         </div>
 
-        @if($produtoId)
-        <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div class="bg-white p-6 rounded shadow-xl w-full max-w-md">
-                <h2 class="text-xl font-bold mb-4">Editar Produto</h2>
-                <form wire:submit.prevent="salvar">
-                    <div class="mb-4">
-                        <label>Nome</label>
-                        <input type="text" wire:model.defer="nome" class="w-full border p-2 rounded" />
-                        @error('nome') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
+@if($produtoId)
+<div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">
+    <div class="bg-white p-6 rounded shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-6 text-center">Editar Produto</h2>
+        <form wire:submit.prevent="salvar">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block mb-1">Nome</label>
+                    <input type="text" wire:model.defer="nome" class="w-full border p-2 rounded" />
+                    @error('nome') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                </div>
 
-                    <div class="mb-4">
-                        <label>Código de Barras</label>
-                        <input type="text" wire:model.defer="codigo_barras" class="w-full border p-2 rounded" />
-                    </div>
+                <div>
+                    <label class="block mb-1">Código de Barras</label>
+                    <input type="text" wire:model.defer="codigo_barras" class="w-full border p-2 rounded" />
+                </div>
 
-                    <div class="mb-4">
-                        <label>Descrição</label>
-                        <textarea wire:model.defer="descricao" class="w-full border p-2 rounded"></textarea>
-                    </div>
+                <div class="col-span-2">
+                    <label class="block mb-1">Descrição</label>
+                    <textarea wire:model.defer="descricao" class="w-full border p-2 rounded"></textarea>
+                </div>
 
-                    <div class="mb-4">
-                        <label>Valor</label>
-                        <input type="number" step="0.01" wire:model.defer="valor" class="w-full border p-2 rounded" />
-                    </div>
+                <div>
+                    <label class="block mb-1">Valor</label>
+                    <input type="number" step="0.01" wire:model.defer="valor" class="w-full border p-2 rounded" />
+                </div>
 
-                    <div class="mb-4">
-                        <label>Estoque</label>
-                        <input type="number" wire:model.defer="estoque" class="w-full border p-2 rounded" />
-                    </div>
+                <div>
+                    <label class="block mb-1">Estoque</label>
+                    <input type="number" wire:model.defer="estoque" class="w-full border p-2 rounded" />
+                </div>
 
-                    <div class="mb-4">
-                        <label>Desconto Padrão</label>
-                        <input type="number" step="0.01" wire:model.defer="desconto_padrao" class="w-full border p-2 rounded" />
-                    </div>
+                <div>
+                    <label class="block mb-1">Desconto Padrão</label>
+                    <input type="number" step="0.01" wire:model.defer="desconto_padrao" class="w-full border p-2 rounded" />
+                </div>
 
-                    <div class="mb-4">
-                        <label>Imagem</label>
-                        <input type="file" wire:model="imagem" class="w-full" />
-                        @error('imagem') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        @if ($imagem_existente && !$imagem)
-                            <div class="mt-2">
-                                <img src="{{ asset('storage/' . $imagem_existente) }}" class="w-24 h-24 object-cover rounded">
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="flex justify-between">
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Salvar</button>
-                        <button type="button" wire:click="fecharModal" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</button>
-                    </div>
-                </form>
+                <div>
+                    <label class="block mb-1">Imagem</label>
+                    <input type="file" wire:model="imagem" class="w-full" />
+                    @error('imagem') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    @if ($imagem_existente && !$imagem)
+                        <div class="mt-2">
+                            <img src="{{ asset('storage/' . $imagem_existente) }}" class="w-24 h-24 object-cover rounded">
+                        </div>
+                    @endif
+                </div>
             </div>
-        </div>
-        @endif
+
+            <hr class="my-6 border-gray-300">
+
+            <div x-data="{ mostrarPerda: @entangle('registrar_perda') }">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" x-model="mostrarPerda" class="form-checkbox">
+                    <span class="font-medium">Registrar Perda</span>
+                </label>
+                <p class="text-gray-500 text-sm mt-1">
+                    Marque para registrar perda de estoque. Valor atual: 
+                    <span x-text="mostrarPerda ? 'SIM' : 'NÃO'"></span>
+                </p>
+
+                <div x-show="mostrarPerda" class="grid grid-cols-1 gap-4 mt-4">
+                    <div class="mb-4">
+                        <label>Quantidade Perdida</label>
+                        <input type="number" wire:model="quantidade_perda" class="w-full border p-2 rounded" />
+                    </div>
+                    <div class="mb-4">
+                        <label>Motivo da Perda</label>
+                        <select wire:model="motivo_perda" class="w-full border p-2 rounded">
+                            <option value="">Selecione</option>
+                            <option value="quebra">Quebra</option>
+                            <option value="descarte">Descarte</option>
+                            <option value="perda">Perda</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="flex justify-end space-x-4 mt-6">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow">
+                    💾 Salvar
+                </button>
+                <button type="button" wire:click="fecharModal" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded shadow">
+                    ❌ Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
     </div>
 </div>
