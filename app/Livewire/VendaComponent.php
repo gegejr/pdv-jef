@@ -25,3 +25,4 @@ class VendaComponent extends Component
         return view('livewire.venda-component');
     }
 }
+

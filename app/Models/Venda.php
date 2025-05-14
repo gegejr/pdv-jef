@@ -44,7 +44,7 @@ class Venda extends Model
         return $this->hasMany(ItemVenda::class);
     }
 
-        public function cliente()
+    public function cliente()
     {
         return $this->belongsTo(Cliente::class);
     }

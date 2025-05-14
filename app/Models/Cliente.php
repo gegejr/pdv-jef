@@ -18,3 +18,5 @@ class Cliente extends Model
         'data_nascimento' => 'date',
     ];
 }
+
+
