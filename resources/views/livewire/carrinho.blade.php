@@ -30,6 +30,27 @@
                     {{ session('error') }}
                 </div>
             @endif
+            @if (!$caixaAberto)
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md text-center">
+                        <h2 class="text-xl font-bold text-red-600 mb-4">Caixa fechado</h2>
+                        <p class="mb-4 text-gray-700">Você precisa abrir o caixa para iniciar uma nova venda.</p>
+
+                        <div class="mb-3 text-left">
+                            <label class="block text-sm font-semibold">Nome do Caixa</label>
+                            <input type="text" wire:model="nome" class="w-full border rounded p-2" placeholder="Ex: Caixa Principal" />
+                        </div>
+                        <div class="mb-4 text-left">
+                            <label class="block text-sm font-semibold">Valor Inicial</label>
+                            <input type="number" wire:model="valor_inicial" class="w-full border rounded p-2" />
+                        </div>
+
+                        <button wire:click="abrirCaixa" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full">
+                            Abrir Caixa
+                        </button>
+                    </div>
+                </div>
+            @endif
 
             <h2 class="text-xl font-bold mb-4">Carrinho de Compras</h2>
             @if ($cliente_nome)
@@ -50,7 +71,7 @@
                         <div class="mt-4">
                             <input 
                                 type="text"
-                                wire:model.debounce.300ms="busca_cliente"
+                                wire:model.debounce.10ms="busca_cliente"
                                 placeholder="Buscar cliente por nome ou telefone"
                                 class="border p-2 rounded w-full"
                             />
@@ -99,7 +120,7 @@
                 >
                     <input 
                         type="text"
-                        wire:model.debounce.100ms="busca_produto"
+                        wire:model.debounce.10ms="busca_produto"
                         placeholder="Digite código ou nome"
                         @focus="aberto = true"
                         @click.away="aberto = false"
@@ -176,6 +197,7 @@
                         <option value="debito">Débito</option>
                         <option value="credito">Crédito</option>
                         <option value="pix">Pix</option>
+                        <option value="conta">Conta</option>
                     </select>
                 </div>
 

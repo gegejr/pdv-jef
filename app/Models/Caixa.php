@@ -9,6 +9,7 @@ class Caixa extends Model
 {
     protected $fillable = [
         'user_id',
+        'nome',
         'valor_inicial',
         'valor_final',
         'aberto_em',
@@ -57,8 +58,13 @@ class Caixa extends Model
     // Método para calcular o valor final do caixa
     public function calcularValorFinal()
     {
-        $total_vendas = $this->vendas->sum('total');
-        return $this->valor_inicial + $total_vendas;
+        $total_dinheiro = 0;
+
+        foreach ($this->vendas as $venda) {
+            $total_dinheiro += $venda->pagamentos()->where('tipo', 'dinheiro')->sum('valor');
+        }
+
+        return $this->valor_inicial + $total_dinheiro;
     }
 
         public function getAbertoEmAttribute($value)
@@ -69,5 +75,10 @@ class Caixa extends Model
     public function getFechadoEmAttribute($value)
     {
         return \Carbon\Carbon::parse($value);
+    }
+
+    public function sangrias()
+    {
+    return $this->hasMany(Sangria::class);
     }
 }

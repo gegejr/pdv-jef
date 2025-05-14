@@ -15,6 +15,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CupomController;
 use App\Livewire\ProdutoPerdaLista;
 use App\Livewire\ClienteLista;
+use App\Livewire\ClientesContas;
 
 // Página inicial
 Route::get('/', function () {
@@ -60,7 +61,8 @@ Route::get('/painel', function (Request $request) {
         ->orderByDesc('fechado_em')
         ->limit(10)
         ->get();
-
+    $vendas = Venda::with('caixa')->get();
+    $caixa = Caixa::whereNull('fechado_em')->first();
     return view('painel', compact(
         'totalVendas',
         'numeroVendas',
@@ -69,7 +71,9 @@ Route::get('/painel', function (Request $request) {
         'ultimasVendas',
         'datas',
         'valores',
-        'historicoCaixas' // <-- aqui
+        'historicoCaixas', // <-- aqui
+        'vendas', // ✅ agora estará disponível na view
+        'caixa'
     ));
 })->middleware('auth')->name('painel');
 
@@ -118,3 +122,5 @@ Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function
 Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->name('imprimir.cupom');
 
 Route::middleware('auth')->get('/clientes', ClienteLista::class)->name('clientes');
+
+Route::get('/cliente.conta', ClientesContas::class)->name('cliente.conta');

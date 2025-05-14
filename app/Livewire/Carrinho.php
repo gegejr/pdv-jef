@@ -25,14 +25,23 @@ class Carrinho extends Component
     public $cliente_nome = null;
     public $busca_cliente = '';
     public $sugestoes_clientes = [];
+    public $caixaAberto = false;
+    public $nome = '';
+    public $valor_inicial = 0;
 
     public function mount()
     {
         $this->atualizarCarrinho();
         $this->clientes = Cliente::all();
-
+        $this->verificarCaixa();
     }
 
+    public function verificarCaixa()
+    {
+        $this->caixaAberto = Caixa::where('user_id', auth()->id())
+            ->whereNull('fechado_em')
+            ->exists();
+    }
     public function atualizarCarrinho()
     {
         $this->carrinho = session()->get('carrinho', []);
@@ -72,6 +81,8 @@ class Carrinho extends Component
 
     public function render()
     {
+        $this->verificarCaixa();
+
         return view('livewire.carrinho', [
             'totalCarrinho' => $this->total,
             'carrinho' => $this->carrinho,
@@ -84,13 +95,19 @@ class Carrinho extends Component
         ]);
     }
 
-    protected function abrirCaixa($valorInicial = 0, $userId)
+    public function abrirCaixa()
     {
-        return Caixa::create([
+        $userId = auth()->id();
+
+        Caixa::create([
             'user_id' => $userId,
-            'valor_inicial' => $valorInicial,
+            'nome' => $this->nome,
+            'valor_inicial' => $this->valor_inicial ?? 0,
             'aberto_em' => now(),
         ]);
+
+        $this->verificarCaixa();
+        $this->reset(['nome', 'valor_inicial']);
     }
 
     public function fecharVenda()

@@ -40,6 +40,18 @@
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
                     Filtrar
                 </button>
+                    @if ($caixa)
+                        <div class="sm:ml-auto text-sm font-semibold text-gray-800 bg-gray-100 px-10 py-5 rounded shadow-inner">
+                            Caixa Atual: <span class="text-blue-600">{{ $caixa->nome }}</span> 
+                            @if($caixa->aberto_em)
+                                | Aberto em: <span class="text-gray-600">{{ \Carbon\Carbon::parse($caixa->aberto_em)->format('d/m/Y H:i') }}</span>
+                            @endif
+                        </div>
+                    @else
+                        <div class="sm:ml-auto text-sm font-semibold text-red-600 bg-red-100 px-4 py-2 rounded shadow-inner">
+                            Nenhum caixa aberto no momento.
+                        </div>
+                    @endif
             </form>
 
             <!-- Cards de Resumo -->

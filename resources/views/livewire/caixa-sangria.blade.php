@@ -14,6 +14,7 @@
             @if ($caixa)
                 <div class="bg-white p-4 border rounded shadow-sm">
                     <h3 class="text-lg font-semibold">Caixa Aberto</h3>
+                    <p><strong>Caixa atual: {{ $caixa->nome}}</p>
                     <p><strong>Valor Inicial:</strong> R$ {{ number_format($caixa->valor_inicial, 2, ',', '.') }}</p>
                     <p><strong>Valor Final:</strong> R$ {{ number_format($caixa->valor_final ?? 0, 2, ',', '.') }}</p>
                     <p><strong>Aberto em:</strong> {{ \Carbon\Carbon::parse($caixa->aberto_em)->format('d/m/Y H:i') }}</p>
@@ -32,6 +33,10 @@
                 <div class="bg-white p-4 border rounded shadow-sm">
                     <h3 class="text-lg font-semibold">Abrir Caixa</h3>
                     <div class="mb-4">
+                        <label for="nome" class="block text-sm font-semibold">Nome Caixa</label>
+                        <input type="text" id="nome" wire:model="nome" class="border p-2 rounded w-full" required>
+                    </div>
+                    <div class="mb-4">
                         <label for="valor_inicial" class="block text-sm font-semibold">Valor Inicial</label>
                         <input type="number" id="valor_inicial" wire:model="valor_inicial" class="border p-2 rounded w-full" required>
                     </div>
@@ -46,6 +51,7 @@
                 <div class="mt-6 bg-white p-4 border rounded shadow-sm">
                     <h3 class="text-lg font-semibold mb-4">Registrar Sangria</h3>
                     <form wire:submit.prevent="registrarSangria" class="space-y-4">
+                        
                         <div>
                             <label for="valor_sangria" class="block text-sm font-semibold">Valor</label>
                             <input type="number" id="valor_sangria" wire:model="valor_sangria" class="border p-2 rounded w-full" min="0" step="0.01" required>

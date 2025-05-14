@@ -13,6 +13,7 @@ class CaixaSangria extends Component
     public $valor_sangria;
     public $observacao_sangria;
     public $caixa;
+    public $nome;
 
     // Método para abrir o caixa
     public function index()
@@ -23,6 +24,7 @@ class CaixaSangria extends Component
 
     public function abrirCaixa()
     {
+        
         $user_id = auth()->id();
 
         // Verifica se já há um caixa aberto
@@ -35,6 +37,7 @@ class CaixaSangria extends Component
 
         $caixa = Caixa::create([
             'user_id' => $user_id,
+            'nome' => $this->nome,
             'valor_inicial' => $this->valor_inicial,
             'aberto_em' => now(),
         ]);
@@ -48,12 +51,14 @@ class CaixaSangria extends Component
     // Método para fechar o caixa
     public function fecharCaixa()
     {
-        $caixa = Caixa::find($this->caixa_id);
+        $caixa = Caixa::with('vendas.pagamentos')->find($this->caixa_id);
 
         if ($caixa) {
-            $caixa->valor_final = $caixa->calcularValorFinal(); // Certifique-se de que esse método exista no modelo Caixa
+            $caixa->valor_final = $caixa->calcularValorFinal();
             $caixa->fechado_em = now();
             $caixa->save();
+
+            $this->caixa = $caixa; // <-- ESSENCIAL PARA A VIEW ATUALIZAR
 
             session()->flash('message', 'Caixa fechado com sucesso!');
         } else {
@@ -67,21 +72,27 @@ class CaixaSangria extends Component
         $caixa = Caixa::find($this->caixa_id);
 
         if ($caixa) {
-            // Valida a entrada de sangria
             $this->validate([
+                //'nome_sangria' => 'required|string|max:255',
                 'valor_sangria' => 'required|numeric|min:0.01',
                 'observacao_sangria' => 'required|string|max:255',
             ]);
 
             Sangria::create([
                 'caixa_id' => $this->caixa_id,
+               // 'nome' => $this->nome_sangria,
                 'valor' => $this->valor_sangria,
                 'observacao' => $this->observacao_sangria,
             ]);
 
-            // Atualiza o valor do caixa
             $caixa->valor_inicial -= $this->valor_sangria;
             $caixa->save();
+
+            // Limpar campos e atualizar dados
+            //$this->nome_caixa,
+            $this->valor_sangria = null;
+            $this->observacao_sangria = null;
+            $this->caixa = Caixa::with('sangrias')->find($this->caixa_id);
 
             session()->flash('message', 'Sangria registrada com sucesso!');
         } else {

@@ -90,7 +90,9 @@
                                     @endforeach
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->user->name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->caixa->nome }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">
+                                    {{ $venda->caixa->nome }}
+                                </td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
                                     <button wire:click="detalhesVenda({{ $venda->id }})" class="text-blue-500 hover:text-blue-700">Ver detalhes</button>
                                 </td>
