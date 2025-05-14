@@ -12,6 +12,7 @@ class Venda extends Model
         'desconto_total',
         'caixa_id',
         'data_venda',
+        'cliente_id', // 
     ];
 
     // Relacionamento com o usuário (quem fez a venda)
@@ -42,5 +43,11 @@ class Venda extends Model
     {
         return $this->hasMany(ItemVenda::class);
     }
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class);
+    }
+
 
 }

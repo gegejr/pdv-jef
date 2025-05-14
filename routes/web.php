@@ -14,6 +14,7 @@ use App\Models\Caixa;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CupomController;
 use App\Livewire\ProdutoPerdaLista;
+use App\Livewire\ClienteLista;
 
 // Página inicial
 Route::get('/', function () {
@@ -116,3 +117,4 @@ Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function
 
 Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->name('imprimir.cupom');
 
+Route::middleware('auth')->get('/clientes', ClienteLista::class)->name('clientes');

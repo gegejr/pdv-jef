@@ -69,6 +69,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Método</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
@@ -81,6 +82,7 @@
                             <tr>
                                 <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $venda->id }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->cliente->nome ?? 'Não informado' }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500">{{ number_format($venda->total, 2, ',', '.') }}</td>
                                 <td class="px-6 py-4 text-sm text-gray-500">
                                     @foreach($venda->pagamentos as $pagamento)

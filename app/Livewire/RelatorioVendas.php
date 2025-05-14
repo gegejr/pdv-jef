@@ -47,7 +47,7 @@ class RelatorioVendas extends Component
 
     public function detalhesVenda($vendaId)
     {
-        $this->vendaSelecionada = Venda::with('itens.produto', 'pagamentos', 'caixa')->find($vendaId);
+        $this->vendaSelecionada = Venda::with(['itens.produto', 'pagamentos', 'caixa', 'cliente'])->find($vendaId);
 
     }
 
