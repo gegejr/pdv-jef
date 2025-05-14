@@ -7,6 +7,8 @@ use App\Models\Produto;
 use App\Models\Caixa;
 use App\Models\Venda;
 use App\Models\Pagamento;
+use App\Livewire\ClienteLista;
+use App\Models\Cliente;
 
 class Carrinho extends Component
 {
@@ -19,9 +21,16 @@ class Carrinho extends Component
     public $mensagem_erro = null;
     public $mensagem_sucesso = null;
     public $sugestoes = [];
+    public $cliente_id = null;
+    public $cliente_nome = null;
+    public $busca_cliente = '';
+    public $sugestoes_clientes = [];
+
     public function mount()
     {
         $this->atualizarCarrinho();
+        $this->clientes = Cliente::all();
+
     }
 
     public function atualizarCarrinho()
@@ -70,6 +79,8 @@ class Carrinho extends Component
             'mensagem_sucesso' => $this->mensagem_sucesso,
             'total' => $this->total,
             'desconto_total' => $this->desconto_total,
+            'cliente_nome' => $this->cliente_nome,
+            'sugestoes_clientes' => $this->sugestoes_clientes,
         ]);
     }
 
@@ -127,6 +138,7 @@ class Carrinho extends Component
         $venda = Venda::create([
             'user_id' => $user_id,
             'caixa_id' => $caixa->id,
+            'cliente_id' => $this->cliente_id, // 👈 Adicione aqui
             'total' => $this->total,
             'desconto_total' => $this->desconto_total,
         ]);
@@ -157,6 +169,10 @@ class Carrinho extends Component
         $this->atualizarCarrinho();
         $this->desconto_total = 0;
         $this->metodo_pagamento = null;
+        $this->cliente_id = null;
+        $this->cliente_nome = null;
+
+
 
         session()->flash('message', 'Venda finalizada com sucesso!');
 
@@ -248,5 +264,32 @@ class Carrinho extends Component
         session()->flash('message', 'Produto adicionado ao carrinho.');
     }
 
+    protected $listeners = ['clienteSelecionado'];
 
+    public function clienteSelecionado($clienteId, $clienteNome)
+    {
+        $this->cliente_id = $clienteId;
+        $this->cliente_nome = $clienteNome;
+    }
+
+    public function updatedBuscaCliente()
+    {
+        $this->sugestoes_clientes = Cliente::where('nome', 'like', '%' . $this->busca_cliente . '%')
+            ->orWhere('telefone', 'like', '%' . $this->busca_cliente . '%')
+            ->limit(5)
+            ->get()
+            ->toArray();
+    }
+
+    public function selecionarCliente($clienteId)
+    {
+        $cliente = Cliente::find($clienteId);
+
+        if ($cliente) {
+            $this->cliente_id = $cliente->id;
+            $this->cliente_nome = $cliente->nome;
+            $this->busca_cliente = '';
+            $this->sugestoes_clientes = [];
+        }
+    }
 }

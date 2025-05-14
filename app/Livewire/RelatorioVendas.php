@@ -47,7 +47,7 @@ class RelatorioVendas extends Component
 
     public function detalhesVenda($vendaId)
     {
-        $this->vendaSelecionada = Venda::with('itens.produto', 'pagamentos', 'caixa')->find($vendaId);
+        $this->vendaSelecionada = Venda::with(['itens.produto', 'pagamentos', 'caixa', 'cliente'])->find($vendaId);
 
     }
 
@@ -68,6 +68,9 @@ class RelatorioVendas extends Component
 
     public function imprimirRelatorio()
     {
-        $this->js('window.dispatchEvent(new CustomEvent("imprimir-pagina"))');
+        $this->dispatch('imprimir-pagina');
+
+        // Após 1 segundo (tempo da impressão abrir), redireciona para a mesma página para resetar Livewire
+        $this->js("setTimeout(() => window.location.href = '".route('relatorio-vendas')."', 1000)");
     }
 }

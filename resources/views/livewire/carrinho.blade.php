@@ -32,11 +32,42 @@
             @endif
 
             <h2 class="text-xl font-bold mb-4">Carrinho de Compras</h2>
-
+            @if ($cliente_nome)
+                <div class="mb-4 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 rounded">
+                    Cliente Selecionado: <strong>{{ $cliente_nome }}</strong>
+                </div>
+            @else
+                <div class="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded">
+                    Nenhum cliente selecionado
+                </div>
+            @endif
             <div class="mb-4">
                 <button wire:click="toggleCampoBusca" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                     Abrir Venda
                 </button>
+                    @if ($campo_visivel)
+                        <!-- Campo de busca de cliente -->
+                        <div class="mt-4">
+                            <input 
+                                type="text"
+                                wire:model.debounce.300ms="busca_cliente"
+                                placeholder="Buscar cliente por nome ou telefone"
+                                class="border p-2 rounded w-full"
+                            />
+                            @if (!empty($sugestoes_clientes))
+                                <ul class="border rounded mt-2 bg-white max-h-40 overflow-y-auto">
+                                    @foreach ($sugestoes_clientes as $cliente)
+                                        <li 
+                                            class="p-2 hover:bg-gray-200 cursor-pointer"
+                                            wire:click="selecionarCliente({{ $cliente['id'] }})"
+                                        >
+                                            {{ $cliente['nome'] }} - {{ $cliente['telefone'] }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                    @endif
 
             @if ($campo_visivel)
                 <div class="relative mt-2"

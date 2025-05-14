@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -65,6 +66,7 @@
                         <tr>
                             <th class="px-6 py-3 text-center">ID</th>
                             <th class="px-6 py-3 text-left">Usuário</th>
+                            <th class="px-6 py-3 text-left">Cliente</th>
                             <th class="px-6 py-3 text-center">Total</th>
                             <th class="px-6 py-3 text-center">Data</th>
                         </tr>
@@ -74,6 +76,7 @@
                             <tr class="border-t hover:bg-gray-50">
                                 <td class="px-6 py-4 text-center">{{ $venda->id }}</td>
                                 <td class="px-6 py-4">{{ $venda->user->name }}</td>
+                                <td class="px-6 py-4">{{ $venda->cliente?->nome ?? 'Não informado' }}</td>
                                 <td class="px-6 py-4 text-center">R$ {{ number_format($venda->total, 2, ',', '.') }}</td>
                                 <td class="px-6 py-4 text-center">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
                             </tr>

@@ -1,3 +1,4 @@
+
 <div id="sidebar" class="bg-white w-64 h-screen shadow-md fixed top-0 left-0 z-40 transition-all duration-300">
     <div class="p-4 border-b font-bold text-xl text-center">
         JEF-Sys
@@ -7,19 +8,28 @@
         <!-- Link para o painel -->
         <a href="{{ route('painel') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2v20m-10-10h20" />
+                <path d="M3 3h18v18H3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <path d="M3 9h18M3 15h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
             </svg>
             Painel
         </a>
-
+                <!-- Link para Caixa/Sangria -->
+        <a href="{{ route('caixa-sangria') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M4 4h16v16H4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <path d="M6 4v16M18 4v16M6 8h12M6 12h12M6 16h12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+            </svg>
+            Caixa/Sangria
+        </a>
         <!-- Link para o carrinho -->
         <a href="{{ route('carrinho') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M3 3h18v2H3zm0 4h18v2H3zm0 4h18v2H3zm0 4h18v2H3zm0 4h18v2H3z" />
+                <path d="M6 6h15l1 12H7L6 6z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <circle cx="9" cy="19" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                <circle cx="18" cy="19" r="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
             </svg>
             Carrinho
         </a>
-
         <!-- Link para o Relatório de Vendas -->
         <a href="{{ route('relatorio-vendas') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,17 +44,18 @@
 
         <div x-data="{ open: false }">
             <!-- Botão principal -->
-            <button @click="open = !open" class="w-full flex items-center justify-between text-gray-700 hover:bg-gray-200 p-2 rounded">
-                <span class="flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M3 12h18M3 6h18M3 18h18" />
-                    </svg>
-                    Produtos
-                </span>
-                <svg class="w-4 h-4 transform transition-transform" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" />
+        <button @click="open = !open" class="w-full flex items-center justify-between text-gray-700 hover:bg-gray-200 p-2 rounded">
+            <span class="flex items-center">
+                <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    <path d="M3 9h18M3 15h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                 </svg>
-            </button>
+                Produtos
+            </span>
+            <svg class="w-4 h-4 transform transition-transform" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
 
         <!-- Dropdown -->
             <div x-show="open" class="pl-6 mt-2 space-y-1" x-cloak>
@@ -52,15 +63,17 @@
                     <a href="{{ route('adicionar-produto') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">Adicionar Produto</a>
                     <a href="{{ route('produtos-perda-lista') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">Ver Perdas</a>
             </div>
-        </div>
-
-        <!-- Link para Caixa/Sangria -->
-        <a href="{{ route('caixa-sangria') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2v20m-10-10h20" />
+        </div> 
+                <a href="{{ route('clientes') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
+            <svg class="w-6 h-6 mr-2 text-gray-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 20.25v-1.5a4.5 4.5 0 014.5-4.5h6a4.5 4.5 0 014.5 4.5v1.5" />
             </svg>
-            Caixa/Sangria
+            Clientes
         </a>
+
+
+
         <div x-data="{ open: false }">
             <!-- Botão principal -->
             <button @click="open = !open" class="w-full flex items-center justify-between text-gray-700 hover:bg-gray-200 p-2 rounded">
