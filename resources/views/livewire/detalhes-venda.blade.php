@@ -46,5 +46,11 @@
                 @endforeach
             </ul>
         </section>
+        <div class="flex justify-end mt-6">
+            <a href="{{ route('impressao.cupom', $vendaSelecionada->id) }}" target="_blank" class="btn btn-primary">
+                Imprimir Cupom
+            </a>
+        </div>
     </div>
+    
 @endif

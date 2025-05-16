@@ -72,30 +72,37 @@
 
             <!-- Últimas Vendas -->
             <h2 class="text-2xl font-semibold mb-4">Últimas Vendas</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white rounded-lg shadow border">
-                    <thead class="bg-gray-100 text-sm text-gray-600 uppercase">
-                        <tr>
-                            <th class="px-6 py-3 text-center">ID</th>
-                            <th class="px-6 py-3 text-left">Usuário</th>
-                            <th class="px-6 py-3 text-left">Cliente</th>
-                            <th class="px-6 py-3 text-center">Total</th>
-                            <th class="px-6 py-3 text-center">Data</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm">
-                        @foreach($ultimasVendas as $venda)
-                            <tr class="border-t hover:bg-gray-50">
-                                <td class="px-6 py-4 text-center">{{ $venda->id }}</td>
-                                <td class="px-6 py-4">{{ $venda->user->name }}</td>
-                                <td class="px-6 py-4">{{ $venda->cliente?->nome ?? 'Não informado' }}</td>
-                                <td class="px-6 py-4 text-center">R$ {{ number_format($venda->total, 2, ',', '.') }}</td>
-                                <td class="px-6 py-4 text-center">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg shadow border">
+                        <thead class="bg-gray-100 text-sm text-gray-600 uppercase">
+                            <tr>
+                                <th class="px-6 py-3 text-center">ID</th>
+                                <th class="px-6 py-3 text-center">Usuário</th>
+                                <th class="px-6 py-3 text-center">Cliente</th>
+                                <th class="px-6 py-3 text-center">Desconto</th>
+                                <th class="px-6 py-3 text-center">Total</th>
+                                <th class="px-6 py-3 text-center">Data</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="text-sm">
+                            @foreach($ultimasVendas as $venda)
+                                <tr class="border-t hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-center">{{ $venda->id }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $venda->user->name }}</td>
+                                    <td class="px-6 py-4 text-center">{{ $venda->cliente?->nome ?? 'Não informado' }}</td>
+                                    <td class="px-6 py-4 text-center text-sm text-gray-500">
+                                        {{ number_format($venda->desconto_total, 2, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center text-sm text-gray-500">
+                                        R$ {{ number_format($venda->total - $venda->desconto_total, 2, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
 
             <!-- Últimos Caixas -->
             <h2 class="text-2xl font-semibold mt-10 mb-4">Últimos Caixas Fechados</h2>

@@ -16,6 +16,7 @@ use App\Http\Controllers\CupomController;
 use App\Livewire\ProdutoPerdaLista;
 use App\Livewire\ClienteLista;
 use App\Livewire\ClientesContas;
+use App\Http\Controllers\ExportarRelatorioController;
 
 // Página inicial
 Route::get('/', function () {
@@ -39,7 +40,7 @@ Route::get('/painel', function (Request $request) {
         $query->whereBetween('created_at', ["$inicio 00:00:00", "$fim 23:59:59"]);
     }
 
-    $totalVendas = $query->sum('total');
+    $totalVendas = $query->selectRaw('SUM(total - desconto_total) as total_corrigido')->value('total_corrigido');
     $numeroVendas = $query->count();
 
     $ultimasVendas = \App\Models\Venda::with('user') // garante que o nome do usuário apareça
@@ -124,3 +125,10 @@ Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->
 Route::middleware('auth')->get('/clientes', ClienteLista::class)->name('clientes');
 
 Route::get('/cliente.conta', ClientesContas::class)->name('cliente.conta');
+
+Route::get('/relatorio/exportar', [ExportarRelatorioController::class, 'exportar'])->name('relatorio.exportar');
+
+
+Route::get('/venda/{venda}/cupom', function (Venda $venda) {
+    return view('impressao.cupom', ['vendaSelecionada' => $venda]);
+})->name('impressao.cupom');

@@ -12,11 +12,17 @@
                 <x-topbar class="no-print" />
             </div>
 
+
             <!-- Título e Botão de Impressão -->
             <div class="flex justify-between items-center mb-4">
                 <button onclick="Livewire.dispatch('imprimir-relatorio')"
                     class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 no-print">
                     Imprimir Relatório
+                </button>
+                            <!-- Botão Exportar -->
+                <button onclick="document.getElementById('modal-exportar').classList.remove('hidden')"
+                    class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 no-print">
+                    Exportar PDF
                 </button>
             </div>
 
@@ -150,4 +156,34 @@
             display: none !important;
         }
     </style>
+    <div id="modal-exportar" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('modal-exportar').classList.add('hidden')"></div>
+
+    <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <h3 class="text-lg font-semibold mb-4">Exportar Relatório</h3>
+        <form method="GET" action="{{ route('relatorio.exportar') }}" target="_blank">
+            <div class="mb-4">
+                <label class="block text-sm">Data Inicial</label>
+                <input type="date" name="data_inicial" class="w-full border p-2 rounded">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm">Data Final</label>
+                <input type="date" name="data_final" class="w-full border p-2 rounded">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm">Método de Pagamento</label>
+                <select name="metodo_pagamento" class="w-full border p-2 rounded">
+                    <option value="todos">Todos</option>
+                    <option value="credito">Crédito</option>
+                    <option value="debito">Débito</option>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="pix">Pix</option>
+                </select>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Exportar</button>
+            </div>
+        </form>
+    </div>
+</div>
 </div>
