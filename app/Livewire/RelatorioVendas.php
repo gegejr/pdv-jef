@@ -5,9 +5,12 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Venda;
 use App\Models\Caixa;
+use Livewire\WithPagination;
 
 class RelatorioVendas extends Component
 {
+     use WithPagination;
+
     public $data_inicial, $data_final, $metodo_pagamento, $caixa_id;
     public $vendaSelecionada = null; // Para armazenar a venda selecionada
     public $exibirImpressao = false; // Flag para controlar a exibição do relatório de impressão

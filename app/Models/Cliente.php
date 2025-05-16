@@ -17,6 +17,11 @@ class Cliente extends Model
     protected $casts = [
         'data_nascimento' => 'date',
     ];
+
+    public function vendas()
+    {
+        return $this->hasMany(Venda::class);
+    }
 }
 
 

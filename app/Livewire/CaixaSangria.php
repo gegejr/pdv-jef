@@ -37,7 +37,7 @@ class CaixaSangria extends Component
 
         $caixa = Caixa::create([
             'user_id' => $user_id,
-            'nome' => $this->nome,
+            'nome' => $this->nome ?? 'Caixa Sem identificação',
             'valor_inicial' => $this->valor_inicial,
             'aberto_em' => now(),
         ]);
@@ -64,6 +64,7 @@ class CaixaSangria extends Component
         } else {
             session()->flash('error', 'Caixa não encontrado!');
         }
+        $this->js("setTimeout(() => window.location.href = '".route('caixa-sangria')."', 1000)");
     }
 
     // Método para registrar sangria

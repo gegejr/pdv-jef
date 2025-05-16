@@ -13,7 +13,7 @@ class ClienteLista extends Component
     public $modalAberto = false;
     public $modoVisualizacao = false;
     public $modoEdicao = false;
-
+    public $mensagemErro = '';
     
     protected $rules = [
         'nome' => 'required|string|max:255',
@@ -100,10 +100,18 @@ class ClienteLista extends Component
         $this->carregarClientes();
     }
 
-    public function excluir($id)
+    public function excluir($clienteId)
     {
-        Cliente::destroy($id);
-        $this->carregarClientes();
+        $cliente = Cliente::findOrFail($clienteId);
+
+        // Verifica se o relacionamento existe antes de tentar acessá-lo
+        if (method_exists($cliente, 'vendas') && $cliente->vendas()->exists()) {
+            $this->mensagemErro = "Não é possível excluir o cliente '{$cliente->nome}' porque ele possui vendas registradas.";
+            return;
+        }
+
+        $cliente->delete();
+        $this->mensagemErro = ''; // Limpa a mensagem se for bem-sucedido
     }
 
     public function ver($id)

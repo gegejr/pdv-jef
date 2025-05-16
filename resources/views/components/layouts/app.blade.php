@@ -34,6 +34,6 @@
             </main>
         </div>
         @livewireScripts
-        <script src="//unpkg.com/alpinejs" defer></script>
+        
     </body>
 </html>

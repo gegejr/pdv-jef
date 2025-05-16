@@ -79,7 +79,7 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($vendas as $venda)
-                                <tr>
+                                <tr wire:key="venda-{{ $venda->id }}">
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $venda->id }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->cliente->nome ?? 'Não informado' }}</td>
@@ -99,10 +99,11 @@
                             @endforeach
                         </tbody>
                     </table>
+                    
                 </div>
 
                 <div class="mt-4">
-                    {{ $vendas->links('pagination::tailwind') }}
+                    {{ $vendas->links() }}
                 </div>
             </div>
         </div>
@@ -115,7 +116,7 @@
 
             <div class="relative bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
                 <button class="absolute top-2 right-3 text-2xl" wire:click="closeModal">&times;</button>
-                @include('livewire.detalhes-venda')
+                <livewire:detalhes-venda :venda-selecionada="$vendaSelecionada" />
             </div>
         </div>
     @endif

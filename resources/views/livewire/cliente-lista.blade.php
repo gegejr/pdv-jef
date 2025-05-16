@@ -3,6 +3,42 @@
 
         <div class="p-6">
                     <x-topbar />
+                    @if (session()->has('message'))
+                        <div class="alert alert-success">
+                            {{ session('message') }}
+                        </div>
+                    @endif
+
+                    @if (session()->has('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if ($mensagemErro)
+                        <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
+                            {{ $mensagemErro }}
+                        </div>
+                    @endif
+            @push('scripts')
+            <script>
+                window.addEventListener('cliente-nao-excluido', event => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Não é possível excluir',
+                        text: `O cliente "${event.detail.nome}" possui vendas registradas.`,
+                    });
+                });
+
+                window.addEventListener('cliente-excluido', () => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cliente excluído',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                });
+            </script>
+            @endpush
             <h2 class="text-xl font-bold mb-4">Clientes</h2>
 
             <button wire:click="$set('modalAberto', true)" class="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700">
