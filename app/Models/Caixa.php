@@ -36,6 +36,7 @@ class Caixa extends Model
     {
         $caixa = Caixa::create([
             'user_id' => $user_id,
+            'nome' => $this->nome ?: null,
             'valor_inicial' => $valor_inicial,
             'aberto_em' => now(),
         ]);

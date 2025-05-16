@@ -6,9 +6,12 @@
 
         <h2 class="text-xl font-bold mb-4">Clientes com Vendas em Conta</h2>
 
-        <table class="w-full table-auto border">
+        {{-- Contas Pendentes --}}
+        <h3 class="text-lg font-semibold mb-2">Contas Pendentes</h3>
+        <table class="w-full table-auto border mb-8">
             <thead>
                 <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-left">Data</th>
                     <th class="px-4 py-2 text-left">Cliente</th>
                     <th class="px-4 py-2">Telefone</th>
                     <th class="px-4 py-2">Valor</th>
@@ -17,32 +20,57 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($vendas as $venda)
+                @forelse ($contasPendentes as $venda)
                     @php
                         $cliente = $venda->cliente;
                         $pagamentoConta = $venda->pagamentos->firstWhere('tipo', 'conta');
-                        $contaPaga = $pagamentoConta && $pagamentoConta->pago;
                     @endphp
                     <tr class="border-t">
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
                         <td class="px-4 py-2">{{ $cliente->nome }}</td>
                         <td class="px-4 py-2">{{ $cliente->telefone }}</td>
                         <td class="px-4 py-2">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
-                        <td class="px-4 py-2 font-bold {{ $contaPaga ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $contaPaga ? 'Pago' : 'Pendente' }}
-                        </td>
+                        <td class="px-4 py-2 font-bold text-red-600">Pendente</td>
                         <td class="px-4 py-2">
-                            @if (!$contaPaga)
-                                <button wire:click="openModal({{ $venda->id }})"
-                                        class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                                    Marcar como Pago
-                                </button>
-                            @else
-                                <span class="text-gray-500">✓</span>
-                            @endif
+                            <button wire:click="openModal({{ $venda->id }})"
+                                    class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                                Marcar como Pago
+                            </button>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-center py-4">Nenhuma venda em conta encontrada.</td></tr>
+                    <tr><td colspan="6" class="text-center py-4">Nenhuma conta pendente encontrada.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        {{-- Contas Pagas --}}
+        <h3 class="text-lg font-semibold mb-2">Contas Pagas</h3>
+        <table class="w-full table-auto border">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-left">Data</th>
+                    <th class="px-4 py-2 text-left">Cliente</th>
+                    <th class="px-4 py-2">Telefone</th>
+                    <th class="px-4 py-2">Valor</th>
+                    <th class="px-4 py-2">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($contasPagas as $venda)
+                    @php
+                        $cliente = $venda->cliente;
+                        $pagamentoConta = $venda->pagamentos->firstWhere('tipo', 'conta');
+                    @endphp
+                    <tr class="border-t">
+                        <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="px-4 py-2">{{ $cliente->nome }}</td>
+                        <td class="px-4 py-2">{{ $cliente->telefone }}</td>
+                        <td class="px-4 py-2">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
+                        <td class="px-4 py-2 font-bold text-green-600">Pago</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" class="text-center py-4">Nenhuma conta paga encontrada.</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -57,17 +85,14 @@
                 <p><strong>Valor:</strong> R$ {{ number_format($valor, 2, ',', '.') }}</p>
 
                 <div class="mt-4">
-                    <label for="metodo_pagamento" class="block text-sm font-medium text-gray-700">Método de Pagamento</label>
-                    <select wire:model="metodo_pagamento" id="metodo_pagamento" class="mt-2 block w-full border-gray-300 rounded-md shadow-sm">
-                        <option value="">Selecione...</option>
+                    <h3 class="text-lg font-semibold mb-2">Método de Pagamento</h3>
+                    <select wire:model="metodo_pagamento" class="border p-2 rounded w-full">
+                        <option value="#" selected>Selecione um método de Pagamento</option>
                         <option value="dinheiro">Dinheiro</option>
-                        <option value="cartao">Cartão</option>
-                        <option value="transferencia">Transferência</option>
+                        <option value="debito">Débito</option>
+                        <option value="credito">Crédito</option>
+                        <option value="pix">Pix</option>
                     </select>
-
-                    @error('metodo_pagamento') 
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
                 </div>
 
                 <div class="mt-4">

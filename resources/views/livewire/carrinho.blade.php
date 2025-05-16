@@ -224,8 +224,8 @@
                         Finalizar Venda
                     </button>
                 </div>
-            @else
-                <div class="text-center p-4">Carrinho vazio</div>
+                @else
+                    <div class="text-center p-4">Carrinho vazio</div>
             @endif
         </div> <!-- Fim do conteúdo principal -->
     </div> <!-- Fim do flex -->

@@ -11,11 +11,17 @@ class RelatorioVendas extends Component
     public $data_inicial, $data_final, $metodo_pagamento, $caixa_id;
     public $vendaSelecionada = null; // Para armazenar a venda selecionada
     public $exibirImpressao = false; // Flag para controlar a exibição do relatório de impressão
+    public $showModal        = false;   // ← flag do modal
 
     protected $listeners = [
         'filtrarRelatorio',
         'imprimir-relatorio' => 'imprimirRelatorio',
     ];
+    
+    public function mount()
+    {
+        $this->resetModal();   // ← toda vez que o componente é montado
+    }
 
     public function render()
     {
@@ -45,12 +51,25 @@ class RelatorioVendas extends Component
         return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));
     }
 
-    public function detalhesVenda($vendaId)
+    public function detalhesVenda($id)
     {
-        $this->vendaSelecionada = Venda::with(['itens.produto', 'pagamentos', 'caixa', 'cliente'])->find($vendaId);
-
+        $this->vendaSelecionada = Venda::with(['itens.produto', 'pagamentos', 'caixa', 'cliente'])->find($id);
+        $this->showModal = true;
+        
     }
 
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->vendaSelecionada = null;
+    }
+    protected function resetModal()
+    {
+        // se quiser, troque por $this->reset(['showModal', 'vendaSelecionada']);
+        $this->showModal        = false;
+        $this->vendaSelecionada = null;
+    }
+    
     public function filtrarRelatorio()
     {
         // Apenas um gatilho para Livewire atualizar o componente

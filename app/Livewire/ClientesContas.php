@@ -14,7 +14,10 @@ class ClientesContas extends Component
     public $clienteNome;
     public $valor;
     public $metodo_pagamento;
-
+    public $venda;
+    public $contasPendentes;
+    public $contasPagas;
+    
     public function mount()
     {
         $this->carregarContas();
@@ -22,21 +25,30 @@ class ClientesContas extends Component
 
     public function carregarContas()
     {
-        $this->vendas = Venda::whereHas('pagamentos', function ($q) {
+        // Contas pendentes
+        $this->contasPendentes = Venda::whereHas('pagamentos', function ($q) {
             $q->where('tipo', 'conta')->where('pago', false);
+        })->with(['cliente', 'pagamentos'])->get();
+
+        // Contas pagas
+        $this->contasPagas = Venda::whereHas('pagamentos', function ($q) {
+            $q->where('tipo', 'conta')->where('pago', true);
         })->with(['cliente', 'pagamentos'])->get();
     }
 
     public function openModal($vendaId)
     {
-        // Busca a venda para preencher os detalhes do modal
-        $venda = Venda::findOrFail($vendaId);
-        $this->vendaId = $vendaId;
-        $this->clienteNome = $venda->cliente->nome;
-        $this->valor = $venda->pagamentos->firstWhere('tipo', 'conta')->valor;
+        $this->vendaId = $vendaId;  // <-- Adicione esta linha
+        $this->vendaSelecionada = Venda::find($vendaId);
 
-        // Abre o modal
-        $this->modalOpen = true;
+        if ($this->vendaSelecionada) {
+            $cliente = $this->vendaSelecionada->cliente;
+            $pagamentoConta = $this->vendaSelecionada->pagamentos->firstWhere('tipo', 'conta');
+
+            $this->clienteNome = $cliente->nome;
+            $this->valor = $pagamentoConta->valor ?? 0;
+            $this->modalOpen = true;
+        }
     }
 
     public function fecharModal()
@@ -48,38 +60,39 @@ class ClientesContas extends Component
 
     public function confirmarPagamento()
     {
-        // Valida se o método de pagamento foi selecionado
         if (!$this->metodo_pagamento) {
             session()->flash('error', 'Por favor, selecione um método de pagamento.');
             return;
         }
 
-        // Busca a venda
         $venda = Venda::findOrFail($this->vendaId);
 
-        // Atualiza os pagamentos para "pago"
-        foreach ($venda->pagamentos as $pagamento) {
-            if ($pagamento->tipo === 'conta') {
-                $pagamento->update(['pago' => true]);
-            }
+        // Verifica se o pagamento do tipo "conta" já foi pago
+        $pagamentoConta = $venda->pagamentos->firstWhere('tipo', 'conta');
+
+        if (!$pagamentoConta || $pagamentoConta->pago) {
+            session()->flash('error', 'Esta conta já foi paga ou não possui pagamento pendente.');
+            $this->fecharModal();
+            return;
         }
 
-        // Cria um novo registro de pagamento com o método selecionado
+        // Marca o pagamento "conta" como pago
+        $pagamentoConta->update(['pago' => true]);
+
+        // Cria o novo pagamento com o método selecionado
         Pagamento::create([
             'venda_id' => $venda->id,
             'tipo' => $this->metodo_pagamento,
             'valor' => $this->valor,
+            'pago' => 1,
         ]);
 
-        // Atualiza a lista de vendas
-        $this->carregarContas();
-
-        // Fecha o modal
+        $this->carregarContas(); // Atualiza as listas
         $this->fecharModal();
 
-        // Exibe uma mensagem de sucesso
         session()->flash('message', 'Pagamento confirmado com sucesso!');
     }
+
 
     public function render()
     {

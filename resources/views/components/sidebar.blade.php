@@ -63,22 +63,30 @@
                     <a href="{{ route('adicionar-produto') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">Adicionar Produto</a>
                     <a href="{{ route('produtos-perda-lista') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">Ver Perdas</a>
             </div>
-        </div> 
-        <a href="{{ route('clientes') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
+        </div>
+        <div x-data="{ open: false }">
+            <!-- Botão principal -->
+        <button @click="open = !open" class="w-full flex items-center justify-between text-gray-700 hover:bg-gray-200 p-2 rounded">
+            <span class="flex items-center">
             <svg class="w-6 h-6 mr-2 text-gray-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 20.25v-1.5a4.5 4.5 0 014.5-4.5h6a4.5 4.5 0 014.5 4.5v1.5" />
             </svg>
-            Clientes
-        </a>
-
-        <a href="{{ route('cliente.conta') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
-            <svg class="w-6 h-6 mr-2 text-gray-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25V6a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 6v12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18V8.25z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25L12 13.5l9-5.25" />
+                Clientes
+            </span>
+            <svg class="w-4 h-4 transform transition-transform" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M9 5l7 7-7 7" />
             </svg>
-            Conta Clientes
-        </a>
+        </button>
+
+        <!-- Dropdown -->
+            <div x-show="open" class="pl-6 mt-2 space-y-1" x-cloak>
+                    <a href="{{ route('clientes') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">Adicionar CLiente</a>
+                    <a href="{{ route('cliente.conta') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">
+                    Conta Cliente
+                    </a>
+            </div>
+        </div> 
         
         <div x-data="{ open: false }">
             <!-- Botão principal -->

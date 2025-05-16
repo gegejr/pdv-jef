@@ -168,6 +168,7 @@ class Carrinho extends Component
 
             $venda->itemVendas()->create([
                 'produto_id' => $item['produto']->id,
+                'total' => $item['total'],
                 'quantidade' => $item['quantidade'],
                 'valor_unitario' => $item['produto']->valor,
                 'desconto' => $item['desconto'] ?? 0,
