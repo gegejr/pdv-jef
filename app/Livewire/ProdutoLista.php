@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Storage;
 
 class ProdutoLista extends Component
 {
+
+    public function mount()
+    {
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
+    }
+    
     use WithPagination;
 
     public $pesquisa = '';

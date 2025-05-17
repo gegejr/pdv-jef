@@ -18,6 +18,12 @@ class ProdutoPerdaLista extends Component
 
     public function mount($produto_id = null)
     {
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
         $this->produto_id = $produto_id;
     }
 

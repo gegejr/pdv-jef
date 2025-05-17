@@ -104,6 +104,9 @@ class CaixaSangria extends Component
     // Carregar dados na inicialização
     public function mount()
     {
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
         $this->caixa = Caixa::whereNull('fechado_em')->first();
 
         if ($this->caixa) {

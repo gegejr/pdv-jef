@@ -35,6 +35,11 @@ class Carrinho extends Component
 
     public function mount()
     {
+        $user = auth()->user()->fresh();
+
+        if (!$user->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
         $this->atualizarCarrinho();
         $this->verificarCaixa();
 

@@ -8,6 +8,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ExportarRelatorioController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->hasValidSubscription()) {
+                return redirect()->route('subscription.expired');
+            }
+            return $next($request);
+        });
+    }
+    
     public function exportar(Request $request)
     {
         $query = Venda::with(['pagamentos', 'cliente', 'user', 'caixa']);

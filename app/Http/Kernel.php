@@ -28,7 +28,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Livewire\Features\SupportDisablingBackButtonCache\DisableBackButtonCacheMiddleware::class,
-
+            \App\Http\Middleware\CheckSubscription::class,
         ],
 
         'api' => [
@@ -44,5 +44,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\IsAdmin::class,
         'admin.only' => \App\Http\Middleware\AdminMiddleware::class,
+        'check.subscription' => \App\Http\Middleware\CheckSubscription::class,
     ];
 }

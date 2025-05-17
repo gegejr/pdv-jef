@@ -17,6 +17,10 @@ class FecharVenda extends Component
 
     public function mount()
     {
+
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
         $this->total = array_sum(array_map(function ($item) {
             return $item['valor_total'];
         }, session()->get('carrinho', [])));

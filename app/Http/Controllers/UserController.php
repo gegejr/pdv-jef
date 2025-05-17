@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->hasValidSubscription()) {
+                return redirect()->route('subscription.expired');
+            }
+            return $next($request);
+        });
+    }
+    
     public function create()
     {
         $usuarios = \App\Models\User::all(); // Carrega todos os usuários

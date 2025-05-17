@@ -6,6 +6,17 @@ use App\Models\Venda;
 
 class CupomController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->hasValidSubscription()) {
+                return redirect()->route('subscription.expired');
+            }
+            return $next($request);
+        });
+    }
+    
     public function imprimir($venda_id)
     {
         // Obter os dados da venda

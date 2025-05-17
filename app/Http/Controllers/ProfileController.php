@@ -11,6 +11,16 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->hasValidSubscription()) {
+                return redirect()->route('subscription.expired');
+            }
+            return $next($request);
+        });
+    }
     /**
      * Display the user's profile form.
      */

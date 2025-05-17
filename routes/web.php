@@ -17,6 +17,7 @@ use App\Livewire\ProdutoPerdaLista;
 use App\Livewire\ClienteLista;
 use App\Livewire\ClientesContas;
 use App\Http\Controllers\ExportarRelatorioController;
+use App\Http\Controllers\SubscriptionController;
 
 // Página inicial
 Route::get('/', function () {
@@ -29,6 +30,12 @@ Route::get('/', function () {
 
     return view('auth.login');
 })->name('login'); // Define nome para rota de login
+
+Route::get('/assinatura-expirada', function () {
+    return view('subscription.expired');
+})->name('subscription.expired');
+
+Route::post('/subscription/unlock', [SubscriptionController::class, 'unlock'])->name('subscription.unlock');
 
 Route::get('/painel', function (Request $request) {
     $inicio = $request->input('inicio');

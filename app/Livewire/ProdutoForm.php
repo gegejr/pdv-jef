@@ -121,6 +121,10 @@ class ProdutoForm extends Component
     // Função chamada ao iniciar o componente, caso passe um id, edita o produto
     public function mount($id = null)
     {
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
+        
         if ($id) {
             $this->editarProduto($id);
         }

@@ -23,6 +23,9 @@ class RelatorioVendas extends Component
     
     public function mount()
     {
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
         $this->resetModal();   // ← toda vez que o componente é montado
     }
 
