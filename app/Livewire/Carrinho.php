@@ -30,6 +30,7 @@ class Carrinho extends Component
     public $pagamentos = [
         ['tipo' => '', 'valor' => 0]
     ];
+    public $usuarioContaId = null; // ID do usuário para pagamento "conta"
 
     protected $listeners = ['clienteSelecionado'];
 
@@ -45,6 +46,7 @@ class Carrinho extends Component
 
         // Inicializa array de pagamentos
         $this->pagamentos = [['tipo' => '', 'valor' => 0]];
+        $this->campo_visivel = true;
     }
 
     public function verificarCaixa()
@@ -209,41 +211,45 @@ class Carrinho extends Component
     }
 
     private function validarPagamentos(): bool
-    {
-        if (empty($this->pagamentos)) {
-            session()->flash('error', 'Adicione pelo menos um método de pagamento.');
-            return false;
-        }
-
-        foreach ($this->pagamentos as $p) {
-            if ($p['tipo'] === '' || $p['valor'] <= 0) {
-                session()->flash('error', 'Preencha tipo e valor de todos os pagamentos.');
+        {
+            if (empty($this->pagamentos)) {
+                session()->flash('error', 'Adicione pelo menos um método de pagamento.');
                 return false;
             }
+
+            foreach ($this->pagamentos as $p) {
+                if ($p['tipo'] === '' || $p['valor'] <= 0) {
+                    session()->flash('error', 'Preencha tipo e valor de todos os pagamentos.');
+                    return false;
+                }
+            }
+
+            $soma = array_sum(array_column($this->pagamentos, 'valor'));
+            $totalDevido = $this->total - $this->desconto_total;
+
+            if (bccomp($soma, $totalDevido, 2) !== 0) {
+                session()->flash('error',
+                    'Pagamentos somam R$ ' . number_format($soma,2,',','.') .
+                    ' mas o total é R$ ' . number_format($totalDevido,2,',','.'));
+                return false;
+            }
+            return true;
         }
 
-        $soma = array_sum(array_column($this->pagamentos, 'valor'));
-        $totalDevido = $this->total - $this->desconto_total;
+        public function adicionarProduto()
+        {
+            $this->busca_produto = trim($this->busca_produto); // remove espaços
 
-        if (bccomp($soma, $totalDevido, 2) !== 0) {
-            session()->flash('error',
-                'Pagamentos somam R$ ' . number_format($soma,2,',','.') .
-                ' mas o total é R$ ' . number_format($totalDevido,2,',','.'));
-            return false;
-        }
-        return true;
-    }
-    public function adicionarProduto()
-    {
-        $produto = Produto::where('id', $this->busca_produto)
-            ->orWhere('codigo_barras', $this->busca_produto)
-            ->orWhere('nome', 'like', '%' . $this->busca_produto . '%')
-            ->first();
+            $produto = Produto::where(function ($query) {
+                $query->where('id', $this->busca_produto)
+                    ->orWhere('codigo_barras', $this->busca_produto)
+                    ->orWhere('nome', 'like', '%' . $this->busca_produto . '%');
+            })->first();
 
-        if (!$produto) {
-            session()->flash('error', 'Produto não encontrado.');
-            return;
-        }
+            if (!$produto) {
+                session()->flash('error', 'Produto não encontrado.');
+                return;
+            }
 
         $carrinho = session()->get('carrinho', []);
 
@@ -282,13 +288,19 @@ class Carrinho extends Component
             ->toArray();
     }
 
-    public function selecionarProduto($input)
+    public function selecionarProduto()
     {
-        $produto = is_numeric($input)
-            ? Produto::find($input)
-            : Produto::where('codigo_barras', $input)
-                ->orWhere('nome', 'like', '%' . $input . '%')
-                ->first();
+        $input = $this->busca_produto;
+
+        $produto = Produto::where('codigo_barras', $input)->first();
+
+        if (!$produto && is_numeric($input)) {
+            $produto = Produto::find((int)$input);
+        }
+
+        if (!$produto) {
+            $produto = Produto::where('nome', 'like', '%' . $input . '%')->first();
+        }
 
         if (!$produto) {
             session()->flash('error', 'Produto não encontrado.');
@@ -314,6 +326,7 @@ class Carrinho extends Component
         $this->busca_produto = '';
         $this->sugestoes = [];
         $this->atualizarCarrinho();
+        $this->campo_visivel = true;
 
         session()->flash('message', 'Produto adicionado ao carrinho.');
     }
@@ -348,6 +361,9 @@ class Carrinho extends Component
             $this->cliente_nome = $cliente->nome;
             $this->busca_cliente = '';
             $this->sugestoes_clientes = [];
+
+            // Aqui:
+            $this->campo_visivel = true;
         }
     }
 

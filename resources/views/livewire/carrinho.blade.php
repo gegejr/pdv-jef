@@ -66,88 +66,53 @@
                 <button wire:click="toggleCampoBusca" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                     Abrir Venda
                 </button>
-                    @if ($campo_visivel)
-                        <!-- Campo de busca de cliente -->
-                        <div class="mt-4">
-                            <input 
-                                type="text"
-                                wire:model.debounce.10ms="busca_cliente"
-                                placeholder="Buscar cliente por nome ou telefone"
-                                class="border p-2 rounded w-full"
-                            />
-                            @if (!empty($sugestoes_clientes))
-                                <ul class="border rounded mt-2 bg-white max-h-40 overflow-y-auto">
-                                    @foreach ($sugestoes_clientes as $cliente)
-                                        <li 
-                                            class="p-2 hover:bg-gray-200 cursor-pointer"
-                                            wire:click="selecionarCliente({{ $cliente['id'] }})"
-                                        >
-                                            {{ $cliente['nome'] }} - {{ $cliente['telefone'] }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
-                        </div>
-                    @endif
+                @if($campo_visivel)
+                    <div class="mt-4" wire:key="campo-busca-cliente">
+                        <input
+                            type="text"
+                            wire:model.debounce.200ms="busca_cliente"
+                            wire:keydown.enter="Buscar cliente por nome ou telefone"
+                            class="form-input w-full"
+                            placeholder="Digite o nome do cliente"
+                        >
+
+                        @if(count($sugestoes_clientes))
+                            <ul class="border rounded mt-2 bg-white max-h-40 overflow-y-auto">
+                                @foreach($sugestoes_clientes as $cliente)
+                                    <li wire:key="cli-{{ $cliente['id'] }}"
+                                        class="p-2 hover:bg-gray-200 cursor-pointer"
+                                        wire:click="selecionarCliente({{ $cliente['id'] }})">
+                                        {{ $cliente['nome'] }} – {{ $cliente['telefone'] }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                @endif
 
             @if ($campo_visivel)
-                <div class="relative mt-2"
-                    x-data="{
-                        aberto: true,
-                        selecionado: 0,
-                        total: {{ count($sugestoes) }},
-                        selecionarComEnter(e) {
-                            if (e.key === 'ArrowDown') {
-                                this.selecionado = (this.selecionado + 1) % this.total;
-                                e.preventDefault();
-                            } else if (e.key === 'ArrowUp') {
-                                this.selecionado = (this.selecionado - 1 + this.total) % this.total;
-                                e.preventDefault();
-                            } else if (e.key === 'Enter') {
-                                e.preventDefault();
-                                const input = e.target.value;
-                                if (this.total > 0) {
-                                    // Se sugestões visíveis, usa a seleção
-                                    $wire.selecionarProduto({{ json_encode($sugestoes) }}[this.selecionado].id);
-                                } else {
-                                    // Se nenhuma sugestão, tenta buscar pelo texto digitado
-                                    $wire.selecionarProduto(input);
-                                }
-                                this.aberto = false;
-                            }
-                        }
-                    }"
-                >
-                    <input 
+                <div class="relative mt-2" wire:key="campo-busca-produto">
+                    <input
                         type="text"
-                        wire:model.debounce.10ms="busca_produto"
-                        placeholder="Digite código ou nome"
-                        @focus="aberto = true"
-                        @click.away="aberto = false"
-                        @keydown="selecionarComEnter"
-                        class="border p-2 rounded w-full" 
-                    />
+                        wire:model.debounce.300ms="busca_produto"
+                        wire:keydown.enter.prevent="selecionarProduto"
+                        class="form-input w-full"
+                        placeholder="Digite o nome ou código de barras do produto..."
+                    >
 
-                    @if (!empty($sugestoes) && $busca_produto)
-                        <ul 
-                            class="absolute bg-white border rounded shadow mt-1 w-full z-10 max-h-60 overflow-y-auto"
-                            x-show="aberto"
-                        >
-                            @foreach ($sugestoes as $index => $produto)
-                                <li 
-                                    wire:click="selecionarProduto({{ $produto['id'] }})"
-                                    :class="{ 'bg-gray-200': selecionado === {{ $index }} }"
-                                    class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                                >
-                                    {{ $produto['nome'] }} - R$ {{ number_format($produto['valor'], 2, ',', '.') }}
+                    @if(count($sugestoes))
+                        <ul class="border rounded mt-2 bg-white max-h-40 overflow-y-auto absolute w-full z-10">
+                            @foreach($sugestoes as $produto)
+                                <li wire:key="prod-{{ $produto['id'] }}"
+                                    class="p-2 hover:bg-gray-200 cursor-pointer"
+                                    wire:click="selecionarProduto({{ $produto['id'] }})">
+                                    {{ $produto['nome'] }} – R$ {{ number_format($produto['valor'], 2, ',', '.') }}
                                 </li>
                             @endforeach
                         </ul>
                     @endif
                 </div>
             @endif
-
-            </div>
 
 
             @if (count($carrinho) > 0)
@@ -259,4 +224,38 @@
             @endif
         </div> <!-- Fim do conteúdo principal -->
     </div> <!-- Fim do flex -->
+    <script>
+    function produtoAutocomplete() {
+        return {
+            aberto: false,
+            selecionado: 0,
+            sugestoes: @json($sugestoes),
+            init() {
+                this.aberto = this.sugestoes.length > 0;
+
+                window.addEventListener('sugestoes-atualizadas', event => {
+                    this.sugestoes = event.detail.sugestoes;
+                    this.selecionado = 0;
+                    this.aberto = this.sugestoes.length > 0;
+                });
+            },
+            selecionarComEnter(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    if (this.sugestoes.length > 0) {
+                        this.selecionarProduto(this.sugestoes[this.selecionado].id);
+                    } else {
+                        const input = event.target.value;
+                        @this.selecionarProduto(input);
+                    }
+                    this.aberto = false;
+                }
+            },
+            selecionarProduto(id) {
+                @this.selecionarProduto(id);
+                this.aberto = false;
+            }
+        }
+    }
+</script>
 </div> <!-- Fim da ml-64 pt-[72px] p-6 -->
