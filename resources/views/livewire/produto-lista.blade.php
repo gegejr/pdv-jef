@@ -18,79 +18,79 @@
             <input type="text" wire:model.debounce.500ms="pesquisa" placeholder="Buscar por nome..."
                 class="border p-2 rounded w-full mb-4" />
 
-            <table class="w-full table-auto border">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="p-2 border text-center">ID</th>
-                        <th class="p-2 border text-center">Imagem</th>
-                        <th class="p-2 border text-center">Nome</th>
-                        <th class="p-2 border text-center">Codigo de barras</th>
-                        <th class="p-2 border text-center">Preço</th>
-                        <th class="p-2 border text-center">Estoque</th>
-                        <th class="p-2 border text-center">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($produtos as $produto)
-                        <tr class="border-t">
-                            <td class="p-2 border text-center">{{ $produto->id }}</td>
-                            <td class="p-2 border text-center">
-                                @if ($produto->imagem)
-                                    <img src="{{ asset('storage/' . $produto->imagem) }}" class="w-12 h-12 object-cover rounded mx-auto">
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td class="p-2 border text-center">{{ $produto->nome }}</td>
-                            <td class="p-2 border text-center">{{ $produto->codigo_barras }}</td>
-                            <td class="p-2 border text-center">R$ {{ number_format($produto->valor, 2, ',', '.') }}</td>
-                            <td class="p-2 border text-center">
-                                @if ($produto->estoque < 5)
-                                    <span class="text-red-600 font-semibold">
-                                        {{ $produto->estoque }} <br>
-                                        <small>Estoque baixo! <br> Faça pedido</small>
-                                    </span>
-                                @else
-                                    {{ $produto->estoque }}
-                                @endif
-                            </td>
-                            <td class="p-2 border text-center">
-                                <div class="flex justify-center items-center space-x-2">
-                                    <button wire:click="editarProduto({{ $produto->id }})" class="flex items-center p-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 11l6-6m2 2L9 15H7v-2l8-8z" />
-                                        </svg>
-                                        Editar
-                                    </button>
+            <table class="min-w-full divide-y divide-gray-200 border rounded-lg overflow-hidden shadow-sm">
+    <thead class="bg-gray-50">
+        <tr>
+            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">ID</th>
+            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Imagem</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Categoria</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Código de Barras</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
+            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Preço</th>
+            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Desconto %</th>
+            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Estoque</th>
+            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+        @forelse($produtos as $produto)
+            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $produto->id }}</td>
+                <td class="px-4 py-2 text-center">
+                    @if ($produto->imagem)
+                        <img src="{{ asset('storage/' . $produto->imagem) }}" alt="Imagem do produto" class="w-12 h-12 object-cover rounded mx-auto" />
+                    @else
+                        <span class="text-gray-400">—</span>
+                    @endif
+                </td>
+                <td class="px-4 py-2 text-left text-sm font-semibold text-gray-900">{{ $produto->nome }}</td>
+                <td class="px-4 py-2 text-left text-sm font-semibold text-gray-900">
+                    {{ optional($produto->categoria)->nome ?? '—' }}
+                </td>
+                <td class="px-4 py-2 text-left text-sm text-gray-700">{{ $produto->codigo_barras }}</td>
+                <td class="px-4 py-2 text-left text-sm text-gray-600">
+                    {{ \Illuminate\Support\Str::limit($produto->descricao, 50) }}
+                </td>
+                <td class="px-4 py-2 text-right text-sm text-green-600 font-semibold">
+                    R$ {{ number_format($produto->valor, 2, ',', '.') }}
+                </td>
+                <td class="px-4 py-2 text-right text-sm text-blue-600 font-semibold">
+                    {{ number_format($produto->desconto_padrao, 2, ',', '.') }}%
+                </td>
+                <td class="px-4 py-2 text-right text-sm font-semibold
+                    {{ $produto->estoque < 5 ? 'text-red-600' : 'text-gray-700' }}">
+                    {{ $produto->estoque }}
+                    @if ($produto->estoque < 5)
+                        <br><small class="text-xs text-red-500 italic">Estoque baixo!</small>
+                    @endif
+                </td>
+                <td class="px-4 py-2 text-center space-x-1 whitespace-nowrap">
+                    <button wire:click="editarProduto({{ $produto->id }})" 
+                        class="inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-500 hover:bg-blue-600 text-white rounded">
+                        Editar
+                    </button>
+                    <button wire:click="excluir({{ $produto->id }})" 
+                        class="inline-flex items-center px-2 py-1 text-xs font-medium bg-red-500 hover:bg-red-600 text-white rounded">
+                        Excluir
+                    </button>
+                    <button wire:click="adicionarCarrinho({{ $produto->id }})" 
+                        class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-500 hover:bg-green-600 text-white rounded">
+                        Adicionar
+                    </button>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="9" class="px-4 py-6 text-center text-gray-500">Nenhum produto encontrado.</td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>
 
-                                    <button wire:click="excluir({{ $produto->id }})" class="flex items-center p-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7L5 7M6 7V19a2 2 0 002 2h8a2 2 0 002-2V7m-5 4v6m-4-6v6m1-10V4a1 1 0 011-1h2a1 1 0 011 1v2" />
-                                        </svg>
-                                        Excluir
-                                    </button>
-
-                                    <button wire:click="adicionarCarrinho({{ $produto->id }})" class="flex items-center p-1 text-sm bg-green-500 text-white rounded hover:bg-green-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.293 2.707a1 1 0 00.707 1.707h11a1 1 0 00.707-1.707L17 13M7 13V6h.01M17 13V6h.01" />
-                                        </svg>
-                                        Adicionar
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center p-4">Nenhum produto encontrado.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            
-            <div class="mt-4">
-                {{ $produtos->links() }}
-            </div>
-        </div>
+<div class="mt-4">
+    {{ $produtos->links() }}
+</div>
 
 @if($produtoId)
 <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-y-auto">

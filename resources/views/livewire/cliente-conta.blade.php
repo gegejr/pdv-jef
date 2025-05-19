@@ -9,14 +9,14 @@
         {{-- Contas Pendentes --}}
         <h3 class="text-lg font-semibold mb-2">Contas Pendentes</h3>
         <table class="w-full table-auto border mb-8">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="px-4 py-2 text-left">Data</th>
-                    <th class="px-4 py-2 text-left">Cliente</th>
-                    <th class="px-4 py-2">Telefone</th>
-                    <th class="px-4 py-2">Valor</th>
-                    <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2">Ação</th>
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Data</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Cliente</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Telefone</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Valor</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Status</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,10 +27,10 @@
                     @endphp
                     <tr class="border-t">
                         <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="px-4 py-2">{{ $cliente->nome }}</td>
-                        <td class="px-4 py-2">{{ $cliente->telefone }}</td>
-                        <td class="px-4 py-2">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
-                        <td class="px-4 py-2 font-bold text-red-600">Pendente</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->nome }}</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->telefone }}</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
+                        <td class="px-4 py-2 text-center text-sm font-bold text-red-600">Pendente</td>
                         <td class="px-4 py-2">
                             <button wire:click="openModal({{ $venda->id }})"
                                     class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
@@ -47,13 +47,13 @@
         {{-- Contas Pagas --}}
         <h3 class="text-lg font-semibold mb-2">Contas Pagas</h3>
         <table class="w-full table-auto border">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="px-4 py-2 text-left">Data</th>
-                    <th class="px-4 py-2 text-left">Cliente</th>
-                    <th class="px-4 py-2">Telefone</th>
-                    <th class="px-4 py-2">Valor</th>
-                    <th class="px-4 py-2">Status</th>
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Data</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Cliente</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Telefone</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Valor</th>
+                    <th class="px-4 py-2 text-center text-sm text-gray-700">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,11 +63,11 @@
                         $pagamentoConta = $venda->pagamentos->firstWhere('tipo', 'conta');
                     @endphp
                     <tr class="border-t">
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="px-4 py-2">{{ $cliente->nome }}</td>
-                        <td class="px-4 py-2">{{ $cliente->telefone }}</td>
-                        <td class="px-4 py-2">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
-                        <td class="px-4 py-2 font-bold text-green-600">Pago</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->nome }}</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->telefone }}</td>
+                        <td class="px-4 py-2 text-center text-sm text-gray-700">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
+                        <td class="px-4 py-2 text-center text-sm font-bold text-green-600">Pago</td>
                     </tr>
                 @empty
                     <tr><td colspan="5" class="text-center py-4">Nenhuma conta paga encontrada.</td></tr>

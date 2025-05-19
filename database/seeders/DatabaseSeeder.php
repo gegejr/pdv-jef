@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('senha'), // Crie uma senha forte
             'role' => 'admin', // Definindo o papel como admin
         ]);
+        $this->call(SistemaConfiguracoesSeeder::class);
     }
+    
 }

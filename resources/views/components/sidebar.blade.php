@@ -102,12 +102,20 @@
                 <svg class="w-4 h-4 transform transition-transform" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M9 5l7 7-7 7" />
                 </svg>
+
+
             </button>
 
             <!-- Dropdown -->
             <div x-show="open" class="pl-6 mt-2 space-y-1" x-cloak>
                 <a href="{{ route('usuarios.criar') }}" class="block text-gray-700 hover:bg-gray-200 p-2 rounded">Criar Usuário</a>
             </div>
+            <div x-show="open" class="pl-6 mt-2 space-y-1" x-cloak>
+                <a wire:click="$emitTo('configurar-sistema', 'abrirConfiguracoes')" class="block text-gray-700 hover:bg-gray-200 p-2 rounded cursor-pointer">
+                    Custom
+                </a>
+            </div>
+
         </div>
 
     </nav>

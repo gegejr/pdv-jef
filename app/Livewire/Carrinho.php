@@ -27,13 +27,18 @@ class Carrinho extends Component
     public $caixaAberto = false;
     public $nome = '';
     public $valor_inicial = 0;
+    public $modalClientesAberto = false;
+    public $modalProdutosAberto = false;
+    public $busca_modal_cliente = '';
+    public $busca_modal_produto = '';
     public $pagamentos = [
         ['tipo' => '', 'valor' => 0]
     ];
     public $usuarioContaId = null; // ID do usuário para pagamento "conta"
 
     protected $listeners = ['clienteSelecionado'];
-
+    public $todos_clientes = [];
+    public $todos_produtos = [];
     public function mount()
     {
         $user = auth()->user()->fresh();
@@ -47,6 +52,8 @@ class Carrinho extends Component
         // Inicializa array de pagamentos
         $this->pagamentos = [['tipo' => '', 'valor' => 0]];
         $this->campo_visivel = true;
+        $this->todos_clientes = \App\Models\Cliente::select('id', 'nome', 'telefone')->get()->toArray();
+        $this->todos_produtos = \App\Models\Produto::select('id', 'nome', 'valor', 'estoque', 'codigo_barras')->get()->toArray();
     }
 
     public function verificarCaixa()
@@ -288,8 +295,16 @@ class Carrinho extends Component
             ->toArray();
     }
 
-    public function selecionarProduto()
-    {
+    public function selecionarProduto($produtoId = null)
+{
+    // Se veio com $produtoId, seleciona direto, senão usa busca_produto
+    if ($produtoId) {
+        $produto = Produto::find($produtoId);
+        if (!$produto) {
+            session()->flash('error', 'Produto não encontrado.');
+            return;
+        }
+    } else {
         $input = $this->busca_produto;
 
         $produto = Produto::where('codigo_barras', $input)->first();
@@ -306,30 +321,34 @@ class Carrinho extends Component
             session()->flash('error', 'Produto não encontrado.');
             return;
         }
-
-        $carrinho = session()->get('carrinho', []);
-
-        if (isset($carrinho[$produto->id])) {
-            $carrinho[$produto->id]['quantidade'] += 1;
-            $carrinho[$produto->id]['valor_total'] = $produto->valor * $carrinho[$produto->id]['quantidade'];
-        } else {
-            $carrinho[$produto->id] = [
-                'produto' => $produto,
-                'quantidade' => 1,
-                'valor_total' => $produto->valor,
-                'desconto' => 0,
-            ];
-        }
-
-        session()->put('carrinho', $carrinho);
-
-        $this->busca_produto = '';
-        $this->sugestoes = [];
-        $this->atualizarCarrinho();
-        $this->campo_visivel = true;
-
-        session()->flash('message', 'Produto adicionado ao carrinho.');
     }
+
+    $carrinho = session()->get('carrinho', []);
+
+    if (isset($carrinho[$produto->id])) {
+        $carrinho[$produto->id]['quantidade'] += 1;
+        $carrinho[$produto->id]['valor_total'] = $produto->valor * $carrinho[$produto->id]['quantidade'];
+    } else {
+        $carrinho[$produto->id] = [
+            'produto' => $produto,
+            'quantidade' => 1,
+            'valor_total' => $produto->valor,
+            'desconto' => 0,
+        ];
+    }
+
+    session()->put('carrinho', $carrinho);
+
+    $this->busca_produto = '';
+    $this->sugestoes = [];
+    $this->atualizarCarrinho();
+    $this->campo_visivel = true;
+
+    // Fecha o modal se estiver aberto
+    $this->modalProdutosAberto = false;
+
+    session()->flash('message', 'Produto adicionado ao carrinho.');
+}
 
     public function toggleCampoBusca()
     {
@@ -361,9 +380,10 @@ class Carrinho extends Component
             $this->cliente_nome = $cliente->nome;
             $this->busca_cliente = '';
             $this->sugestoes_clientes = [];
-
-            // Aqui:
             $this->campo_visivel = true;
+
+            // Fecha modal clientes se aberto
+            $this->modalClientesAberto = false;
         }
     }
 
@@ -389,5 +409,25 @@ class Carrinho extends Component
             'cliente_nome' => $this->cliente_nome,
             'sugestoes_clientes' => $this->sugestoes_clientes,
         ]);
+    }
+
+    public function abrirModalClientes()
+    {
+        $this->modalClientesAberto = true;
+    }
+
+    public function fecharModalClientes()
+    {
+        $this->modalClientesAberto = false;
+    }
+
+    public function abrirModalProdutos()
+    {
+        $this->modalProdutosAberto = true;
+    }
+
+    public function fecharModalProdutos()
+    {
+        $this->modalProdutosAberto = false;
     }
 }

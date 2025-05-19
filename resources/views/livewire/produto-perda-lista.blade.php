@@ -10,14 +10,14 @@
         <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300">
             <h3 class="font-bold mb-2">Histórico de Perdas</h3>
             <table class="w-full table-auto border">
-                <thead class="bg-gray-100">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th class="p-2 border text-center">Imagem</th>
-                        <th class="p-2 border text-center">Nome</th>
-                        <th class="p-2 border text-center">Quantidade</th>
-                        <th class="p-2 border text-center">Motivo</th>
-                        <th class="p-2 border text-center">Valor</th>
-                        <th class="p-2 border text-center">Data</th>
+                        <th class="px-4 py-2 text-center text-sm text-gray-700">Imagem</th>
+                        <th class="px-4 py-2 text-center text-sm text-gray-700">Nome</th>
+                        <th class="px-4 py-2 text-center text-sm text-gray-700">Quantidade</th>
+                        <th class="px-4 py-2 text-center text-sm text-gray-700">Motivo</th>
+                        <th class="px-4 py-2 text-center text-sm text-gray-700">Valor</th>
+                        <th class="px-4 py-2 text-center text-sm text-gray-700">Data</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,11 +30,11 @@
                                 -
                             @endif
                         </td>
-                            <td class="p-2 border text-center">{{$perda->produto->nome}}</td>
-                            <td class="p-2 border text-center">{{ $perda->quantidade }}</td>
-                            <td class="p-2 border text-center">{{ ucfirst($perda->motivo) }}</td>
-                            <td class="p-2 border text-center">R$ {{ number_format($perda->valor, 2, ',', '.') }}</td>
-                            <td class="p-2 border text-center">{{ $perda->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="px-4 py-2 text-center text-sm text-gray-700">{{$perda->produto->nome}}</td>
+                            <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $perda->quantidade }}</td>
+                            <td class="px-4 py-2 text-center text-sm text-gray-700">{{ ucfirst($perda->motivo) }}</td>
+                            <td class="px-4 py-2 text-center text-sm text-gray-700">R$ {{ number_format($perda->valor, 2, ',', '.') }}</td>
+                            <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $perda->created_at->format('d/m/Y H:i') }}</td>
                             
                         </tr>
                     @endforeach

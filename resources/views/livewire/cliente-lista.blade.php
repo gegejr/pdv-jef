@@ -45,24 +45,24 @@
                 Novo Cliente
             </button>
 
-            <table class="min-w-full bg-white border">
-                <thead>
-                    <tr class="bg-gray-100 text-left">
-                        <th class="px-4 py-2">Nome</th>
-                        <th class="px-4 py-2">CPF/CNPJ</th>
-                        <th class="px-4 py-2">Telefone</th>
-                        <th class="px-4 py-2">Endereço</th>
-                        <th class="px-4 py-2">Ações</th>
+            <table class="min-w-full divide-y divide-gray-200 border rounded-lg overflow-hidden shadow-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Nome</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">CPF/CNPJ</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Telefone</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Endereço</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($clientes as $cliente)
-                        <tr class="border-t">
-                            <td class="px-4 py-2">{{ $cliente->nome }}</td>
-                            <td class="px-4 py-2">{{ $cliente->cpf_cnpj }}</td>
-                            <td class="px-4 py-2">{{ $cliente->telefone }}</td>
-                            <td class="px-4 py-2">{{ $cliente->endereco }}</td>
-                            <td class="px-4 py-2 space-x-2">
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <td class="px-4 py-2 text-center text-sm font-semibold text-gray-900">{{ $cliente->nome }}</td>
+                            <td class="px-4 py-2 text-center text-sm font-semibold text-gray-900">{{ $cliente->cpf_cnpj }}</td>
+                            <td class="px-4 py-2 text-center text-sm font-semibold text-gray-900">{{ $cliente->telefone }}</td>
+                            <td class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{{ $cliente->endereco }}</td>
+                            <td class="px-4 py-2 text-center space-x-1 whitespace-nowrap">
                                 <button wire:click="ver({{ $cliente->id }})" class="text-blue-600 hover:underline">Ver</button>
                                 <button wire:click="editar({{ $cliente->id }})" class="text-yellow-600 hover:underline">Editar</button>
                                 <button wire:click="excluir({{ $cliente->id }})" class="text-red-600 hover:underline">Excluir</button>

@@ -5,128 +5,187 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Produto;
-use App\Livewire\ProdutoLista;
+use App\Models\Categoria;
 use App\Models\ProdutoPerda;
 
 class ProdutoForm extends Component
 {
     use WithFileUploads;
 
-    public $produto_id;
-    public $produtoId;
-    public $nome, $codigo_barras, $descricao, $valor, $estoque, $desconto_padrao = 0, $imagem, $imagem_existente;
+    // --- Propriedades públicas do formulário ---
+    public $produto_id;      // usado para update
+    public $produtoId;       // compatibilidade com o emit anterior
 
-    protected $listeners = ['editarProduto'];
+    public $nome;
+    public $codigo_barras;
+    public $sku;
+    public $descricao;
+    public $valor;
+    public $estoque;
+    public $unidade_medida = 'un';
+    public $desconto_padrao = 0;
+
+    public $categoria_id;
+    public $status = 'ativo';
+
+    public $imagem;
+    public $imagem_existente;
+
+    // Listas auxiliares
+    public array $categorias = [];
+
+    // Perdas
     public $registrar_perda = false;
     public $quantidade_perda;
     public $motivo_perda;
-    // Editar produto
+
+    protected $listeners = ['editarProduto'];
+
+    /* ----------------------------------- */
+    /*  Métodos de ciclo de vida           */
+    /* ----------------------------------- */
+    public function mount($id = null)
+    {
+        // Verificação de assinatura (conforme seu fluxo)
+        if (!auth()->user()->hasValidSubscription()) {
+            return redirect()->route('subscription.expired');
+        }
+
+        // Carrega categorias 1× (evita consulta a cada render)
+        $this->categorias = Categoria::orderBy('nome')->get()->toArray();
+
+        if ($id) {
+            $this->editarProduto($id);
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.produto-form', [
+            'categorias' => $this->categorias,
+        ]);
+    }
+
+    /* ----------------------------------- */
+    /*  CRUD                               */
+    /* ----------------------------------- */
     public function editarProduto($id)
     {
-        $this->produtoId = $id;  // Guardar o ID do produto a ser editado
+        $this->produtoId = $id;
         $produto = Produto::findOrFail($id);
-    
-        // Preencher os campos do formulário com os dados do produto
-        $this->nome = $produto->nome;
-        $this->codigo_barras = $produto->codigo_barras;
-        $this->descricao = $produto->descricao;
-        $this->valor = $produto->valor;
-        $this->estoque = $produto->estoque;
-        $this->desconto_padrao = $produto->desconto_padrao;
+
+        // Preenche as propriedades
+        $this->produto_id       = $produto->id;
+        $this->nome             = $produto->nome;
+        $this->codigo_barras    = $produto->codigo_barras;
+        $this->sku              = $produto->sku;
+        $this->descricao        = $produto->descricao;
+        $this->valor            = $produto->valor;
+        $this->estoque          = $produto->estoque;
+        $this->unidade_medida   = $produto->unidade_medida;
+        $this->desconto_padrao  = $produto->desconto_padrao;
+        $this->categoria_id     = $produto->categoria_id;
+        $this->status           = $produto->status;
         $this->imagem_existente = $produto->imagem;
-    
-        // Emitir o evento para abrir o modal
+
         $this->dispatch('openModal');
     }
 
-    // Função de salvar (para cadastro e edição)
     public function salvar()
     {
-        $this->validate([
-            'nome' => 'required|string|max:255',
-            'codigo_barras' => 'nullable|string|max:100',
-            'valor' => 'required|numeric|min:0',
-            'estoque' => 'required|integer|min:0',
-            'imagem' => 'nullable|image|max:2048',
-            'desconto_padrao' => 'nullable|numeric|min:0',
-            'quantidade_perda' => 'nullable|integer|min:1',
-            'motivo_perda' => 'nullable|in:quebra,descarte,perda',
-        ]);
+        $this->validate($this->rules());
 
-        // Verifica se foi enviado uma imagem nova
-        $caminhoImagem = $this->imagem
-            ? $this->imagem->store('produtos', 'public')
-            : $this->imagem_existente;
+        // Upload (se existir imagem nova)
+        $caminhoImagem = $this->imagem ?
+            $this->imagem->store('produtos', 'public') :
+            $this->imagem_existente;
+
+        $dados = [
+            'nome'            => $this->nome,
+            'codigo_barras'   => $this->codigo_barras,
+            'sku'             => $this->sku,
+            'descricao'       => $this->descricao,
+            'valor'           => $this->valor,
+            'estoque'         => $this->estoque,
+            'unidade_medida'  => $this->unidade_medida,
+            'imagem'          => $caminhoImagem,
+            'desconto_padrao' => $this->desconto_padrao ?: 0,
+            'categoria_id'    => $this->categoria_id,
+            'status'          => $this->status,
+        ];
 
         if ($this->produto_id) {
-            // Edição de produto
             $produto = Produto::findOrFail($this->produto_id);
-            $produto->update([
-                'nome' => $this->nome,
-                'codigo_barras' => $this->codigo_barras,
-                'descricao' => $this->descricao,
-                'valor' => $this->valor,
-                'estoque' => $this->estoque,
-                'imagem' => $caminhoImagem,
-                'desconto_padrao' => $this->desconto_padrao ?? 0,
-            ]);
+            $produto->update($dados);
 
-            // Registra a perda, caso haja
+            // Perda de estoque (opcional)
             if ($this->registrar_perda && $this->quantidade_perda > 0) {
                 ProdutoPerda::create([
                     'produto_id' => $produto->id,
                     'quantidade' => $this->quantidade_perda,
-                    'valor' => $produto->valor * $this->quantidade_perda,
-                    'motivo' => $this->motivo_perda,
+                    'valor'      => $produto->valor * $this->quantidade_perda,
+                    'motivo'     => $this->motivo_perda,
                 ]);
 
-                // Atualiza o estoque
                 $produto->decrement('estoque', $this->quantidade_perda);
             }
 
             session()->flash('sucesso', 'Produto atualizado com sucesso!');
         } else {
-            // Cadastro de novo produto
-            Produto::create([
-                'nome' => $this->nome,
-                'codigo_barras' => $this->codigo_barras,
-                'descricao' => $this->descricao,
-                'valor' => $this->valor,
-                'estoque' => $this->estoque,
-                'imagem' => $caminhoImagem,
-                'desconto_padrao' => $this->desconto_padrao ?? 0,
-            ]);
-
+            Produto::create($dados);
             session()->flash('sucesso', 'Produto cadastrado com sucesso!');
         }
 
-        // Resetando os dados após a ação
-        $this->reset(['nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'produto_id', 'imagem_existente', 'desconto_padrao', 'quantidade_perda', 'motivo_perda']);
-        $this->dispatch('produtoAtualizado'); // opcional para atualizar a lista de produtos
+        $this->resetForm();
+        $this->dispatch('produtoAtualizado');
     }
 
-
-    // Função render para mostrar o formulário
-    public function render()
+    /* ----------------------------------- */
+    /*  Utilitários                        */
+    /* ----------------------------------- */
+    protected function rules()
     {
-        return view('livewire.produto-form');
+        return [
+            'nome'            => 'required|string|max:255',
+            'codigo_barras'   => 'nullable|string|max:100',
+            'sku'             => 'nullable|string|max:100|unique:produtos,sku,' . $this->produto_id,
+            'valor'           => 'required|numeric|min:0',
+            'estoque'         => 'required|integer|min:0',
+            'unidade_medida'  => 'required|in:un,kg,l,cx',
+            'categoria_id'    => 'required|exists:categorias,id',
+            'status'          => 'required|in:ativo,inativo',
+            'imagem'          => 'nullable|image|max:2048',
+            'desconto_padrao' => 'nullable|numeric|min:0',
+            'quantidade_perda'=> 'nullable|integer|min:1',
+            'motivo_perda'    => 'nullable|in:quebra,descarte,perda',
+        ];
     }
 
-    // Função para fechar o modal e resetar os dados
+    protected function resetForm()
+    {
+        $this->reset([
+            'produto_id',
+            'produtoId',
+            'nome',
+            'codigo_barras',
+            'sku',
+            'descricao',
+            'valor',
+            'estoque',
+            'unidade_medida',
+            'imagem',
+            'imagem_existente',
+            'desconto_padrao',
+            'categoria_id',
+            'status',
+            'quantidade_perda',
+            'motivo_perda',
+            'registrar_perda',
+        ]);
+    }
+
     public function fecharModal()
     {
-        $this->reset(['produto_id', 'nome', 'codigo_barras', 'descricao', 'valor', 'estoque', 'imagem', 'imagem_existente', 'desconto_padrao']);
-    }
-
-    // Função chamada ao iniciar o componente, caso passe um id, edita o produto
-    public function mount($id = null)
-    {
-        if (!auth()->user()->hasValidSubscription()) {
-            return redirect()->route('subscription.expired');
-        }
-        
-        if ($id) {
-            $this->editarProduto($id);
-        }
+        $this->resetForm();
     }
 }
