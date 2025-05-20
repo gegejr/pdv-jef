@@ -1,66 +1,91 @@
-<div class="ml-64 pt-[72px] p-6">
+<div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
     <div class="flex">
         <!-- Menu lateral -->
         <x-sidebar />
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300">
+        <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300 space-y-8">
             <!-- Topbar -->
             <x-topbar />
 
-            <!-- ======= MESAS LIVRES ======= -->
-            <h3 class="font-bold mt-6">Mesas Livres</h3>
-            <div class="flex justify-end mb-4">
-                <button wire:click="criarMesa" class="bg-green-600 text-white px-4 py-2 rounded">
-                    + Cadastrar Mesa
-                </button>
-            </div>
+            <!-- MESAS LIVRES -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Mesas Livres</h3>
+                    <button wire:click="criarMesa" class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Cadastrar Mesa
+                    </button>
+                </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @foreach ($mesasFree as $mesa)
-                    <div class="p-4 border rounded shadow text-center">
-                        <div class="text-xl font-semibold">Mesa: {{ $mesa->numero }}</div>
-                        <button wire:click="abrirPedido({{ $mesa->id }})"
-                                class="bg-blue-600 text-white px-3 py-1 mt-2 rounded">
-                            Abrir pedido
-                        </button>
-                    </div>
-                @endforeach
-            </div>
-
-            <!-- ======= MESAS OCUPADAS ======= -->
-            <h3 class="font-bold mt-10">Mesas Ocupadas</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @foreach ($mesasBusy as $mesa)
-                    <div class="p-4 border rounded shadow bg-red-50">
-                        <div class="text-xl font-semibold text-center">#{{ $mesa->numero }}</div>
-
-                        @php $venda = $mesa->ultimaVenda; @endphp
-
-                        @if ($venda)
-                            <ul class="text-left mt-2 text-sm list-disc pl-4">
-                                @foreach ($venda->itens as $item)
-                                    <li>{{ $item->quantidade }}× {{ $item->produto->nome }}</li>
-                                @endforeach
-                            </ul>
-                            <p class="font-semibold mt-1">
-                                Total: R$ {{ number_format($venda->total, 2, ',', '.') }}
-                            </p>
-                        @endif
-
-                        <div class="flex flex-col gap-2 mt-3">
-                            <button wire:click="verDetalhes({{ $mesa->id }})"
-                                    class="bg-gray-700 text-white px-3 py-1 rounded">
-                                Ver detalhes
-                            </button>
-                            <button wire:click="finalizarMesa({{ $mesa->id }})"
-                                    class="bg-green-600 text-white px-3 py-1 rounded">
-                                Finalizar mesa
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    @foreach ($mesasFree as $mesa)
+                        <div class="bg-white p-4 rounded-xl shadow-md text-center space-y-2">
+                            <div class="text-lg font-semibold text-gray-700">Mesa: {{ $mesa->numero }}</div>
+                            <button wire:click="abrirPedido({{ $mesa->id }})"
+                                    class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M8 7v10l8-5-8-5z"/>
+                                </svg>
+                                Abrir pedido
                             </button>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
+
+            <!-- MESAS OCUPADAS -->
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800 mt-10">Mesas Ocupadas</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
+                    @foreach ($mesasBusy as $mesa)
+                        <div class="bg-red-100 p-4 rounded-xl shadow-md">
+                            <div class="text-center text-lg font-bold text-red-800">#{{ $mesa->numero }}</div>
+                            @php $venda = $mesa->ultimaVenda; @endphp
+
+                            @if ($venda)
+                                <ul class="text-sm mt-3 text-gray-700 list-disc list-inside space-y-1">
+                                    @foreach ($venda->itens as $item)
+                                        <li>{{ $item->quantidade }}× {{ $item->produto->nome }}</li>
+                                    @endforeach
+                                </ul>
+                                <p class="mt-2 font-semibold text-right text-red-900">
+                                    Total: R$ {{ number_format($venda->total, 2, ',', '.') }}
+                                </p>
+                            @endif
+
+                            <div class="mt-4 flex flex-col gap-2">
+                                <button wire:click="verDetalhes({{ $mesa->id }})"
+                                        class="inline-flex items-center justify-center gap-2 bg-gray-700 text-white px-4 py-1.5 rounded hover:bg-gray-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    Ver detalhes
+                                </button>
+
+                                <button wire:click="finalizarMesa({{ $mesa->id }})"
+                                        class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-1.5 rounded hover:bg-green-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                    Finalizar mesa
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
 
             <!-- ======= MODAL PEDIDO (criação) ======= -->
             @if($showModalPedido)
