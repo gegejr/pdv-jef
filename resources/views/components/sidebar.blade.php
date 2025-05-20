@@ -87,6 +87,14 @@
                     </a>
             </div>
         </div> 
+
+        <a href="{{ route('mesas') }}" class="flex items-center text-gray-700 hover:bg-gray-200 p-2 rounded">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 10h18v2H3v-2zm2 2v6h2v-4h10v4h2v-6H5z" />
+            </svg>
+            Mesas
+        </a>
+
         
         <div x-data="{ open: false }">
             <!-- Botão principal -->

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Venda extends Model
 {
     protected $fillable = [
@@ -46,7 +47,15 @@ class Venda extends Model
 
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class);
+        return $this->belongsTo(Cliente::class)->withDefault([
+            'nome' => 'Cliente não informado',
+            'telefone' => '-',
+        ]);
     }
 
+            // app/Models/Venda.php
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class);
+    }
 }

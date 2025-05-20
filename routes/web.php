@@ -18,6 +18,7 @@ use App\Livewire\ClienteLista;
 use App\Livewire\ClientesContas;
 use App\Http\Controllers\ExportarRelatorioController;
 use App\Http\Controllers\SubscriptionController;
+use App\Livewire\Mesas;
 
 // Página inicial
 Route::get('/', function () {
@@ -139,3 +140,5 @@ Route::get('/relatorio/exportar', [ExportarRelatorioController::class, 'exportar
 Route::get('/venda/{venda}/cupom', function (Venda $venda) {
     return view('impressao.cupom', ['vendaSelecionada' => $venda]);
 })->name('impressao.cupom');
+
+Route::middleware('auth')->get('/mesa', Mesas::class)->name('mesas');

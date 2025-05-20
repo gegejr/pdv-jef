@@ -86,15 +86,47 @@
 
                 <div class="mt-4">
                     <h3 class="text-lg font-semibold mb-2">Método de Pagamento</h3>
-                    <select wire:model="metodo_pagamento" class="border p-2 rounded w-full">
-                        <option value="#" selected>Selecione um método de Pagamento</option>
+                    @if (session()->has('error'))
+                        <div class="bg-red-100 text-red-700 text-sm p-2 rounded mb-3">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if (session()->has('message'))
+                        <div class="bg-green-100 text-green-700 text-sm p-2 rounded mb-3">
+                            {{ session('message') }}
+                        </div>
+                    @endif
+                    <select wire:model="metodo_pagamento" class="border p-2 rounded w-full mb-2">
+                        <option value="" selected>Selecione...</option>  {{-- value vazio, não “#” --}}
                         <option value="dinheiro">Dinheiro</option>
                         <option value="debito">Débito</option>
                         <option value="credito">Crédito</option>
                         <option value="pix">Pix</option>
                     </select>
+
+                    <input  type="number"
+                            step="0.01"
+                            wire:model="valor_pagamento"
+                            placeholder="Valor"
+                            class="border p-2 rounded w-full mb-2">
+                    <button wire:click="adicionarPagamento"
+                            class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300 w-full">
+                        + Adicionar Pagamento
+                    </button>
                 </div>
 
+                <!-- Lista de pagamentos adicionados -->
+                @if(count($pagamentos_adicionados) > 0)
+                    <div class="mt-4">
+                        <h4 class="font-semibold">Pagamentos Adicionados:</h4>
+                        <ul class="list-disc list-inside text-sm text-gray-700">
+                            @foreach($pagamentos_adicionados as $p)
+                                <li>{{ ucfirst($p['tipo']) }} - R$ {{ number_format($p['valor'], 2, ',', '.') }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+@endif
                 <div class="mt-4">
                     <button wire:click="confirmarPagamento"
                             class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
