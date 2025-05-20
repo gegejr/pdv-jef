@@ -43,7 +43,11 @@
                 @endforelse
             </tbody>
         </table>
-
+        {{-- Links de paginação fora da tabela --}}
+        <div class="mt-4">
+            {{ $contasPendentes->links() }}
+        </div>
+        
         {{-- Contas Pagas --}}
         <h3 class="text-lg font-semibold mb-2">Contas Pagas</h3>
         <table class="w-full table-auto border">
@@ -74,7 +78,9 @@
                 @endforelse
             </tbody>
         </table>
-
+        <div class="mt-4">
+            {{ $contasPagas->links() }}
+        </div>
         <!-- Modal -->
         @if($modalOpen)
         <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">

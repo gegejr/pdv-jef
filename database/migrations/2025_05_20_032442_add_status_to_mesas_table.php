@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('mesas', function (Blueprint $table) {
-            $table->string('status')->default('livre')->after('numero');
+            //$table->string('status')->default('livre')->after('numero');
             // Ou se preferir ENUM:
             // $table->enum('status', ['livre', 'ocupada', 'finalizada'])->default('livre')->after('numero');
         });

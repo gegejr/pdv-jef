@@ -5,9 +5,11 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Venda;
 use App\Models\Pagamento;
-
+use Livewire\WithPagination;
 class ClientesContas extends Component
 {
+    use WithPagination;
+    
     public $vendas;
     public $modalOpen = false;
     public $vendaId;
@@ -15,10 +17,12 @@ class ClientesContas extends Component
     public $valor;
     public $metodo_pagamento;
     public $venda;
-    public $contasPendentes;
-    public $contasPagas;
+    //public $contasPendentes;
+    //public $contasPagas;
     public $valor_pagamento  = null;   // valor digitado agora
     public $pagamentos_adicionados = [];   // [ ['tipo'=>'dinheiro','valor'=>10] ... ]
+    protected $paginationTheme = 'tailwind';
+
     public function mount()
     {
         if (!auth()->user()->hasValidSubscription()) {
@@ -29,15 +33,7 @@ class ClientesContas extends Component
 
     public function carregarContas()
     {
-        // Contas pendentes
-        $this->contasPendentes = Venda::whereHas('pagamentos', function ($q) {
-            $q->where('tipo', 'conta')->where('pago', false);
-        })->with(['cliente', 'pagamentos'])->get();
-
-        // Contas pagas
-        $this->contasPagas = Venda::whereHas('pagamentos', function ($q) {
-            $q->where('tipo', 'conta')->where('pago', true);
-        })->with(['cliente', 'pagamentos'])->get();
+        $this->resetPage();
     }
 
     public function openModal($vendaId)
@@ -143,6 +139,14 @@ class ClientesContas extends Component
     
     public function render()
     {
-        return view('livewire.cliente-conta');
+        $contasPendentes = Venda::whereHas('pagamentos', function ($q) {
+            $q->where('tipo', 'conta')->where('pago', false);
+        })->with(['cliente', 'pagamentos'])->paginate(10, ['*'], 'pendentes');
+
+        $contasPagas = Venda::whereHas('pagamentos', function ($q) {
+            $q->where('tipo', 'conta')->where('pago', true);
+        })->with(['cliente', 'pagamentos'])->paginate(10, ['*'], 'pagas');
+
+        return view('livewire.cliente-conta', compact('contasPendentes', 'contasPagas'));
     }
 }

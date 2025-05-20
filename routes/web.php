@@ -19,6 +19,7 @@ use App\Livewire\ClientesContas;
 use App\Http\Controllers\ExportarRelatorioController;
 use App\Http\Controllers\SubscriptionController;
 use App\Livewire\Mesas;
+use App\Http\Controllers\ComandaController;
 
 // Página inicial
 Route::get('/', function () {
@@ -142,3 +143,9 @@ Route::get('/venda/{venda}/cupom', function (Venda $venda) {
 })->name('impressao.cupom');
 
 Route::middleware('auth')->get('/mesa', Mesas::class)->name('mesas');
+
+Route::get('/comanda/print/{id}', [ComandaController::class, 'print'])->name('comanda.print');
+
+Route::get('/comanda/print/{venda}', function (\App\Models\Venda $venda) {
+    return view('comandas.print', compact('venda'));
+});

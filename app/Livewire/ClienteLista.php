@@ -4,9 +4,11 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Cliente;
-
+use Livewire\WithPagination;
 class ClienteLista extends Component
 {
+    use WithPagination;
+
     public $nome, $cpf_cnpj, $data_nascimento, $endereco, $telefone;
     public $clientes;
     public $clienteSelecionadoId = null;
@@ -80,7 +82,7 @@ class ClienteLista extends Component
         $this->telefone = $cliente->telefone;
         $this->modoEdicao = true;
         $this->modalAberto = true;
-
+        
         // Atualiza regra para ignorar o cpf_cnpj único do próprio cliente
         $this->rules['cpf_cnpj'] = 'required|string|max:20|unique:clientes,cpf_cnpj,' . $cliente->id;
     }

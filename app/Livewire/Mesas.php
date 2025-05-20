@@ -23,8 +23,10 @@ class Mesas extends Component
     public $itensCarrinho = [];             // ['produto_id' => ['produto' => obj, 'qtd' => 2]]
     public $vendaDetalhes;           // Venda mostrada no modal
     public $showModalDetalhes = false;
-    protected $listeners = ['addItem'];     // virá de outro comp. ou JS se preferir
-
+    protected $listeners = ['addItem', 'confirmarImpressaoComanda','mesaAtualizada' => 'carregarMesas'];     // virá de outro comp. ou JS se preferir
+    public $vendaGeradaId = null;
+    public $confirmarImpressao = false;
+    
     /** ---------- LISTAGEM ---------- */
     public function render()
     {
@@ -57,6 +59,18 @@ class Mesas extends Component
             'produtosFiltrados'  => $this->produtosFiltrados,
             
         ]);
+    }
+
+    public function mount()
+    {
+        $this->cliente_id = null;
+        $this->itensCarrinho = [];
+        $this->buscaProduto = '';
+        $this->mesaSelecionada = null;
+        $this->showModalPedido = false;
+        $this->showModalProdutos = false;
+        $this->showModalMesa = false;
+        $this->showModalDetalhes = false;
     }
 
     /** ---------- CRUD MESA ---------- */
@@ -94,6 +108,11 @@ class Mesas extends Component
         $this->showModalProdutos = false;
     }
 
+    public function removerItem($index)
+    {
+        unset($this->itensCarrinho[$index]);
+        $this->itensCarrinho = array_values($this->itensCarrinho); // Reindexa
+    }
     public function finalizarPedido()
     {
         if (!$this->mesaSelecionada || !$this->mesaSelecionada->id) {
@@ -150,6 +169,8 @@ class Mesas extends Component
         $this->imprimirComanda($venda);
 
         $this->showModalPedido = false;
+        $this->vendaGeradaId = $venda->id; // salva para usar na confirmação
+        $this->confirmarImpressao = true;  // exibe modal de confirmação
     }
 
     public function finalizarMesa($mesaId)
@@ -172,7 +193,12 @@ class Mesas extends Component
     public function verDetalhes($mesaId)
     {
         $mesa = \App\Models\Mesa::with('ultimaVenda.itens.produto', 'ultimaVenda.cliente')->findOrFail($mesaId);
-        
+
+        if (!$mesa->ultimaVenda) {
+            session()->flash('erro', 'Esta mesa ainda não possui pedidos.');
+            return;
+        }
+
         $this->vendaDetalhes = $mesa->ultimaVenda;
         $this->showModalDetalhes = true;
     }
@@ -198,6 +224,22 @@ class Mesas extends Component
             'status' => 'livre'
         ]);
     }
+    public function excluirMesa($id)
+    {
+        $mesa = Mesa::find($id);
+
+        if ($mesa) {
+            $mesa->delete();
+            session()->flash('success', 'Mesa excluída com sucesso.');
+        } else {
+            session()->flash('error', 'Mesa não encontrada.');
+        }
+
+        $this->dispatch('mesaAtualizada');
+    }
+
+
+
 
     public function getProdutosFiltradosProperty()
     {
@@ -215,5 +257,28 @@ class Mesas extends Component
             return $total;
             }
 
-            
+    public function teste()
+    {
+        logger('Botão funcionando!');
+    }        
+
+    public function confirmarImpressaoComanda($vendaId)
+    {
+        $venda = \App\Models\Venda::with('mesa', 'itens.produto', 'cliente')->find($vendaId);
+
+        if (!$venda) {
+            session()->flash('erro', 'Venda não encontrada para impressão.');
+            return;
+        }
+
+        $this->imprimirComanda($venda);
+
+        // Resetar o modal de confirmação após impressão
+        $this->confirmarImpressao = false;
+        $this->vendaGeradaId = null;
+    }
+
+
+
+
 }

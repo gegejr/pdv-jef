@@ -75,52 +75,77 @@
             </table>
 
             {{-- Modal --}}
-            @if ($modalAberto)
+           @if ($modalAberto)
                 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white p-6 rounded shadow-md w-full max-w-xl">
-                        <h3 class="text-lg font-bold mb-4">
-                            {{ $clienteSelecionadoId ? 'Editar Cliente' : 'Novo Cliente' }}
-                        </h3>
+                    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                                @if ($clienteSelecionadoId)
+                                    <x-heroicon-o-pencil class="w-5 h-5 text-blue-600" />
+                                    Editar Cliente
+                                @else
+                                    <x-heroicon-o-user-plus class="w-5 h-5 text-green-600" />
+                                    Novo Cliente
+                                @endif
+                            </h3>
+                            <button wire:click="resetCampos" class="text-gray-400 hover:text-gray-600">
+                                <x-heroicon-o-x-mark class="w-6 h-6" />
+                            </button>
+                        </div>
 
-                        <form wire:submit.prevent="{{ $clienteSelecionadoId ? 'atualizar' : 'salvar' }}">
-                            <div class="mb-3">
-                                <label class="block mb-1">Nome</label>
-                                <input type="text" wire:model.defer="nome" class="w-full border rounded px-3 py-2"
-                                    @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                        <form wire:submit.prevent="{{ $clienteSelecionadoId ? 'atualizar' : 'salvar' }}" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nome</label>
+                                <div class="relative">
+                                    <x-heroicon-o-user class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+                                    <input type="text" wire:model.defer="nome"
+                                        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="block mb-1">CPF/CNPJ</label>
-                                <input type="text" wire:model.defer="cpf_cnpj" class="w-full border rounded px-3 py-2"
-                                    @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">CPF/CNPJ</label>
+                                <div class="relative">
+                                    <x-heroicon-o-identification class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+                                    <input type="text" wire:model.defer="cpf_cnpj"
+                                        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="block mb-1">Data de Nascimento</label>
-                                <input type="date" wire:model.defer="data_nascimento" class="w-full border rounded px-3 py-2"
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
+                                <input type="date" wire:model.defer="data_nascimento"
+                                    class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     @if($modoVisualizacao) readonly @endif>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="block mb-1">Endereço</label>
-                                <input type="text" wire:model.defer="endereco" class="w-full border rounded px-3 py-2"
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Endereço</label>
+                                <input type="text" wire:model.defer="endereco"
+                                    class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     @if($modoVisualizacao) readonly @endif>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="block mb-1">Telefone</label>
-                                <input type="text" wire:model.defer="telefone" class="w-full border rounded px-3 py-2"
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                                <input type="text" wire:model.defer="telefone"
+                                    class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     @if($modoVisualizacao) readonly @endif>
                             </div>
 
-
-                            <div class="flex justify-end gap-2 mt-4">
-                                <button type="button" wire:click="resetCampos" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                            <div class="flex justify-end gap-3 pt-4">
+                                <button type="button" wire:click="resetCampos"
+                                    class="inline-flex items-center px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
+                                    <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
                                     Cancelar
                                 </button>
 
-                                @if(!$modoVisualizacao)
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                @if (!$modoVisualizacao)
+                                    <button type="submit"
+                                        class="inline-flex items-center px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+                                        <x-heroicon-o-check-circle class="w-5 h-5 mr-2" />
                                         Salvar
                                     </button>
                                 @endif
@@ -129,5 +154,6 @@
                     </div>
                 </div>
             @endif
+
         </div>
 </div>

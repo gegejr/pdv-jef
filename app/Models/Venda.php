@@ -14,6 +14,7 @@ class Venda extends Model
         'caixa_id',
         'data_venda',
         'cliente_id', // 
+        'mesa_id',
     ];
 
     // Relacionamento com o usuário (quem fez a venda)
