@@ -15,8 +15,10 @@ class Mesa extends Model
     }
 
     // apenas a última venda (pedido atual)
-    public function ultimaVenda()   // mantenha o nome igual ao que usar no Livewire
+    public function ultimaVenda()
     {
-        return $this->hasOne(\App\Models\Venda::class)->latestOfMany();
+        return $this->hasOne(\App\Models\Venda::class)
+                    ->where('status', 'ocupada')
+                    ->latest(); // ordena pela mais recente
     }
 }

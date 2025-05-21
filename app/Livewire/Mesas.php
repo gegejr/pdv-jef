@@ -26,7 +26,8 @@ class Mesas extends Component
     protected $listeners = ['addItem', 'confirmarImpressaoComanda','mesaAtualizada' => 'carregarMesas'];     // virá de outro comp. ou JS se preferir
     public $vendaGeradaId = null;
     public $confirmarImpressao = false;
-    
+    public $vendaId; // 👈 Adicione isso aqui
+
     /** ---------- LISTAGEM ---------- */
     public function render()
     {
@@ -92,8 +93,18 @@ class Mesas extends Component
         $produto = Produto::find($produtoId);
         if (!$produto) return;
 
+        if ($produto->estoque <= 0) {
+            session()->flash('erro', 'Produto sem estoque disponível.');
+            return;
+        }
+
         foreach ($this->itensCarrinho as &$item) {
             if ($item['produto']->id === $produtoId) {
+                if ($item['qtd'] + 1 > $produto->estoque) {
+                    session()->flash('erro', 'Quantidade excede o estoque disponível.');
+                    return;
+                }
+
                 $item['qtd']++;
                 $this->showModalProdutos = false;
                 return;
@@ -108,11 +119,15 @@ class Mesas extends Component
         $this->showModalProdutos = false;
     }
 
+
+
+
     public function removerItem($index)
     {
         unset($this->itensCarrinho[$index]);
         $this->itensCarrinho = array_values($this->itensCarrinho); // Reindexa
     }
+
     public function finalizarPedido()
     {
         if (!$this->mesaSelecionada || !$this->mesaSelecionada->id) {
@@ -123,7 +138,7 @@ class Mesas extends Component
         $venda = $mesa->ultimaVenda;
 
         if ($venda) {
-            $venda->update(['status' => 'fechada']); // se tiver coluna status em vendas
+            $venda->update(['status' => 'ocupada']); // se tiver coluna status em vendas
         }
 
         $mesa->update(['status' => 'ocupada']);
@@ -142,6 +157,13 @@ class Mesas extends Component
             return;
         }
 
+        foreach ($this->itensCarrinho as $item) {
+            if ($item['qtd'] > $item['produto']->estoque) {
+                session()->flash('erro', "Produto {$item['produto']->nome} não possui estoque suficiente.");
+                return;
+            }
+        }
+
         $venda = \App\Models\Venda::create([
             'cliente_id' => $this->cliente_id,
             'user_id' => auth()->id(),
@@ -156,6 +178,15 @@ class Mesas extends Component
                 'quantidade' => $item['qtd'],
                 'valor_unitario' => $item['produto']->valor,
             ]);
+        // Dar baixa no estoque dos produtos
+        foreach ($this->itensCarrinho as $item) {
+            $produto = Produto::find($item['produto']->id);
+            if ($produto) {
+                $produto->estoque -= $item['qtd'];
+                if ($produto->estoque < 0) $produto->estoque = 0;
+                $produto->save();
+            }
+        }
         }
 
         $venda->pagamentos()->create([
@@ -163,6 +194,7 @@ class Mesas extends Component
             'valor'=> $venda->total,
             
         ]);
+        
 
         $this->mesaSelecionada->update(['status' => 'ocupada']);
 
@@ -170,7 +202,9 @@ class Mesas extends Component
 
         $this->showModalPedido = false;
         $this->vendaGeradaId = $venda->id; // salva para usar na confirmação
+
         $this->confirmarImpressao = true;  // exibe modal de confirmação
+        $this->dispatch('vendaFinalizada');
     }
 
     public function finalizarMesa($mesaId)
@@ -279,6 +313,85 @@ class Mesas extends Component
     }
 
 
+    public function atualizarVenda()
+    {
+        $venda = \App\Models\Venda::findOrFail($this->vendaId);
+
+        // ➊ Repor estoque dos itens antigos
+        foreach ($venda->itens as $item) {
+            $produto = Produto::find($item->produto_id);
+            if ($produto) {
+                $produto->estoque += $item->quantidade;
+                $produto->save();
+            }
+        }
+
+        // ➋ Apaga os itens antigos
+        $venda->itens()->delete();
+
+        // ➌ Reinsere os novos itens e dá baixa no estoque
+        foreach ($this->itensCarrinho as $item) {
+            $venda->itens()->create([
+                'produto_id' => $item['produto']->id,
+                'quantidade' => $item['qtd'],
+                'valor_unitario' => $item['produto']->valor,
+            ]);
+
+            $produto = Produto::find($item['produto']->id);
+            if ($produto) {
+                $produto->estoque -= $item['qtd'];
+                if ($produto->estoque < 0) $produto->estoque = 0;
+                $produto->save();
+            }
+        }
+
+        // Atualiza o total da venda
+        $novoTotal = $this->calcularTotal();
+        $venda->update(['total' => $novoTotal]);
+
+        // Atualiza o pagamento (assumindo um pagamento do tipo "conta")
+        $pagamento = $venda->pagamentos()->where('tipo', 'conta')->first();
+
+        if ($pagamento) {
+            $pagamento->update(['valor' => $novoTotal]);
+        } else {
+            // Caso não exista pagamento (situação incomum), cria um novo
+            $venda->pagamentos()->create([
+                'tipo' => 'conta',
+                'valor' => $novoTotal,
+            ]);
+        }
+
+        $this->imprimirComanda($venda);
+
+        $this->reset(['showModalPedido', 'itensCarrinho', 'mesaSelecionada', 'vendaId']);
+        $this->dispatch('mesaAtualizada');
+    }
 
 
+    public function adicionarProdutos($mesaId)
+    {
+        $mesa = Mesa::with('ultimaVenda.itens.produto')->findOrFail($mesaId);
+
+        if (!$mesa->ultimaVenda) {
+            session()->flash('erro', 'Não há venda ativa para esta mesa.');
+            return;
+        }
+
+        $this->mesaSelecionada = $mesa;
+        $this->vendaId = $mesa->ultimaVenda->id;
+
+        $this->itensCarrinho = [];
+
+        foreach ($mesa->ultimaVenda->itens as $item) {
+            $this->itensCarrinho[] = [
+                'produto' => $item->produto,
+                'qtd' => $item->quantidade
+            ];
+        }
+
+        $this->showModalPedido = true;
+    }
 }
+
+

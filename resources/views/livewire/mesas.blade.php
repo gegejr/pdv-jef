@@ -41,6 +41,7 @@
             </div>
 
             <!-- MESAS OCUPADAS -->
+             <!-- MESAS OCUPADAS -->
             <div>
                 <h3 class="text-2xl font-bold text-gray-800 mt-10">Mesas Ocupadas</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
@@ -70,6 +71,13 @@
                                     </svg>
                                     Ver detalhes
                                 </button>
+                                <button wire:click="adicionarProdutos({{ $mesa->id }})"
+                                        class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Adicionar produtos
+                                </button>
 
                                 <button wire:click="finalizarMesa({{ $mesa->id }})"
                                         class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-1.5 rounded hover:bg-green-700">
@@ -80,6 +88,7 @@
                                     </svg>
                                     Finalizar mesa
                                 </button>
+
                             </div>
                         </div>
                     @endforeach
@@ -123,16 +132,20 @@
 
                                     <!-- Lista de produtos -->
                                     <div class="max-h-72 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-2">
-                                        @forelse($produtosFiltrados as $p)
-                                            <button wire:click="addItem({{ $p->id }})"
-                                                    class="border px-3 py-2 rounded hover:bg-gray-100 text-left">
+                                       @foreach ($produtosFiltrados as $p)
+                                            <button
+                                                wire:click="{{ $p->estoque > 0 ? 'addItem(' . $p->id . ')' : '' }}"
+                                                class="border px-3 py-2 rounded hover:bg-gray-100 text-left
+                                                    {{ $p->estoque <= 0 ? 'bg-gray-100 opacity-50 cursor-not-allowed' : '' }}"
+                                                {{ $p->estoque <= 0 ? 'disabled' : '' }}
+                                            >
                                                 <div class="font-semibold">{{ $p->nome }}</div>
                                                 <div class="text-sm text-gray-600">Código: {{ $p->codigo_barras ?? '—' }}</div>
-                                                <div class="text-green-700 font-bold">R$ {{ number_format($p->valor, 2, ',', '.') }}</div>
+                                                <div class="{{ $p->estoque <= 0 ? 'text-red-500 font-bold' : 'text-green-700 font-bold' }}">
+                                                    {{ $p->estoque <= 0 ? 'Estoque esgotado' : 'R$ ' . number_format($p->valor, 2, ',', '.') }}
+                                                </div>
                                             </button>
-                                        @empty
-                                            <div class="text-center text-gray-500 col-span-2">Nenhum produto encontrado</div>
-                                        @endforelse
+                                        @endforeach
                                     </div>
 
                                     <!-- Botão fechar -->
@@ -160,8 +173,11 @@
                         <div class="flex justify-end gap-2">
                             <button wire:click="$set('showModalPedido', false)"
                                     class="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
-                            <button wire:click="finalizarPedido"
-                                    class="px-4 py-2 bg-green-600 text-white rounded">Finalizar</button>
+                            @if ($vendaId)
+                                <button wire:click="atualizarVenda">Atualizar Pedido</button>
+                            @else
+                                <button wire:click="finalizarPedido">Finalizar Pedido</button>
+                            @endif
                         </div>
                     </div>
                 </div>

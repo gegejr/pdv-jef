@@ -19,6 +19,7 @@ class RelatorioVendas extends Component
     protected $listeners = [
         'filtrarRelatorio',
         'imprimir-relatorio' => 'imprimirRelatorio',
+        'vendaFinalizada' => 'carregarVendas',
     ];
     
     public function mount()
@@ -27,6 +28,7 @@ class RelatorioVendas extends Component
             return redirect()->route('subscription.expired');
         }
         $this->resetModal();   // ← toda vez que o componente é montado
+        $this->carregarVendas();
     }
 
     public function render()
@@ -55,6 +57,11 @@ class RelatorioVendas extends Component
         $caixas = Caixa::all();
     
         return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));
+    }
+
+    public function carregarVendas()
+    {
+        $this->vendas = \App\Models\Venda::with('pagamentos')->latest()->get();
     }
 
     public function detalhesVenda($id)

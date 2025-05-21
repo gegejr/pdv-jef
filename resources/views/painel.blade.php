@@ -22,8 +22,8 @@
             <!-- Cabeçalho e botão -->
             <div class="flex items-center justify-between mb-6">
             <h1 class="text-3xl font-extrabold text-gray-800 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21V3m12 7h-5.5M17 21V10"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="blue" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column">
+                    <path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
                 </svg>
                 Dashboard
             </h1>
@@ -43,8 +43,16 @@
                 <input type="date" name="fim" id="fim" value="{{ $fim ?? '' }}" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
             </div>
             <button type="submit" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405M17.5 15.5L21 12M9 13h6M4 7v10"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal-icon lucide-sliders-horizontal">
+                    <line x1="21" x2="14" y1="4" y2="4"/>
+                    <line x1="10" x2="3" y1="4" y2="4"/>
+                    <line x1="21" x2="12" y1="12" y2="12"/>
+                    <line x1="8" x2="3" y1="12" y2="12"/>
+                    <line x1="21" x2="16" y1="20" y2="20"/>
+                    <line x1="12" x2="3" y1="20" y2="20"/>
+                    <line x1="14" x2="14" y1="2" y2="6"/>
+                    <line x1="8" x2="8" y1="10" y2="14"/>
+                    <line x1="16" x2="16" y1="18" y2="22"/>
                 </svg>
                 Filtrar
             </button>
@@ -83,9 +91,7 @@
                 <p class="text-3xl font-bold text-blue-700 dark:text-blue-200 mt-2">R$ {{ number_format($totalVendas, 2, ',', '.') }}</p>
             </div>
             <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-200/50 dark:bg-blue-700/30">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600 dark:text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h2l1 2h11l1-2h2m-2 0a9 9 0 11-18 0h18z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-no-axes-combined-icon lucide-chart-no-axes-combined"><path d="M12 16v5"/><path d="M16 14v7"/><path d="M20 10v11"/><path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/><path d="M4 18v3"/><path d="M8 14v7"/></svg>
             </div>
         </div>
     </div>
@@ -98,9 +104,7 @@
                 <p class="text-3xl font-bold text-green-700 dark:text-green-200 mt-2">{{ $numeroVendas }}</p>
             </div>
             <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-200/50 dark:bg-green-700/30">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600 dark:text-green-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 11V9a2 2 0 10-4 0v2a2 2 0 004 0zM15 11V9a2 2 0 114 0v2a2 2 0 01-4 0z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up10-icon lucide-arrow-up-1-0"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M17 10V4h-2"/><path d="M15 10h4"/><rect x="15" y="14" width="4" height="6" ry="2"/></svg>
             </div>
         </div>
     </div>
@@ -113,9 +117,7 @@
                 <a href="{{ route('relatorio-vendas') }}" class="text-yellow-600 dark:text-yellow-300 font-bold hover:underline">Ver Relatório →</a>
             </div>
             <div class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-200/50 dark:bg-yellow-700/30">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-600 dark:text-yellow-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6m4-10H5a2 2 0 00-2 2v12h18V9a2 2 0 00-2-2z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-chart-gantt-icon lucide-square-chart-gantt"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 8h7"/><path d="M8 12h6"/><path d="M11 16h5"/></svg>
             </div>
         </div>
     </div>

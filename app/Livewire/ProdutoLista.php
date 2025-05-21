@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Storage;
 class ProdutoLista extends Component
 {
 
-    public function mount()
+    /*public function mount()
     {
         if (!auth()->user()->hasValidSubscription()) {
             return redirect()->route('subscription.expired');
         }
-    }
+    }*/
     
     use WithPagination;
 
@@ -145,13 +145,19 @@ class ProdutoLista extends Component
 
     public function render()
     {
-        $produtos = Produto::where('nome', 'like', '%' . $this->pesquisa . '%')
+        $produtos = Produto::query()
+            ->when($this->pesquisa, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nome', 'like', '%' . $this->pesquisa . '%')
+                    ->orWhere('codigo_barras', 'like', '%' . $this->pesquisa . '%')
+                    ->orWhere('descricao', 'like', '%' . $this->pesquisa . '%');
+                });
+            })
             ->orderBy('id', 'desc')
             ->paginate(10);
 
         return view('livewire.produto-lista', compact('produtos'));
     }
-
     public function fecharModal()
     {
         $this->reset([
@@ -159,5 +165,11 @@ class ProdutoLista extends Component
             'valor', 'estoque', 'imagem', 'imagem_existente',
             'desconto_padrao', 'registrar_perda', 'quantidade_perda', 'motivo_perda'
         ]);
+    }
+
+    // dentro do seu componente
+    public function updatedPesquisa()
+    {
+        $this->resetPage();
     }
 }

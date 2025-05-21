@@ -15,10 +15,12 @@
                     {{ session('sucesso') }}
                 </div>
             @endif
-
-            <input type="text" wire:model.debounce.500ms="pesquisa" placeholder="🔍 Buscar por nome..."
+            
+            <input type="text" wire:model.debounce.300ms="pesquisa" placeholder="🔍 Buscar por nome..."
                 class="w-full px-4 py-2 mb-6 rounded-lg border border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 transition" />
-
+            <div class="mt-2 text-sm text-gray-600">
+                Termo digitado: "{{ $pesquisa }}"
+            </div>
             <div class="overflow-x-auto rounded-lg shadow">
                 <table class="min-w-full divide-y divide-gray-200 bg-white rounded-lg">
                     <thead class="bg-gray-100 text-gray-600 uppercase text-xs font-semibold">

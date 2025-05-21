@@ -1,5 +1,5 @@
 <div id="sidebar" class="bg-white w-64 h-screen shadow-lg fixed top-0 left-0 z-40 transition-all duration-300 border-r">
-    <div class="p-6 border-b text-2xl font-extrabold text-gray-800 text-center tracking-tight">
+    <div class="p-4 border-b text-2xl font-extrabold text-gray-800 text-center tracking-tight">
         JEF-Sys
     </div>
     <nav class="px-4 py-6 space-y-2 text-sm font-medium text-gray-700">
@@ -22,12 +22,13 @@
         </a>
 
         <a href="{{ route('carrinho') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M6 6h15l1 12H7L6 6z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                <circle cx="9" cy="19" r="2" />
-                <circle cx="18" cy="19" r="2" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9d9e9b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-badge-dollar-sign-icon lucide-badge-dollar-sign">
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/>
+                <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>
             </svg>
-            <span>Carrinho</span>
+            <span>
+                Iniciar Venda
+            </span>
         </a>
 
         <a href="{{ route('relatorio-vendas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">

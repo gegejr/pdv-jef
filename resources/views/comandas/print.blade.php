@@ -62,15 +62,15 @@
             <tr>
                 <td>{{ $item->produto->nome ?? 'Produto removido' }}</td>
                 <td class="qty">{{ $item->quantidade }}</td>
-                <td class="price">R$ {{ number_format($item->valor, 2, ',', '.') }}</td>
-                <td class="total">R$ {{ number_format($item->quantidade * $item->valor, 2, ',', '.') }}</td>
+                <td class="price">R$ {{ number_format($item->valor_unitario, 2, ',', '.') }}</td>
+                <td class="total">R$ {{ number_format($item->quantidade * $item->valor_unitario, 2, ',', '.') }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
     <p class="total">
-        Total da Comanda: R$ {{ number_format($venda->valor_total, 2, ',', '.') }}
+        Total da Comanda: R$ {{ number_format($venda->total, 2, ',', '.') }}
     </p>
 
     <script>
