@@ -10,15 +10,17 @@ use Illuminate\Support\Facades\Storage;
 class ProdutoLista extends Component
 {
 
-    /*public function mount()
+    public function mount()
     {
-        if (!auth()->user()->hasValidSubscription()) {
-            return redirect()->route('subscription.expired');
-        }
-    }*/
+        //if (!auth()->user()->hasValidSubscription()) {
+          //  return redirect()->route('subscription.expired');
+        //}
+        $this->searchTerm = request()->query('searchTerm', $this->searchTerm);
+    }
     
     use WithPagination;
 
+    public $searchTerm = '';
     public $pesquisa = '';
     public $carrinho = [];
     public $produtoId; // Para armazenar o ID do produto a ser editado
@@ -146,11 +148,11 @@ class ProdutoLista extends Component
     public function render()
     {
         $produtos = Produto::query()
-            ->when($this->pesquisa, function ($query) {
+            ->when($this->searchTerm, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('nome', 'like', '%' . $this->pesquisa . '%')
-                    ->orWhere('codigo_barras', 'like', '%' . $this->pesquisa . '%')
-                    ->orWhere('descricao', 'like', '%' . $this->pesquisa . '%');
+                    $q->where('nome', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('codigo_barras', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('descricao', 'like', '%' . $this->searchTerm . '%');
                 });
             })
             ->orderBy('id', 'desc')
@@ -171,5 +173,23 @@ class ProdutoLista extends Component
     public function updatedPesquisa()
     {
         $this->resetPage();
+    }
+
+    protected $queryString = [
+        'searchTerm' => ['except' => ''],
+    //    'selectedCategories' => ['except' => []],
+    //    'selectedBrands' => ['except' => []]
+    ];
+
+    public function updatedSearchTerm()
+    {
+        $this->dispatch('updateQueryString', 'searchTerm', $this->searchTerm)->self();
+    }
+
+    public function clearFilters()
+    {
+        $this->searchTerm = '';
+        //$this->clearCategories();
+        //$this->clearBrands();
     }
 }

@@ -20,6 +20,7 @@ use App\Http\Controllers\ExportarRelatorioController;
 use App\Http\Controllers\SubscriptionController;
 use App\Livewire\Mesas;
 use App\Http\Controllers\ComandaController;
+use App\Livewire\Search;
 
 // Página inicial
 Route::get('/', function () {
@@ -149,3 +150,5 @@ Route::get('/comanda/print/{id}', [ComandaController::class, 'print'])->name('co
 Route::get('/comanda/print/{venda}', function (\App\Models\Venda $venda) {
     return view('comandas.print', compact('venda'));
 });
+
+Route::get('/search', Search::class)->name('search');

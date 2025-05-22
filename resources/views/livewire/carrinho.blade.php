@@ -87,7 +87,7 @@
                     <div class="flex space-x-2">
                         <input
                             type="text"
-                            wire:model.debounce.200ms="busca_cliente"
+                            wire:model.live="busca_cliente"
                             wire:keydown.enter="Buscar cliente por nome ou telefone"
                             class="form-input w-full"
                             placeholder="Digite o nome do cliente"
@@ -118,7 +118,7 @@
                     <div class="flex space-x-2">
                         <input
                             type="text"
-                            wire:model.debounce.300ms="busca_produto"
+                            wire:model.live="searchTerm"
                             wire:keydown.enter.prevent="selecionarProduto"
                             class="form-input w-full"
                             placeholder="Digite o nome ou código de barras do produto..."
@@ -192,28 +192,31 @@
                         <!-- Campo de busca -->
                         <input
                             type="text"
-                            wire:model.debounce.300ms="busca_modal_produto"
+                            wire:model.live="searchTerm"
                             class="form-input w-full mb-3 text-sm"
                             placeholder="Buscar produto..."
                         >
 
                         <ul class="divide-y">
                             @foreach($todos_produtos as $produto)
-                                @if(str_contains(strtolower($produto['nome']), strtolower($busca_modal_produto)))
-                                    <li
-                                        wire:click="selecionarProduto({{ $produto['id'] }})"
-                                        class="p-3 hover:bg-gray-100 cursor-pointer text-sm"
-                                    >
-                                        <div class="font-semibold text-gray-800">{{ $produto['nome'] }}</div>
-                                        <div class="text-gray-600 text-xs">
-                                            Código: <span class="font-mono">{{ $produto['codigo_barras'] }}</span> |
-                                            Estoque: <strong>{{ $produto['estoque'] }}</strong>
-                                        </div>
-                                        <div class="text-green-600 font-semibold text-sm mt-1">
-                                            R$ {{ number_format($produto['valor'], 2, ',', '.') }}
-                                        </div>
-                                    </li>
-                                @endif
+                                @if(
+                                        str_contains(strtolower($produto['nome']), strtolower($searchTerm)) ||
+                                        str_contains((string)$produto['codigo_barras'], $searchTerm)
+                                    )
+                                        <li
+                                            wire:click="selecionarProduto({{ $produto['id'] }})"
+                                            class="p-3 hover:bg-gray-100 cursor-pointer text-sm"
+                                        >
+                                            <div class="font-semibold text-gray-800">{{ $produto['nome'] }}</div>
+                                            <div class="text-gray-600 text-xs">
+                                                Código: <span class="font-mono">{{ $produto['codigo_barras'] }}</span> |
+                                                Estoque: <strong>{{ $produto['estoque'] }}</strong>
+                                            </div>
+                                            <div class="text-green-600 font-semibold text-sm mt-1">
+                                                R$ {{ number_format($produto['valor'], 2, ',', '.') }}
+                                            </div>
+                                        </li>
+                                    @endif
                             @endforeach
                         </ul>
                     </div>

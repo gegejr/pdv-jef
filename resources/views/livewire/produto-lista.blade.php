@@ -16,10 +16,11 @@
                 </div>
             @endif
             
-            <input type="text" wire:model.debounce.300ms="pesquisa" placeholder="🔍 Buscar por nome..."
-                class="w-full px-4 py-2 mb-6 rounded-lg border border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 transition" />
+            <input type="text" wire:model.live="searchTerm"  placeholder="🔍 Buscar por nome..."
+            class="w-full px-4 py-2 mb-6 rounded-lg border border-gray-300 shadow-sm focus:ring focus:ring-indigo-200 transition" />
+
             <div class="mt-2 text-sm text-gray-600">
-                Termo digitado: "{{ $pesquisa }}"
+                Termo digitado: "{{ $searchTerm }}"
             </div>
             <div class="overflow-x-auto rounded-lg shadow">
                 <table class="min-w-full divide-y divide-gray-200 bg-white rounded-lg">

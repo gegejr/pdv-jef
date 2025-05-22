@@ -11,11 +11,13 @@ use App\Models\Cliente;
 
 class Carrinho extends Component
 {
+    
     public $carrinho = [];
     public $total = 0;
     public $desconto_total = 0;
     public $metodo_pagamento;
     public $busca_produto = '';
+    public $searchTerm = '';
     public $campo_visivel = false;
     public $mensagem_erro = null;
     public $mensagem_sucesso = null;
@@ -245,12 +247,15 @@ class Carrinho extends Component
 
         public function adicionarProduto()
         {
-            $this->busca_produto = trim($this->busca_produto); // remove espaços
+            $this->searchTerm = trim($this->searchTerm); // remove espaços
 
-            $produto = Produto::where(function ($query) {
-                $query->where('id', $this->busca_produto)
-                    ->orWhere('codigo_barras', $this->busca_produto)
-                    ->orWhere('nome', 'like', '%' . $this->busca_produto . '%');
+            $produto = Produto::query()
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nome', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('codigo_barras', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('descricao', 'like', '%' . $this->searchTerm . '%');
+                });
             })->first();
 
             if (!$produto) {
@@ -274,7 +279,7 @@ class Carrinho extends Component
 
         session()->put('carrinho', $carrinho);
 
-        $this->busca_produto = '';
+        $this->searchTerm = '';
         $this->sugestoes = [];
         $this->atualizarCarrinho();
 
@@ -283,72 +288,82 @@ class Carrinho extends Component
 
     public function updatedBuscaProduto()
     {
-        if ($this->busca_produto === '') {
+        if ($this->searchTerm === '') {
             $this->sugestoes = [];
             return;
         }
 
-        $this->sugestoes = Produto::where('nome', 'like', '%' . $this->busca_produto . '%')
-            ->orWhere('codigo_barras', 'like', '%' . $this->busca_produto . '%')
-            ->limit(10)
-            ->get()
+        $this->sugestoes = Produto::query()
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nome', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('codigo_barras', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('descricao', 'like', '%' . $this->searchTerm . '%');
+                });
+            })->get()
             ->toArray();
     }
 
     public function selecionarProduto($produtoId = null)
-{
-    // Se veio com $produtoId, seleciona direto, senão usa busca_produto
-    if ($produtoId) {
-        $produto = Produto::find($produtoId);
-        if (!$produto) {
-            session()->flash('error', 'Produto não encontrado.');
-            return;
-        }
-    } else {
-        $input = $this->busca_produto;
+    {
+        // Se veio com $produtoId, seleciona direto, senão usa busca_produto
+        if ($produtoId) {
+            $produto = Produto::find($produtoId);
+            if (!$produto) {
+                session()->flash('error', 'Produto não encontrado.');
+                return;
+            }
+        } else {
+            $input = $this->searchTerm;
 
-        $produto = Produto::where('codigo_barras', $input)->first();
+            $produto = Produto::where('codigo_barras', $input)->first();
 
-        if (!$produto && is_numeric($input)) {
-            $produto = Produto::find((int)$input);
+            if (!$produto && is_numeric($input)) {
+                $produto = Produto::find((int)$input);
+            }
+
+            if (!$produto) {
+                $produto = Produto::where('id', 'like', '%' . $input . '%')->first();
+            }
+            if (!$produto) {
+                $produto = Produto::where('nome', 'like', '%' . $input . '%')->first();
+            }
+            if (!$produto) {
+                $produto = Produto::where('codigo_barras', 'like', '%' . $input . '%')->first();
+            }
+
+            if (!$produto) {
+                session()->flash('error', 'Produto não encontrado.');
+                return;
+            }
         }
 
-        if (!$produto) {
-            $produto = Produto::where('nome', 'like', '%' . $input . '%')->first();
+        $carrinho = session()->get('carrinho', []);
+
+        if (isset($carrinho[$produto->id])) {
+            $carrinho[$produto->id]['quantidade'] += 1;
+            $carrinho[$produto->id]['valor_total'] = $produto->valor * $carrinho[$produto->id]['quantidade'];
+        } else {
+            $carrinho[$produto->id] = [
+                'produto' => $produto,
+                'quantidade' => 1,
+                'valor_total' => $produto->valor,
+                'desconto' => 0,
+            ];
         }
 
-        if (!$produto) {
-            session()->flash('error', 'Produto não encontrado.');
-            return;
-        }
+        session()->put('carrinho', $carrinho);
+
+        $this->searchTerm = '';
+        $this->sugestoes = [];
+        $this->atualizarCarrinho();
+        $this->campo_visivel = true;
+
+        // Fecha o modal se estiver aberto
+        $this->modalProdutosAberto = false;
+
+        session()->flash('message', 'Produto adicionado ao carrinho.');
     }
-
-    $carrinho = session()->get('carrinho', []);
-
-    if (isset($carrinho[$produto->id])) {
-        $carrinho[$produto->id]['quantidade'] += 1;
-        $carrinho[$produto->id]['valor_total'] = $produto->valor * $carrinho[$produto->id]['quantidade'];
-    } else {
-        $carrinho[$produto->id] = [
-            'produto' => $produto,
-            'quantidade' => 1,
-            'valor_total' => $produto->valor,
-            'desconto' => 0,
-        ];
-    }
-
-    session()->put('carrinho', $carrinho);
-
-    $this->busca_produto = '';
-    $this->sugestoes = [];
-    $this->atualizarCarrinho();
-    $this->campo_visivel = true;
-
-    // Fecha o modal se estiver aberto
-    $this->modalProdutosAberto = false;
-
-    session()->flash('message', 'Produto adicionado ao carrinho.');
-}
 
     public function toggleCampoBusca()
     {
@@ -399,6 +414,15 @@ class Carrinho extends Component
     {
         $this->verificarCaixa();
 
+        $produto = Produto::query()
+            ->when($this->searchTerm, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nome', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('codigo_barras', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('descricao', 'like', '%' . $this->searchTerm . '%');
+                });
+            })->get();
+
         return view('livewire.carrinho', [
             'totalCarrinho' => $this->total,
             'carrinho' => $this->carrinho,
@@ -429,5 +453,22 @@ class Carrinho extends Component
     public function fecharModalProdutos()
     {
         $this->modalProdutosAberto = false;
+    }
+        protected $queryString = [
+        'searchTerm' => ['except' => ''],
+    //    'selectedCategories' => ['except' => []],
+    //    'selectedBrands' => ['except' => []]
+    ];
+
+    public function updatedSearchTerm()
+    {
+        $this->dispatch('updateQueryString', 'searchTerm', $this->searchTerm)->self();
+    }
+
+    public function clearFilters()
+    {
+        $this->searchTerm = '';
+        //$this->clearCategories();
+        //$this->clearBrands();
     }
 }

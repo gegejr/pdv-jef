@@ -47,7 +47,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
                     @foreach ($mesasBusy as $mesa)
                         <div class="bg-red-100 p-4 rounded-xl shadow-md">
-                            <div class="text-center text-lg font-bold text-red-800">#{{ $mesa->numero }}</div>
+                            <div class="text-center text-lg font-bold text-red-800">Mesa: {{ $mesa->numero }}</div>
                             @php $venda = $mesa->ultimaVenda; @endphp
 
                             @if ($venda)
