@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin', // Definindo o papel como admin
         ]);
         $this->call(SistemaConfiguracoesSeeder::class);
+        $this->call(AtualizarImpostosProdutosSeeder::class);
     }
     
 }

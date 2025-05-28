@@ -11,7 +11,19 @@
             <div>
                 <x-topbar class="no-print" />
             </div>
-
+            <div 
+                x-data="{ message: '', show: false }" 
+                x-on:notify.window="
+                    message = $event.detail.message;
+                    show = true;
+                    setTimeout(() => show = false, 3000);
+                "
+                x-show="show"
+                x-transition
+                class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow"
+            >
+                <span x-text="message"></span>
+            </div>
 
             <!-- Título e Botão de Impressão -->
             <div class="flex justify-between items-center mb-4">
@@ -80,6 +92,9 @@
                                 <th class="px-6 py-3">Método</th>
                                 <th class="px-6 py-3">Usuário</th>
                                 <th class="px-6 py-3">Caixa</th>
+                                {{-- nova coluna --}}
+                                <th class="px-6 py-3">NF-e</th>
+                                <th class="px-6 py-3">Nota Fiscal</th>
                                 <th class="px-6 py-3">Ações</th>
                             </tr>
                         </thead>
@@ -98,6 +113,31 @@
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->user->name ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->caixa->nome }}</td>
+                                    {{-- dentro do loop --}}
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        @if($venda->nota_fiscal)
+                                            <a href="{{ $venda->nota_fiscal->link_pdf }}"
+                                            target="_blank"
+                                            class="text-green-600 hover:underline">
+                                                DANFE
+                                            </a>
+                                        @else
+                                            <button wire:click="emitirNota({{ $venda->id }})"
+                                                    wire:loading.attr="disabled"
+                                                    class="text-indigo-600 hover:underline">
+                                                Emitir
+                                            </button>
+                                            <span wire:loading wire:target="emitirNota({{ $venda->id }})">⏳</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        @if($venda->nota_fiscal)
+                                            <p>Status: {{ $venda->nota_fiscal->status }}</p>
+                                            <a href="{{ $venda->nota_fiscal->link_pdf }}" target="_blank" class="text-blue-600 hover:underline">Ver DANFE</a>
+                                        @else
+                                            <p>Não emitida</p>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 text-sm text-gray-500">
                                         <button class="text-blue-500 hover:underline" wire:click="detalhesVenda({{ $venda->id }})">Ver detalhes</button>
                                     </td>
@@ -122,7 +162,8 @@
 
             <div class="relative bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
                 <button class="absolute top-2 right-3 text-2xl" wire:click="closeModal">&times;</button>
-                <livewire:detalhes-venda :venda-selecionada="$vendaSelecionada" />
+                <livewire:detalhes-venda :venda-selecionada="$vendaSelecionada->id"
+                         :key="'detalhes-'.$vendaSelecionada->id" />
             </div>
         </div>
     @endif

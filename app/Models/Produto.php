@@ -24,6 +24,16 @@ class Produto extends Model
         'desconto_padrao',
         'categoria_id',
         'status',
+
+        // Campos fiscais
+        'cst_icms',
+        'icms_rate',
+        'cst_ipi',
+        'ipi_rate',
+        'cst_pis',
+        'pis_rate',
+        'cst_cofins',
+        'cofins_rate',
     ];
 
     /**

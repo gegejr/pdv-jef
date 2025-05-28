@@ -335,7 +335,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h13m-4 4l4-4m0 0l-4-4"/>
                         </svg>
                         Finalizar Venda
-                    </button>
+                    
                 </div>
                 @else
                     <div class="text-center p-4">Carrinho vazio</div>

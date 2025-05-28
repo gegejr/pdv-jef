@@ -8,10 +8,11 @@ use App\Models\Caixa;
 use App\Models\Venda;
 use App\Models\Pagamento;
 use App\Models\Cliente;
+use App\Services\NFeService;
 
 class Carrinho extends Component
 {
-    
+    public $venda;
     public $carrinho = [];
     public $total = 0;
     public $desconto_total = 0;
@@ -161,7 +162,7 @@ class Carrinho extends Component
             'desconto_total'  => $this->desconto_total,
             'metodo_pagamento'=> $this->metodo_pagamento,
         ]);
-
+        $this->venda = $venda;   // para que o Blade possa enxergar
         /* 7. Itens & estoque */
         foreach ($this->carrinho as $item) {
             $produto = Produto::find($item['produto']->id);
@@ -194,7 +195,7 @@ class Carrinho extends Component
                 ' mas o total é R$ ' . number_format($valorEsperado,2,',','.'));
             return;
         }
-
+        $this->venda = $venda->load('nota_fiscal');
         /* 9. Limpa estado */
         session()->forget('carrinho');
         $this->reset([
@@ -471,4 +472,6 @@ class Carrinho extends Component
         //$this->clearCategories();
         //$this->clearBrands();
     }
+
+    
 }

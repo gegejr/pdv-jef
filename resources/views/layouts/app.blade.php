@@ -39,7 +39,20 @@
 
     <!-- Livewire Scripts -->
     @livewireScripts
-
+    <div 
+    x-data="{ message: '', show: false }"
+    x-on:notify.window="
+        message = $event.detail.message;
+        show = true;
+        setTimeout(() => show = false, 4000);
+    "
+    x-show="show"
+    x-transition
+    class="fixed top-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50"
+    style="display: none;"
+>
+    <span x-text="message"></span>
+</div>
     <!-- JS Compilado -->
     {{-- Se estiver usando Vite, já está incluso no @vite --}}
     {{-- Se estiver usando Laravel Mix: --}}

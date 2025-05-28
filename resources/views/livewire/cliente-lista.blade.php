@@ -51,7 +51,7 @@
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Nome</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">CPF/CNPJ</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Telefone</th>
-                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Endereço</th>
+                        <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Cidade</th>
                         <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Ações</th>
                     </tr>
                 </thead>
@@ -61,7 +61,7 @@
                             <td class="px-4 py-2 text-center text-sm font-semibold text-gray-900">{{ $cliente->nome }}</td>
                             <td class="px-4 py-2 text-center text-sm font-semibold text-gray-900">{{ $cliente->cpf_cnpj }}</td>
                             <td class="px-4 py-2 text-center text-sm font-semibold text-gray-900">{{ $cliente->telefone }}</td>
-                            <td class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{{ $cliente->endereco }}</td>
+                            <td class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">{{ $cliente->cidade }}, {{ $cliente->uf }}</td>
                             <td class="px-4 py-2 text-center space-x-1 whitespace-nowrap">
                                 <button wire:click="ver({{ $cliente->id }})" class="text-blue-600 hover:underline">Ver</button>
                                 <button wire:click="editar({{ $cliente->id }})" class="text-yellow-600 hover:underline">Editar</button>
@@ -76,84 +76,200 @@
 
             {{-- Modal --}}
            @if ($modalAberto)
-                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 space-y-6">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                                @if ($clienteSelecionadoId)
-                                    <x-heroicon-o-pencil class="w-5 h-5 text-blue-600" />
-                                    Editar Cliente
-                                @else
-                                    <x-heroicon-o-user-plus class="w-5 h-5 text-green-600" />
-                                    Novo Cliente
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                    @if ($clienteSelecionadoId)
+                        <x-heroicon-o-pencil class="w-5 h-5 text-blue-600" />
+                        Editar Cliente
+                    @else
+                        <x-heroicon-o-user-plus class="w-5 h-5 text-green-600" />
+                        Novo Cliente
+                    @endif
+                </h3>
+                <button wire:click="resetCampos" class="text-gray-400 hover:text-gray-600">
+                    <x-heroicon-o-x-mark class="w-6 h-6" />
+                </button>
+            </div>
+
+                            <form 
+                                    @if($clienteSelecionadoId)
+                                        wire:submit.prevent="atualizar"
+                                    @else
+                                        wire:submit.prevent="salvar"
+                                    @endif
+                                >
+                                {{-- Tipo Pessoa --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Tipo de Pessoa</label>
+                                    <select wire:model.live="tipo_pessoa"
+                                        class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                                        <option value="fisica" @if($modoVisualizacao || $modoEdicao) disabled @endif>Física</option>
+                                        <option value="juridica" class="" @if($modoVisualizacao || $modoEdicao) disabled @endif>Jurídica</option>
+                                    </select>
+                                </div>
+
+                                {{-- Dados Básicos --}}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Nome</label>
+                                        <input type="text" wire:model.defer="nome"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">CPF/CNPJ</label>
+                                        <input type="text" wire:model.defer="cpf_cnpj"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                                    </div>
+
+                                    @if ($tipo_pessoa === 'juridica')
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Razão Social</label>
+                                            <input type="text" wire:model.defer="razao_social"
+                                                class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                @if($modoVisualizacao) readonly @endif>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Nome Fantasia</label>
+                                            <input type="text" wire:model.defer="nome_fantasia"
+                                                class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                @if($modoVisualizacao) readonly @endif>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="cnae_id" class="block text-sm font-medium text-gray-700">
+                                                Atividade Econômica Principal (CNAE)
+                                            </label>
+                                            <select name="cnae_id" id="cnae_id"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                            wire:model="cnae_id"
+                                            @if($modoVisualizacao) disabled @endif>
+                                                <option value="">Selecione...</option>
+                                                @foreach($cnaes as $cnae)
+                                                    <option value="{{ $cnae->id }}"
+                                                        @selected(old('cnae_id', $cliente->cnae_id ?? '') == $cnae->id)>
+                                                        {{ $cnae->codigo }} - {{ $cnae->descricao }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    @endif
+                                </div>
+                                
+                                {{-- Dados de Contato e Nascimento --}}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                                        <input type="text" wire:model.defer="telefone"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">E-mail</label>
+                                        <input type="email" wire:model.defer="email"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
+                                        <input type="date" wire:model.defer="data_nascimento"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+                                </div>
+
+                                {{-- Endereço --}}
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">CEP</label>
+                                        <input type="text" wire:model.defer="cep"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Número</label>
+                                        <input type="text" wire:model.defer="numero"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Complemento</label>
+                                        <input type="text" wire:model.defer="complemento"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Bairro</label>
+                                        <input type="text" wire:model.defer="bairro"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Cidade</label>
+                                        <input type="text" wire:model.defer="cidade"
+                                            class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">UF</label>
+                                        <input type="text" maxlength="2" wire:model.defer="uf"
+                                            class="w-full border px-3 py-2 rounded-lg uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+                                </div>
+
+                                {{-- Campos fiscais extras para PJ --}}
+                                @if($tipo_pessoa === 'juridica')
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Inscrição Estadual (IE)</label>
+                                            <input type="text" wire:model.defer="ie"
+                                                class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                @if($modoVisualizacao) readonly @endif>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700">Inscrição Municipal (IM)</label>
+                                            <input type="text" wire:model.defer="im"
+                                                class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                @if($modoVisualizacao) readonly @endif>
+                                        </div>
+                                    </div>
                                 @endif
-                            </h3>
-                            <button wire:click="resetCampos" class="text-gray-400 hover:text-gray-600">
-                                <x-heroicon-o-x-mark class="w-6 h-6" />
-                            </button>
-                        </div>
 
-                        <form wire:submit.prevent="{{ $clienteSelecionadoId ? 'atualizar' : 'salvar' }}" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Nome</label>
-                                <div class="relative">
-                                    <x-heroicon-o-user class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-                                    <input type="text" wire:model.defer="nome"
-                                        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        @if($modoVisualizacao || $modoEdicao) disabled @endif>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">CPF/CNPJ</label>
-                                <div class="relative">
-                                    <x-heroicon-o-identification class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-                                    <input type="text" wire:model.defer="cpf_cnpj"
-                                        class="w-full pl-10 pr-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        @if($modoVisualizacao || $modoEdicao) disabled @endif>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
-                                <input type="date" wire:model.defer="data_nascimento"
-                                    class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    @if($modoVisualizacao) readonly @endif>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Endereço</label>
-                                <input type="text" wire:model.defer="endereco"
-                                    class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    @if($modoVisualizacao) readonly @endif>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Telefone</label>
-                                <input type="text" wire:model.defer="telefone"
-                                    class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    @if($modoVisualizacao) readonly @endif>
-                            </div>
-
-                            <div class="flex justify-end gap-3 pt-4">
-                                <button type="button" wire:click="resetCampos"
-                                    class="inline-flex items-center px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
-                                    <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
-                                    Cancelar
-                                </button>
-
-                                @if (!$modoVisualizacao)
-                                    <button type="submit"
-                                        class="inline-flex items-center px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
-                                        <x-heroicon-o-check-circle class="w-5 h-5 mr-2" />
-                                        Salvar
+                                {{-- Botões --}}
+                                <div class="flex justify-end gap-3 pt-4">
+                                    <button type="button" wire:click="resetCampos"
+                                        class="inline-flex items-center px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
+                                        <x-heroicon-o-x-circle class="w-5 h-5 mr-2" />
+                                        Cancelar
                                     </button>
-                                @endif
-                            </div>
-                        </form>
+
+                                    @if (!$modoVisualizacao)
+                                        <button type="submit"
+                                            class="inline-flex items-center px-4 py-2 text-sm text-white bg-blue-600 rounded hover:bg-blue-700">
+                                            <x-heroicon-o-check-circle class="w-5 h-5 mr-2" />
+                                            Salvar
+                                        </button>
+                                    @endif
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            @endif
+                @endif
+
 
         </div>
 </div>

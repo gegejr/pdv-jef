@@ -1,7 +1,7 @@
 <div class="ml-64 pt-[72px] p-6 bg-gray-50 min-h-screen">
     <div class="flex">
         <x-sidebar />
-        <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300">
+        <div class="flex-1 p-6  md:ml-0 transition-all duration-300">
             <x-topbar />
 
             <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-2xl space-y-8">
@@ -48,6 +48,23 @@
                             <x-form.input type="number" label="Estoque *" model="estoque" icon="archive-box" />
                         </div>
                     </div>
+                    {{-- Informações Fiscais --}}
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 flex items-center gap-1">
+                            <x-heroicon-o-document-text class="w-5 h-5 text-yellow-500" />
+                            Informações fiscais
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <x-form.input label="CST ICMS" model="cst_icms" />
+                            <x-form.input type="number" step="0.01" label="ICMS (%)" model="icms_rate" />
+                            <x-form.input label="CST IPI" model="cst_ipi" />
+                            <x-form.input type="number" step="0.01" label="IPI (%)" model="ipi_rate" />
+                            <x-form.input label="CST PIS" model="cst_pis" />
+                            <x-form.input type="number" step="0.01" label="PIS (%)" model="pis_rate" />
+                            <x-form.input label="CST COFINS" model="cst_cofins" />
+                            <x-form.input type="number" step="0.01" label="COFINS (%)" model="cofins_rate" />
+                        </div>
+                    </div>
 
                     {{-- Descrição e Imagem --}}
                     <div>
@@ -87,6 +104,11 @@
                             <x-heroicon-o-arrow-down-tray class="w-5 h-5" />
                             {{ $produto_id ? 'Atualizar Produto' : 'Cadastrar Produto' }}
                         </button>
+                        <a href="{{ route('produtos.lista') }}"
+                        class="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm underline">
+                            <x-heroicon-o-arrow-left class="w-4 h-4" />
+                            Voltar para listagem
+                        </a>
                     </div>
                 </form>
             </div>

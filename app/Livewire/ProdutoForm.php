@@ -23,8 +23,15 @@ class ProdutoForm extends Component
     public $valor;
     public $estoque;
     public $unidade_medida = 'un';
-    public $desconto_padrao = 0;
-
+    public $desconto_padrao = 0;    
+    public $cst_icms;
+    public $icms_rate;
+    public $cst_ipi;
+    public $ipi_rate;
+    public $cst_pis;
+    public $pis_rate;
+    public $cst_cofins;
+    public $cofins_rate;
     public $categoria_id;
     public $status = 'ativo';
 
@@ -87,6 +94,14 @@ class ProdutoForm extends Component
         $this->categoria_id     = $produto->categoria_id;
         $this->status           = $produto->status;
         $this->imagem_existente = $produto->imagem;
+        $this->cst_icms     = $produto->cst_icms;
+        $this->icms_rate    = $produto->icms_rate;
+        $this->cst_ipi      = $produto->cst_ipi;
+        $this->ipi_rate     = $produto->ipi_rate;
+        $this->cst_pis      = $produto->cst_pis;
+        $this->pis_rate     = $produto->pis_rate;
+        $this->cst_cofins   = $produto->cst_cofins;
+        $this->cofins_rate  = $produto->cofins_rate;
 
         $this->dispatch('openModal');
     }
@@ -112,6 +127,14 @@ class ProdutoForm extends Component
             'desconto_padrao' => $this->desconto_padrao ?: 0,
             'categoria_id'    => $this->categoria_id,
             'status'          => $this->status,
+            'cst_icms'    => $this->cst_icms,
+            'icms_rate'   => $this->icms_rate,
+            'cst_ipi'     => $this->cst_ipi,
+            'ipi_rate'    => $this->ipi_rate,
+            'cst_pis'     => $this->cst_pis,
+            'pis_rate'    => $this->pis_rate,
+            'cst_cofins'  => $this->cst_cofins,
+            'cofins_rate' => $this->cofins_rate,
         ];
 
         if ($this->produto_id) {
@@ -158,6 +181,14 @@ class ProdutoForm extends Component
             'desconto_padrao' => 'nullable|numeric|min:0',
             'quantidade_perda'=> 'nullable|integer|min:1',
             'motivo_perda'    => 'nullable|in:quebra,descarte,perda',
+            'cst_icms'    => 'nullable|string|max:3',
+            'icms_rate'   => 'nullable|numeric|min:0',
+            'cst_ipi'     => 'nullable|string|max:3',
+            'ipi_rate'    => 'nullable|numeric|min:0',
+            'cst_pis'     => 'nullable|string|max:3',
+            'pis_rate'    => 'nullable|numeric|min:0',
+            'cst_cofins'  => 'nullable|string|max:3',
+            'cofins_rate' => 'nullable|numeric|min:0',
         ];
     }
 

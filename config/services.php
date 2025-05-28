@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'nfeio' => [
+        'token' => env('NFEIO_TOKEN'),
+        'company_id' => env('NFEIO_COMPANY_ID'),
+        'base_url' => env('NFEIO_BASE_URL', 'https://api.nfse.io'),
+    ],
 ];

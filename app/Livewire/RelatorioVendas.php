@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Venda;
 use App\Models\Caixa;
 use Livewire\WithPagination;
+use App\Jobs\EmitirNotaJob; // coloque isso no topo do seu componente
 
 class RelatorioVendas extends Component
 {
@@ -55,13 +56,14 @@ class RelatorioVendas extends Component
     
         $vendas = $query->with(['caixa', 'pagamentos', 'user'])->paginate(10);
         $caixas = Caixa::all();
+        
     
         return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));
     }
 
     public function carregarVendas()
     {
-        $this->vendas = \App\Models\Venda::with('pagamentos')->latest()->get();
+        $this->vendas = Venda::with(['pagamentos', 'nota_fiscal'])->latest()->paginate(10);
     }
 
     public function detalhesVenda($id)
@@ -105,4 +107,13 @@ class RelatorioVendas extends Component
         // Após 1 segundo (tempo da impressão abrir), redireciona para a mesma página para resetar Livewire
         $this->js("setTimeout(() => window.location.href = '".route('relatorio-vendas')."', 1000)");
     }
-}
+
+   public function emitirNota($vendaId)
+    {
+        $venda = Venda::with('itens.produto')->find($vendaId);
+        $resultado = app(\App\Services\NFeService::class)->emitirNota($venda);
+
+        dd($resultado);
+    }
+
+    }

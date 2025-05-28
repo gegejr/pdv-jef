@@ -13,7 +13,7 @@ class Venda extends Model
         'desconto_total',
         'caixa_id',
         'data_venda',
-        'cliente_id', // 
+        'cliente_id', //
         'mesa_id',
     ];
 
@@ -58,5 +58,15 @@ class Venda extends Model
     public function mesa()
     {
         return $this->belongsTo(Mesa::class);
+    }
+
+        public function nota_fiscal()
+    {
+        return $this->hasOne(NotaFiscal::class);
+    }
+
+    public function notaFiscalErro()
+    {
+        return $this->hasMany(NotaFiscalErro::class);
     }
 }
