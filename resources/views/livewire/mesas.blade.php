@@ -26,6 +26,7 @@
                     @foreach ($mesasFree as $mesa)
                         <div class="bg-white p-4 rounded-xl shadow-md text-center space-y-2">
                             <div class="text-lg font-semibold text-gray-700">Mesa: {{ $mesa->numero }}</div>
+                            <div><img src="{{ asset('build/assets/mesa.png') }}" alt="Ícone" class="w-16 h-16 rounded-md shadow inline-flex items-center"></div>
                             <button wire:click="abrirPedido({{ $mesa->id }})"
                                     class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -49,7 +50,9 @@
                         <div class="bg-red-100 p-4 rounded-xl shadow-md">
                             <div class="text-center text-lg font-bold text-red-800">Mesa: {{ $mesa->numero }}</div>
                             @php $venda = $mesa->ultimaVenda; @endphp
-
+                            <div class="flex justify-center mt-2">
+                                <img src="{{ asset('build/assets/mesa.png') }}" alt="Ícone" class="w-16 h-16 rounded-md shadow">
+                            </div>
                             @if ($venda)
                                 <ul class="text-sm mt-3 text-gray-700 list-disc list-inside space-y-1">
                                     @foreach ($venda->itens as $item)
@@ -60,7 +63,7 @@
                                     Total: R$ {{ number_format($venda->total, 2, ',', '.') }}
                                 </p>
                             @endif
-
+                            
                             <div class="mt-4 flex flex-col gap-2">
                                 <button wire:click="verDetalhes({{ $mesa->id }})"
                                         class="inline-flex items-center justify-center gap-2 bg-gray-700 text-white px-4 py-1.5 rounded hover:bg-gray-800">

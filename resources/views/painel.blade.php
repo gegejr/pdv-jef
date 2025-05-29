@@ -152,7 +152,10 @@
                                     </td>
                                     <td class="px-6 py-4 text-center">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
                                 </tr>
+                                
                             @endforeach
+
+                            
                         </tbody>
                     </table>
                 </div>

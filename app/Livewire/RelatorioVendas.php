@@ -44,7 +44,7 @@ class RelatorioVendas extends Component
             $query->where('created_at', '<=', $this->data_final . ' 23:59:59');
         }
     
-        if ($this->metodo_pagamento) {
+        if ($this->metodo_pagamento && $this->metodo_pagamento !== 'conta') {
             $query->whereHas('pagamentos', function ($q) {
                 $q->where('tipo', $this->metodo_pagamento);
             });

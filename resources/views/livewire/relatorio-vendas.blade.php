@@ -107,7 +107,7 @@
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ number_format($venda->desconto_total, 2, ',', '.') }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-500">R$ {{ number_format($venda->total - $venda->desconto_total, 2, ',', '.') }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-500">
-                                        @foreach($venda->pagamentos as $pagamento)
+                                        @foreach($venda->pagamentos->where('tipo', '!=', 'conta') as $pagamento)
                                             <p>{{ ucfirst($pagamento->tipo) }} - R$ {{ number_format($pagamento->valor, 2, ',', '.') }}</p>
                                         @endforeach
                                     </td>

@@ -51,7 +51,7 @@
     <table>
         <thead>
             <tr>
-                <th>Produto</th>
+                <th>Pedido</th>
                 <th class="qty">Qtd</th>
                 <th class="price">Preço</th>
                 <th class="total">Total</th>
