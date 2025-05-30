@@ -5,11 +5,22 @@
 
         <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300">
             <x-topbar />
+
             <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <x-heroicon-o-cube class="w-6 h-6 text-indigo-500" />
                 Lista de Produtos
             </h2>
-
+            <div class="flex justify-between items-center mb-4">
+                <!-- Botão Produtos Mais Vendidos -->
+                <button wire:click="abrirMaisVendidos"
+                    class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 no-print">
+                    Produtos Mais Vendidos
+                </button>
+                <button wire:click="consultarFalta"
+                    class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 no-print">
+                    Consultar corte
+                </button>
+            </div>
             @if (session()->has('sucesso'))
                 <div class="bg-green-100 text-green-800 p-3 rounded shadow mb-4">
                     {{ session('sucesso') }}
@@ -49,7 +60,9 @@
                                         <span class="text-gray-400">—</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 font-semibold text-gray-900">{{ $produto->nome }}</td>
+                                <td class="px-4 py-3 font-semibold text-gray-900">
+                                    {{ $produto->nome }}<p class="text-sm text-gray-600">Vendido {{ $produto->vendas_no_mes }} vezes este mês</p>
+                                </td>
                                 <td class="px-4 py-3 text-gray-700">{{ optional($produto->categoria)->nome ?? '—' }}</td>
                                 <td class="px-4 py-3 text-gray-600">{{ $produto->codigo_barras }}</td>
                                 <td class="px-4 py-3 text-gray-500">{{ \Illuminate\Support\Str::limit($produto->descricao, 50) }}</td>
@@ -197,4 +210,62 @@
 @endif
 
     </div>
+    @if($showMaisVendidos)
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/50" wire:click="fecharMaisVendidos"></div>
+
+        <div class="relative bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
+            <button class="absolute top-2 right-3 text-2xl" wire:click="fecharMaisVendidos">&times;</button>
+            <h3 class="text-lg font-semibold mb-4">Top 10 Produtos Mais Vendidos</h3>
+
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead>
+                    <tr>
+                        <th class="text-left px-4 py-2">Produto</th>
+                        <th class="text-left px-4 py-2">Quantidade Vendida</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($produtosMaisVendidos as $item)
+                        <tr>
+                            <td class="px-4 py-2">{{ $item->produto->nome ?? 'Produto excluído' }}</td>
+                            <td class="px-4 py-2">{{ $item->total_vendido }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="2" class="px-4 py-2 text-center text-gray-500">Nenhuma venda encontrada.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+@endif
+@if($showFalta)
+<div class="fixed inset-0 z-50 flex items-center justify-center">
+    <!-- Fundo escuro clicável para fechar -->
+    <div class="absolute inset-0 bg-black/50" wire:click="fecharFalta"></div>
+
+    <!-- Caixa branca do modal -->
+    <div class="relative bg-white p-6 rounded shadow-lg max-w-md w-full z-10">
+        <h3 class="text-lg font-bold mb-4">Produtos em falta (estoque &lt; 10)</h3>
+        <ul class="space-y-2">
+            @forelse($produtosEmFalta as $produto)
+                <li class="text-sm text-red-600">
+                    {{ $produto->nome }} — {{ $produto->estoque }} unidades restantes
+                </li>
+            @empty
+                <li class="text-sm text-gray-500">Nenhum produto em falta.</li>
+            @endforelse
+        </ul>
+
+        <!-- Botão fechar opcional -->
+        <button wire:click="fecharFalta"
+                class="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">
+            Fechar
+        </button>
+    </div>
+</div>
+@endif
+
 </div>

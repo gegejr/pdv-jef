@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Venda;
 use App\Models\Caixa;
+use App\Models\ItemVenda;
+use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use App\Jobs\EmitirNotaJob; // coloque isso no topo do seu componente
 
@@ -16,6 +18,8 @@ class RelatorioVendas extends Component
     public $vendaSelecionada = null; // Para armazenar a venda selecionada
     public $exibirImpressao = false; // Flag para controlar a exibição do relatório de impressão
     public $showModal        = false;   // ← flag do modal
+    public $produtosMaisVendidos = [];
+    public $showMaisVendidos = false;
 
     protected $listeners = [
         'filtrarRelatorio',
@@ -108,7 +112,24 @@ class RelatorioVendas extends Component
         $this->js("setTimeout(() => window.location.href = '".route('relatorio-vendas')."', 1000)");
     }
 
-   public function emitirNota($vendaId)
+    public function abrirMaisVendidos()
+    {
+        $this->produtosMaisVendidos = ItemVenda::select('produto_id', DB::raw('SUM(quantidade) as total_vendido'))
+            ->groupBy('produto_id')
+            ->orderByDesc('total_vendido')
+            ->with('produto')
+            ->take(10)
+            ->get();
+
+        $this->showMaisVendidos = true;
+    }
+
+    public function fecharMaisVendidos()
+    {
+        $this->showMaisVendidos = false;
+    }
+
+    public function emitirNota($vendaId)
     {
         $venda = Venda::with('itens.produto')->find($vendaId);
         $resultado = app(\App\Services\NFeService::class)->emitirNota($venda);

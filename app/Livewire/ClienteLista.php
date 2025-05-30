@@ -5,13 +5,14 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Cliente;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Http;
 class ClienteLista extends Component
 {
     use WithPagination;
 
     public $nome, $cpf_cnpj, $data_nascimento, $telefone,
     $numero, $bairro, $cidade, $tipo_pessoa, $cep, $complemento, $ie, $im, $uf, $email
-    , $nome_fantasia, $razao_social, $cnaes;
+    , $nome_fantasia, $razao_social, $cnaes, $codigo_ibge, $endereco;
     public $clientes;
     public $clienteSelecionadoId = null;
     public $modalAberto = false;
@@ -34,6 +35,7 @@ class ClienteLista extends Component
             'bairro' => 'nullable|string|max:50',
             'cidade' => 'nullable|string|max:50',
             'uf' => 'nullable|string|max:2',
+            'codigo_ibge' => 'nullable|regex:/^\d{7}$/',
             'tipo_pessoa' => 'required|in:fisica,juridica',
             'razao_social' => 'nullable|string|max:255',
             'nome_fantasia' => 'nullable|string|max:255',
@@ -80,6 +82,7 @@ class ClienteLista extends Component
                 'cidade' => $this->cidade,
                 'uf' => $this->uf,
                 'complemento' => $this->complemento,
+                'codigo_ibge' => $this->codigo_ibge,
                 'ie' => $this->ie,
                 'im' => $this->im,
             ]);
@@ -107,6 +110,7 @@ class ClienteLista extends Component
             'cidade' => 'required|string',
             'uf' => 'required|string|size:2',
             'complemento' => 'nullable|string',
+            'codigo_ibge' => 'nullable|regex:/^\d{7}$/',
         ];
 
         if ($this->tipo_pessoa === 'pj') {
@@ -157,6 +161,7 @@ class ClienteLista extends Component
         $this->cidade = $cliente->cidade;
         $this->uf = $cliente->uf;
         $this->complemento = $cliente->complemento;
+        $this->codigo_ibge = $cliente->codigo_ibge;
         $this->ie = $cliente->ie;
         $this->im = $cliente->im;
         $this->modoEdicao = true;
@@ -189,6 +194,7 @@ class ClienteLista extends Component
             'cidade' => $this->cidade,
             'uf' => $this->uf,
             'complemento' => $this->complemento,
+            'codigo_ibge' => $this->codigo_ibge,
             'ie' => $this->ie,
             'im' => $this->im,
         ]);
@@ -231,6 +237,7 @@ class ClienteLista extends Component
         $this->cidade = $cliente->cidade;
         $this->uf = $cliente->uf;
         $this->complemento = $cliente->complemento;
+        $this->codigo_ibge = $cliente->codigo_ibge;
         $this->ie = $cliente->ie;
         $this->im = $cliente->im;
         $this->preencherDados($cliente);
@@ -256,6 +263,7 @@ class ClienteLista extends Component
         $this->cidade = $cliente->cidade;
         $this->uf = $cliente->uf;
         $this->complemento = $cliente->complemento;
+        $this->codigo_ibge = $cliente->codigo_ibge;
         $this->ie = $cliente->ie;
         $this->im = $cliente->im;
     }
@@ -269,5 +277,44 @@ class ClienteLista extends Component
         $this->dispatch('clienteSelecionado', id: $id);
     }
 
-    
+    public function buscarEnderecoPorCep()
+    {
+        if (!$this->cep) return;
+
+        try {
+            $cepLimpo = preg_replace('/\D/', '', $this->cep);
+            $response = Http::withOptions(['verify' => false])
+                ->get("https://viacep.com.br/ws/{$this->cep}/json/");
+
+            if ($response->failed() || isset($response['erro'])) {
+                $this->mensagemErro = 'CEP não encontrado.';
+                return;
+            }
+
+            $dados = $response->json();
+
+            $this->cidade = $dados['localidade'] ?? '';
+            $this->uf = $dados['uf'] ?? '';
+            $this->bairro = $dados['bairro'] ?? '';
+            $this->endereco = $dados['logradouro'] ?? '';
+            $this->codigo_ibge = $dados['ibge'] ?? '';
+
+            $this->dispatch('atualizarCamposEndereco');
+        } catch (\Exception $e) {
+            $this->mensagemErro = 'Erro ao buscar endereço: ' . $e->getMessage();
+        }
+        /*
+        $ch = curl_init("https://viacep.com.br/ws/{$this->cep}/json/");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = json_decode(curl_exec($ch));
+        curl_close($ch);
+
+        $this->cidade = $dados['localidade'] ?? '';
+        $this->uf = $dados['uf'] ?? '';
+        $this->bairro = $dados['bairro'] ?? '';
+        $this->endereco = $dados['logradouro'] ?? '';
+        $this->codigo_ibge = $dados['ibge'] ?? '';
+        */
+    }
+
 }

@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Produto;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ItemVenda;
+use Illuminate\Support\Facades\DB;
 
 class ProdutoLista extends Component
 {
@@ -30,7 +32,11 @@ class ProdutoLista extends Component
     public $quantidade_perda;
     public $motivo_perda;
     protected $paginationTheme = 'tailwind';
-
+    public $produtosMaisVendidos = [];
+    public $showMaisVendidos = false;
+    public $pedidoDeProdutos = [];
+    public $produtosEmFalta = [];
+    public $showFalta = false;
     protected $listeners = ['editarProduto']; // Adicionando o listener para o evento
 
     public function atualizarPagina()
@@ -157,7 +163,10 @@ class ProdutoLista extends Component
             })
             ->orderBy('id', 'desc')
             ->paginate(10);
-
+     
+            foreach ($produtos as $produto) {
+                $produto->vendas_no_mes = $produto->vendasNoMes();
+            }
         return view('livewire.produto-lista', compact('produtos'));
     }
     public function fecharModal()
@@ -191,5 +200,45 @@ class ProdutoLista extends Component
         $this->searchTerm = '';
         //$this->clearCategories();
         //$this->clearBrands();
+    }
+
+    public function abrirMaisVendidos()
+    {
+        $this->produtosMaisVendidos = ItemVenda::select('produto_id', DB::raw('SUM(quantidade) as total_vendido'))
+            ->groupBy('produto_id')
+            ->orderByDesc('total_vendido')
+            ->with('produto')
+            ->take(10)
+            ->get();
+
+        $this->showMaisVendidos = true;
+    }
+
+    public function fecharMaisVendidos()
+    {
+        $this->showMaisVendidos = false;
+    }
+
+    public function consultarFalta()
+    {
+        // Produtos mais vendidos (mantém sua lógica original)
+        $this->pedidoDeProdutos = ItemVenda::select('produto_id', DB::raw('SUM(quantidade) as total_vendido'))
+            ->groupBy('produto_id')
+            ->orderByDesc('total_vendido')
+            ->with('produto')
+            ->take(10)
+            ->get();
+
+        // Produtos com estoque abaixo de 10 unidades
+        $this->produtosEmFalta = Produto::where('estoque', '<', 10)
+            ->orderBy('estoque', 'asc')
+            ->get();
+
+        $this->showFalta = true;
+    }
+
+    public function fecharFalta()
+    {
+        $this->showFalta = false;
     }
 }

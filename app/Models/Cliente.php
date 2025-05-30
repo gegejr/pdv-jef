@@ -24,6 +24,7 @@ class Cliente extends Model
             'cidade',
             'uf',
             'complemento',
+            'codigo_ibge',
             'ie',
             'im',
     ];

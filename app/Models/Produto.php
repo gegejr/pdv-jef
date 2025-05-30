@@ -43,4 +43,12 @@ class Produto extends Model
     {
         return $this->belongsTo(Categoria::class);
     }
+
+    public function vendasNoMes()
+    {
+        return $this->hasMany(\App\Models\ItemVenda::class)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('quantidade'); // Ou use ->count() se quiser contar transações
+    }
 }

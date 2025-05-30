@@ -71,7 +71,7 @@
                     Nenhum cliente selecionado
                 </div>
             @endif
-
+            <!--
             <div class="mb-4">
                 <button wire:click="toggleCampoBusca" class="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -80,7 +80,7 @@
                     Abrir Venda
                 </button>
             </div>
-
+            -->
             @if($campo_visivel)
                 <!-- Campo busca cliente + botão -->
                 <div class="mt-4" wire:key="campo-busca-cliente">
@@ -229,6 +229,7 @@
                 <table class="w-full text-sm text-left text-gray-700 border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                     <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
                         <tr>
+                            <th class="px-4 py-2">Código de Barras</th>
                             <th class="px-4 py-2">Produto</th>
                             <th class="px-4 py-2">Preço</th>
                             <th class="px-4 py-2">Qtd</th>
@@ -239,6 +240,7 @@
                     <tbody class="divide-y">
                         @foreach ($carrinho as $item)
                             <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-2">{{ $item['produto']->codigo_barras }}</td>
                                 <td class="px-4 py-2">{{ $item['produto']->nome }}</td>
                                 <td class="px-4 py-2">R$ {{ number_format($item['produto']->valor, 2, ',', '.') }}</td>
                                 <td class="px-4 py-2">

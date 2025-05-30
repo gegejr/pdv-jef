@@ -186,10 +186,32 @@
                                 </div>
 
                                 {{-- Endereço --}}
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4" :key="$cep">
+                                    <div class="flex items-end gap-2">
+                                        <div class="w-full">
+                                            <label class="block text-sm font-medium text-gray-700">CEP</label>
+                                            <input type="text" wire:model.lazy="cep"
+                                                class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                placeholder="Digite o CEP"
+                                                @if($modoVisualizacao) readonly @endif>
+                                        </div>
+
+                                        <button type="button"
+                                            wire:click="buscarEnderecoPorCep"
+                                            class="mb-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                            <!-- Ícone de lupa -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">CEP</label>
-                                        <input type="text" wire:model.defer="cep"
+                                        <label class="block text-sm font-medium text-gray-700">Endereço</label>
+                                        <input type="text" wire:model.defer="endereco"
                                             class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             @if($modoVisualizacao) readonly @endif>
                                     </div>
@@ -225,6 +247,13 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">UF</label>
                                         <input type="text" maxlength="2" wire:model.defer="uf"
+                                            class="w-full border px-3 py-2 rounded-lg uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            @if($modoVisualizacao) readonly @endif>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Código IBGE</label>
+                                        <input type="text" maxlength="7" wire:model.defer="codigo_ibge"
                                             class="w-full border px-3 py-2 rounded-lg uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             @if($modoVisualizacao) readonly @endif>
                                     </div>
