@@ -30,6 +30,7 @@
                             <x-form.input label="Nome *" model="nome" icon="tag" />
                             <x-form.input label="Código de Barras" model="codigo_barras" icon="qr-code" />
                             <x-form.input label="SKU (opcional)" model="sku" icon="finger-print" />
+                            <x-form.input label="NCM" model="ncm" icon="finger-print" />
                             <x-form.select label="Categoria *" model="categoria_id" :options="$categorias" value="id" text="nome" />
                             <x-form.select label="Unidade de Medida" model="unidade_medida" :options="[['value' => 'un', 'text' => 'Unidade'], ['value' => 'kg', 'text' => 'Kg'], ['value' => 'l', 'text' => 'Litro'], ['value' => 'cx', 'text' => 'Caixa']]" />
                             <x-form.select label="Status" model="status" :options="[['value' => 'ativo', 'text' => 'Ativo'], ['value' => 'inativo', 'text' => 'Inativo']]" />

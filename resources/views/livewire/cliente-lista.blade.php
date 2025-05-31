@@ -76,7 +76,7 @@
 
             {{-- Modal --}}
            @if ($modalAberto)
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" wire:key="{{ now() }}">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 space-y-6">
             <div class="flex items-center justify-between">
                 <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
@@ -190,7 +190,7 @@
                                     <div class="flex items-end gap-2">
                                         <div class="w-full">
                                             <label class="block text-sm font-medium text-gray-700">CEP</label>
-                                            <input type="text" wire:model.lazy="cep"
+                                            <input type="text" wire:model.defer="cep"
                                                 class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                                 placeholder="Digite o CEP"
                                                 @if($modoVisualizacao) readonly @endif>

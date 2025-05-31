@@ -20,6 +20,7 @@ class ProdutoForm extends Component
     public $codigo_barras;
     public $sku;
     public $descricao;
+    public $ncm;
     public $valor;
     public $estoque;
     public $unidade_medida = 'un';
@@ -87,6 +88,7 @@ class ProdutoForm extends Component
         $this->codigo_barras    = $produto->codigo_barras;
         $this->sku              = $produto->sku;
         $this->descricao        = $produto->descricao;
+        $this->ncm              = $produto->ncm;
         $this->valor            = $produto->valor;
         $this->estoque          = $produto->estoque;
         $this->unidade_medida   = $produto->unidade_medida;
@@ -122,6 +124,7 @@ class ProdutoForm extends Component
             'descricao'       => $this->descricao,
             'valor'           => $this->valor,
             'estoque'         => $this->estoque,
+            'ncm'             => $this->ncm,
             'unidade_medida'  => $this->unidade_medida,
             'imagem'          => $caminhoImagem,
             'desconto_padrao' => $this->desconto_padrao ?: 0,
@@ -175,6 +178,7 @@ class ProdutoForm extends Component
             'valor'           => 'required|numeric|min:0',
             'estoque'         => 'required|integer|min:0',
             'unidade_medida'  => 'required|in:un,kg,l,cx',
+            'ncm'             => 'required|string|max:255',
             'categoria_id'    => 'required|exists:categorias,id',
             'status'          => 'required|in:ativo,inativo',
             'imagem'          => 'nullable|image|max:2048',
@@ -204,6 +208,7 @@ class ProdutoForm extends Component
             'valor',
             'estoque',
             'unidade_medida',
+            'ncm',
             'imagem',
             'imagem_existente',
             'desconto_padrao',

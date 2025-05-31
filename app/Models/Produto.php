@@ -17,6 +17,7 @@ class Produto extends Model
         'codigo_barras',
         'sku',
         'descricao',
+        'ncm',
         'valor',
         'estoque',
         'unidade_medida',

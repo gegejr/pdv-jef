@@ -129,7 +129,9 @@ class ClienteLista extends Component
 
     public function resetCampos()
     {
-        $this->nome = $this->cpf_cnpj = $this->data_nascimento  = $this->telefone = '';
+        $this->nome = $this->cpf_cnpj = $this->data_nascimento  = $this->telefone = $this->cep = 
+        $this->endereco = $this->bairro = $this->cidade = $this->uf = $this->codigo_ibge = 
+        $this->complemento = $this->tipo_pessoa = '';
         $this->clienteSelecionadoId = null;
         $this->modalAberto = false;
         $this->modoVisualizacao = false;
