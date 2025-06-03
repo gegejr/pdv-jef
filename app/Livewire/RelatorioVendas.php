@@ -20,7 +20,10 @@ class RelatorioVendas extends Component
     public $showModal        = false;   // ← flag do modal
     public $produtosMaisVendidos = [];
     public $showMaisVendidos = false;
-
+    public $confirmandoEstorno = false;
+    public $motivoEstorno = '';
+    public $vendaParaEstornar = null;
+    
     protected $listeners = [
         'filtrarRelatorio',
         'imprimir-relatorio' => 'imprimirRelatorio',
@@ -128,6 +131,37 @@ class RelatorioVendas extends Component
     {
         $this->showMaisVendidos = false;
     }
+
+    public function confirmarEstorno($vendaId)
+    {
+        $this->vendaParaEstornar = $vendaId;
+        $this->confirmandoEstorno = true;
+    }
+
+    public function realizarEstorno()
+    {
+        $this->validate([
+            'motivoEstorno' => 'required|string|min:3',
+        ]);
+
+        $venda = Venda::find($this->vendaParaEstornar);
+
+        if (!$venda) {
+            $this->dispatch('notify', ['message' => 'Venda não encontrada.']);
+            return;
+        }
+
+        // Lógica de estorno (exemplo simples: apenas flag)
+        $venda->status = 'estornada'; // ou use "estorno" se for esse o valor padrão
+        $venda->motivo_estorno = $this->motivoEstorno;
+        $venda->save();
+
+        $this->dispatch('notify', ['message' => 'Venda estornada com sucesso.']);
+        $this->confirmandoEstorno = false;
+        $this->motivoEstorno = '';
+        $this->carregarVendas(); // Recarrega os dados
+    }
+
 
     public function emitirNota($vendaId)
     {

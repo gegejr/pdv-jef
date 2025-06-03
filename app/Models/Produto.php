@@ -25,6 +25,13 @@ class Produto extends Model
         'desconto_padrao',
         'categoria_id',
         'status',
+        'tamanho',
+        'cor',
+        'genero',
+        'marca',
+        'material',
+        'modelo',
+        'colecao',
 
         // Campos fiscais
         'cst_icms',

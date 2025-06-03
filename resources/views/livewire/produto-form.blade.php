@@ -34,6 +34,22 @@
                             <x-form.select label="Categoria *" model="categoria_id" :options="$categorias" value="id" text="nome" />
                             <x-form.select label="Unidade de Medida" model="unidade_medida" :options="[['value' => 'un', 'text' => 'Unidade'], ['value' => 'kg', 'text' => 'Kg'], ['value' => 'l', 'text' => 'Litro'], ['value' => 'cx', 'text' => 'Caixa']]" />
                             <x-form.select label="Status" model="status" :options="[['value' => 'ativo', 'text' => 'Ativo'], ['value' => 'inativo', 'text' => 'Inativo']]" />
+                            
+
+                            @if ($this->tipo_produto === 'roupa')
+                                <div class="col-span-2">
+                                    <h3 class="text-lg font-medium text-gray-700">Variações de Roupas</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-form.select label="Tamanho" model="tamanho" :options="[
+                                            ['value' => 'P', 'text' => 'P'],
+                                            ['value' => 'M', 'text' => 'M'],
+                                            ['value' => 'G', 'text' => 'G'],
+                                            ['value' => 'GG', 'text' => 'GG'],
+                                        ]" />
+                                        <x-form.input label="Cor" model="cor" />
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -49,6 +65,27 @@
                             <x-form.input type="number" label="Estoque *" model="estoque" icon="archive-box" />
                         </div>
                     </div>
+                    {{-- Características de Moda --}}
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-700 flex items-center gap-1">
+                            <x-heroicon-o-adjustments-horizontal class="w-5 h-5 text-indigo-500" />
+                            Características de Moda
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <x-form.input label="Tamanho" model="tamanho" icon="arrows-pointing-out" />
+                            <x-form.input label="Cor" model="cor" icon="swatch" />
+                            <x-form.select label="Gênero" model="genero" :options="[
+                                ['value' => 'unissex', 'text' => 'Unissex'],
+                                ['value' => 'masculino', 'text' => 'Masculino'],
+                                ['value' => 'feminino', 'text' => 'Feminino'],
+                            ]" />
+                            <x-form.input label="Marca" model="marca" icon="building-storefront" />
+                            <x-form.input label="Material" model="material" icon="cube-transparent" />
+                            <x-form.input label="Modelo (referência)" model="modelo" icon="identification" />
+                            <x-form.input label="Coleção" model="colecao" icon="calendar" />
+                        </div>
+                    </div>
+
                     {{-- Informações Fiscais --}}
                     <div>
                         <h3 class="text-lg font-medium text-gray-700 flex items-center gap-1">

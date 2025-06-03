@@ -101,6 +101,7 @@
                                 {{-- nova coluna --}}
                                 <th class="px-6 py-3">NF-e</th>
                                 <th class="px-6 py-3">Nota Fiscal</th>
+                                <th class="px-6 py-3">Estorno</th>
                                 <th class="px-6 py-3">Ações</th>
                             </tr>
                         </thead>
@@ -145,8 +146,18 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-500">
-                                        <button class="text-blue-500 hover:underline" wire:click="detalhesVenda({{ $venda->id }})">Ver detalhes</button>
+                                        @if($venda->status === 'estornada')
+                                            <span class="text-red-600 font-semibold">Estornada</span>
+                                        @else
+                                            <span class="text-green-600">OK</span>
+                                        @endif
                                     </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 relative">
+                    
+                                        <button wire:click="detalhesVenda({{ $venda->id }})" class="w-full text-left px-4 py-2 hover:bg-gray-100">Ver Detalhes</button>
+                                        <button wire:click="confirmarEstorno({{ $venda->id }})" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Estornar</button>
+                                    </td>
+                                    
                                 </tr>
                             @endforeach
                         </tbody>
@@ -264,5 +275,27 @@
         </div>
     </div>
 @endif
+@if($confirmandoEstorno)
+    <div class="fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/50" wire:click="$set('confirmandoEstorno', false)"></div>
 
+        <div class="relative bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+            <h3 class="text-lg font-semibold mb-4">Confirmar Estorno</h3>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1">Motivo do Estorno</label>
+                <textarea wire:model="motivoEstorno" class="w-full border p-2 rounded" rows="3"></textarea>
+                @error('motivoEstorno') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button wire:click="$set('confirmandoEstorno', false)"
+                        class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
+
+                <button wire:click="realizarEstorno"
+                        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmar Estorno</button>
+            </div>
+        </div>
+    </div>
+@endif
 </div>

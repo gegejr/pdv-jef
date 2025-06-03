@@ -35,10 +35,16 @@ class ProdutoForm extends Component
     public $cofins_rate;
     public $categoria_id;
     public $status = 'ativo';
-
+    public $tamanho;
+    public $cor;
+    public $genero;
+    public $marca;
+    public $material;
+    public $modelo;
+    public $colecao;
     public $imagem;
     public $imagem_existente;
-
+    public string $tipo_produto = 'geral';
     // Listas auxiliares
     public array $categorias = [];
 
@@ -96,6 +102,13 @@ class ProdutoForm extends Component
         $this->categoria_id     = $produto->categoria_id;
         $this->status           = $produto->status;
         $this->imagem_existente = $produto->imagem;
+        $this->tamanho = $produto->tamanho;
+        $this->cor = $produto->cor;
+        $this->genero = $produto->genero;
+        $this->marca = $produto->marca;
+        $this->material = $produto->material;
+        $this->modelo = $produto->modelo;
+        $this->colecao = $produto->colecao;
         $this->cst_icms     = $produto->cst_icms;
         $this->icms_rate    = $produto->icms_rate;
         $this->cst_ipi      = $produto->cst_ipi;
@@ -127,6 +140,13 @@ class ProdutoForm extends Component
             'ncm'             => $this->ncm,
             'unidade_medida'  => $this->unidade_medida,
             'imagem'          => $caminhoImagem,
+            'tamanho'  => $this->tamanho,
+            'cor'      => $this->cor,
+            'genero'   => $this->genero,
+            'marca'    => $this->marca,
+            'material' => $this->material,
+            'modelo'   => $this->modelo,
+            'colecao'  => $this->colecao,
             'desconto_padrao' => $this->desconto_padrao ?: 0,
             'categoria_id'    => $this->categoria_id,
             'status'          => $this->status,
@@ -182,6 +202,13 @@ class ProdutoForm extends Component
             'categoria_id'    => 'required|exists:categorias,id',
             'status'          => 'required|in:ativo,inativo',
             'imagem'          => 'nullable|image|max:2048',
+            'tamanho'  => 'nullable|string|max:20',
+            'cor'      => 'nullable|string|max:30',
+            'genero'   => 'nullable|in:masculino,feminino,unissex',
+            'marca'    => 'nullable|string|max:50',
+            'material' => 'nullable|string|max:50',
+            'modelo'   => 'nullable|string|max:50',
+            'colecao'  => 'nullable|string|max:50',
             'desconto_padrao' => 'nullable|numeric|min:0',
             'quantidade_perda'=> 'nullable|integer|min:1',
             'motivo_perda'    => 'nullable|in:quebra,descarte,perda',
@@ -211,6 +238,13 @@ class ProdutoForm extends Component
             'ncm',
             'imagem',
             'imagem_existente',
+            'tamanho',
+            'cor',
+            'genero',
+            'marca',
+            'material',
+            'modelo',
+            'colecao',
             'desconto_padrao',
             'categoria_id',
             'status',

@@ -44,7 +44,11 @@ Route::get('/painel', function (Request $request) {
     $inicio = $request->input('inicio');
     $fim = $request->input('fim');
 
+    // ✅ Inicializa a query
     $query = Venda::query();
+
+    // Aplica filtro para ignorar estornadas
+    $query->where('status', '!=', 'estornada');
 
     if ($inicio && $fim) {
         $query->whereBetween('created_at', ["$inicio 00:00:00", "$fim 23:59:59"]);
@@ -53,11 +57,11 @@ Route::get('/painel', function (Request $request) {
     $totalVendas = $query->selectRaw('SUM(total - desconto_total) as total_corrigido')->value('total_corrigido');
     $numeroVendas = $query->count();
 
-    $ultimasVendas = \App\Models\Venda::with('user') // garante que o nome do usuário apareça
+    $ultimasVendas = Venda::with('user', 'cliente') // Adiciona 'cliente' se você usa isso na view
         ->orderBy('created_at', 'desc')
         ->limit(5)
         ->get();
-        
+
     $vendasPorData = Venda::selectRaw('DATE(created_at) as data, SUM(total) as total')
         ->when($inicio && $fim, fn($q) => $q->whereBetween('created_at', ["$inicio 00:00:00", "$fim 23:59:59"]))
         ->groupBy('data')
@@ -67,13 +71,14 @@ Route::get('/painel', function (Request $request) {
     $datas = $vendasPorData->pluck('data');
     $valores = $vendasPorData->pluck('total');
 
-    // 🔽 Adiciona o histórico de caixas fechados
     $historicoCaixas = Caixa::whereNotNull('fechado_em')
         ->orderByDesc('fechado_em')
         ->limit(10)
         ->get();
+
     $vendas = Venda::with('caixa')->get();
     $caixa = Caixa::whereNull('fechado_em')->first();
+
     return view('painel', compact(
         'totalVendas',
         'numeroVendas',
@@ -82,8 +87,8 @@ Route::get('/painel', function (Request $request) {
         'ultimasVendas',
         'datas',
         'valores',
-        'historicoCaixas', // <-- aqui
-        'vendas', // ✅ agora estará disponível na view
+        'historicoCaixas',
+        'vendas',
         'caixa'
     ));
 })->middleware('auth')->name('painel');
