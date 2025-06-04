@@ -19,6 +19,7 @@ class Produto extends Model
         'descricao',
         'ncm',
         'valor',
+        'preco_custo',
         'estoque',
         'unidade_medida',
         'imagem',

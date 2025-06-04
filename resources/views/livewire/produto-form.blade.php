@@ -60,7 +60,8 @@
                             Estoque e preço
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <x-form.input type="number" step="0.01" label="Valor *" model="valor" icon="banknotes" />
+                            <x-form.input type="number" step="0.01" label="Preço de Custo *" model="preco_custo" icon="banknotes" />
+                            <x-form.input type="number" step="0.01" label="Preço de Venda *" model="valor" icon="banknotes" />
                             <x-form.input type="number" step="0.01" label="Desconto Padrão (%)" model="desconto_padrao" icon="tag" />
                             <x-form.input type="number" label="Estoque *" model="estoque" icon="archive-box" />
                         </div>

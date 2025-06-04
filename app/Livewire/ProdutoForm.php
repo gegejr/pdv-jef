@@ -22,6 +22,7 @@ class ProdutoForm extends Component
     public $descricao;
     public $ncm;
     public $valor;
+    public $preco_custo;
     public $estoque;
     public $unidade_medida = 'un';
     public $desconto_padrao = 0;    
@@ -96,6 +97,7 @@ class ProdutoForm extends Component
         $this->descricao        = $produto->descricao;
         $this->ncm              = $produto->ncm;
         $this->valor            = $produto->valor;
+        $this->preco_custo      = $produto->preco_custo;
         $this->estoque          = $produto->estoque;
         $this->unidade_medida   = $produto->unidade_medida;
         $this->desconto_padrao  = $produto->desconto_padrao;
@@ -136,6 +138,7 @@ class ProdutoForm extends Component
             'sku'             => $this->sku,
             'descricao'       => $this->descricao,
             'valor'           => $this->valor,
+            'preco_custo'     => $this->preco_custo,
             'estoque'         => $this->estoque,
             'ncm'             => $this->ncm,
             'unidade_medida'  => $this->unidade_medida,
@@ -196,6 +199,7 @@ class ProdutoForm extends Component
             'codigo_barras'   => 'nullable|string|max:100',
             'sku'             => 'nullable|string|max:100|unique:produtos,sku,' . $this->produto_id,
             'valor'           => 'required|numeric|min:0',
+            'preco_custo'     => 'required|numero|min:0',
             'estoque'         => 'required|integer|min:0',
             'unidade_medida'  => 'required|in:un,kg,l,cx',
             'ncm'             => 'required|string|max:255',
@@ -233,6 +237,7 @@ class ProdutoForm extends Component
             'sku',
             'descricao',
             'valor',
+            'preco_custo',
             'estoque',
             'unidade_medida',
             'ncm',
