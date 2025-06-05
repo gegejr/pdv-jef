@@ -9,6 +9,7 @@ use App\Models\Venda;
 use App\Models\Pagamento;
 use App\Models\Cliente;
 use App\Services\NFeService;
+use Illuminate\Support\Facades\DB;
 
 class Carrinho extends Component
 {
@@ -38,7 +39,7 @@ class Carrinho extends Component
         ['tipo' => '', 'valor' => 0]
     ];
     public $usuarioContaId = null; // ID do usuário para pagamento "conta"
-
+    public $vendaFinalizadaId;
     protected $listeners = ['clienteSelecionado'];
     public $todos_clientes = [];
     public $todos_produtos = [];
@@ -118,96 +119,118 @@ class Carrinho extends Component
         $this->reset(['nome', 'valor_inicial']);
     }
 
+    
+
     public function fecharVenda()
     {
         $user_id = auth()->id();
 
-        /* 1. Carrinho vazio? */
+        // 1. Carrinho vazio?
         if (empty($this->carrinho)) {
             session()->flash('error', 'O carrinho está vazio.');
             return;
         }
 
-        /* 2. Validação dos pagamentos */
+        // 2. Validação dos pagamentos
         if (!$this->validarPagamentos()) {
-            return; // mensagens já disparadas pelo método
+            return;
         }
 
-        /* 3. Estoque suficiente? */
-        foreach ($this->carrinho as $item) {
-            $produto = Produto::find($item['produto']->id);
+        // 3. Valida produtos e estoque
+        foreach ($this->carrinho as &$item) {
+            $item['produto'] = Produto::find($item['produto']->id);
 
-            if (!$produto || $produto->estoque < $item['quantidade']) {
-                session()->flash('error',
-                    'Estoque insuficiente para "' . $item['produto']->nome . '".');
+            if (!$item['produto'] || $item['produto']->estoque < $item['quantidade']) {
+                session()->flash('error', 'Estoque insuficiente para "' . $item['produto']->nome . '".');
                 return;
             }
         }
 
-        /* 4. Garante caixa aberto */
-        $caixa = Caixa::firstOrCreate(
-            ['user_id' => $user_id, 'fechado_em' => null],
-            ['nome' => 'Caixa', 'valor_inicial' => 0, 'aberto_em' => now()]
-        );
+        try {
+            DB::beginTransaction();
 
-        /* 5. Monta descrição resumida dos métodos */
-        $this->metodo_pagamento = implode(' + ', array_column($this->pagamentos, 'tipo'));
+            // 4. Garante caixa aberto
+            $caixa = Caixa::firstOrCreate(
+                ['user_id' => $user_id, 'fechado_em' => null],
+                ['nome' => 'Caixa', 'valor_inicial' => 0, 'aberto_em' => now()]
+            );
 
-        /* 6. Cria venda */
-        $venda = Venda::create([
-            'user_id'         => $user_id,
-            'caixa_id'        => $caixa->id,
-            'cliente_id'      => $this->cliente_id,
-            'total'           => $this->total,
-            'desconto_total'  => $this->desconto_total,
-            'metodo_pagamento'=> $this->metodo_pagamento,
-        ]);
-        $this->venda = $venda;   // para que o Blade possa enxergar
-        /* 7. Itens & estoque */
-        foreach ($this->carrinho as $item) {
-            $produto = Produto::find($item['produto']->id);
-            $produto->decrement('estoque', $item['quantidade']);
+            // 5. Descrição dos métodos de pagamento
+            $this->metodo_pagamento = implode(' + ', array_column($this->pagamentos, 'tipo'));
 
-            $venda->itemVendas()->create([
-                'produto_id'    => $produto->id,
-                'total'         => $item['valor_total'],
-                'quantidade'    => $item['quantidade'],
-                'valor_unitario'=> $produto->valor,
-                'desconto'      => $item['desconto'] ?? 0,
+            // 6. Cria venda
+            $venda = Venda::create([
+                'user_id'         => $user_id,
+                'caixa_id'        => $caixa->id,
+                'cliente_id'      => $this->cliente_id,
+                'total'           => $this->total,
+                'desconto_total'  => $this->desconto_total,
+                'metodo_pagamento'=> $this->metodo_pagamento,
             ]);
-        }
 
-        /* 8. Pagamentos */
-        $totalRecebido = 0;
-        foreach ($this->pagamentos as $p) {
-            Pagamento::create([
-                'venda_id' => $venda->id,
-                'tipo'     => $p['tipo'],
-                'valor'    => $p['valor'],
+            // 7. Itens & estoque
+            foreach ($this->carrinho as $item) {
+                $produto = $item['produto'];
+                $produto->decrement('estoque', $item['quantidade']);
+
+                $venda->itemVendas()->create([
+                    'produto_id'     => $produto->id,
+                    'total'          => $item['valor_total'],
+                    'quantidade'     => $item['quantidade'],
+                    'valor_unitario' => $produto->valor,
+                    'desconto'       => $item['desconto'] ?? 0,
+                ]);
+            }
+
+            // 8. Pagamentos
+            $totalRecebido = 0;
+            foreach ($this->pagamentos as $p) {
+                Pagamento::create([
+                    'venda_id' => $venda->id,
+                    'tipo'     => $p['tipo'],
+                    'valor'    => $p['valor'],
+                ]);
+                $totalRecebido += $p['valor'];
+            }
+
+            $valorEsperado = $this->total - $this->desconto_total;
+            if (abs($totalRecebido - $valorEsperado) > 0.01) {
+                DB::rollBack();
+                session()->flash('error',
+                    'Pagamentos somam R$ ' . number_format($totalRecebido, 2, ',', '.') .
+                    ' mas o total é R$ ' . number_format($valorEsperado, 2, ',', '.')
+                );
+                return;
+            }
+
+            DB::commit();
+
+            // Define o ID da venda finalizada
+            $this->vendaFinalizadaId = $venda->id;
+
+            // Carrega venda com nota fiscal (caso exista)
+            $this->venda = $venda->load('nota_fiscal');
+
+            // 9. Limpa estado
+            session()->forget('carrinho');
+            $this->reset([
+                'carrinho', 'total', 'desconto_total',
+                'cliente_id', 'cliente_nome',
+                'pagamentos'
             ]);
-            $totalRecebido += $p['valor'];
-        }
+            $this->pagamentos = [['tipo' => '', 'valor' => 0]];
 
-        $valorEsperado = $this->total - $this->desconto_total;
-        if (abs($totalRecebido - $valorEsperado) > 0.01) {
-            session()->flash('error',
-                'Pagamentos somam R$ ' . number_format($totalRecebido,2,',','.') .
-                ' mas o total é R$ ' . number_format($valorEsperado,2,',','.'));
+            session()->flash('message', 'Venda finalizada com sucesso!');
+            $this->dispatch('imprimir.cupom', vendaId: $venda->id);
+            return;
+            
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'Erro ao finalizar a venda: ' . $e->getMessage());
             return;
         }
-        $this->venda = $venda->load('nota_fiscal');
-        /* 9. Limpa estado */
-        session()->forget('carrinho');
-        $this->reset([
-            'carrinho', 'total', 'desconto_total',
-            'cliente_id', 'cliente_nome',
-            'pagamentos'
-        ]);
-        $this->pagamentos = [['tipo' => '', 'valor' => 0]];
-
-        session()->flash('message', 'Venda finalizada com sucesso!');
-        return redirect()->route('imprimir.cupom', ['venda_id' => $venda->id]);
     }
+
 
      public function adicionarPagamento()
     {
@@ -473,5 +496,21 @@ class Carrinho extends Component
         //$this->clearBrands();
     }
 
+    public function getTotalInformadoProperty()
+    {
+        return collect($this->pagamentos)
+            ->sum(function ($p) {
+                return floatval($p['valor'] ?? 0);
+            });
+    }
     
+    public function updatedPagamentos()
+    {
+        $esperado = $this->total - $this->desconto_total;
+        $recebido = $this->totalInformado;
+
+        if ($recebido > $esperado) {
+            session()->flash('error', 'O valor informado excede o total da venda.');
+        }
+    }
 }

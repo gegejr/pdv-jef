@@ -1,12 +1,11 @@
-<div class="ml-64 pt-[72px] p-6">
-    <div class="flex">
+<div class="pt-[80px] p-4">
+    <div class="flex justify-center">
         <!-- Menu lateral -->
-        <x-sidebar />
+
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300">
+        <div class="w-2/3 p-4 bg-white rounded shadow overflow-y-auto">
             <!-- Topbar -->
-            <x-topbar />
 
             <!-- Mensagens de feedback -->
             @if (session()->has('message'))
@@ -146,172 +145,20 @@
             @endif
 
             <!-- Modal Clientes -->
-            @if($modalClientesAberto)
-                <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div class="bg-white rounded-lg shadow-lg w-72 max-h-60 overflow-y-auto p-4 relative">
-                        <h3 class="text-base font-semibold mb-2">Selecione um Cliente</h3>
-                        <button
-                            wire:click="fecharModalClientes"
-                            class="absolute top-1 right-2 text-gray-600 hover:text-gray-900 font-bold"
-                            title="Fechar"
-                        >&times;</button>
-
-                        <!-- Campo de busca dentro do modal -->
-                        <input
-                            type="text"
-                            wire:model.debounce.300ms="busca_modal_cliente"
-                            class="form-input w-full mb-2 text-sm"
-                            placeholder="Buscar cliente..."
-                        >
-
-                        <ul>
-                            @foreach($todos_clientes as $cliente)
-                                @if(str_contains(strtolower($cliente['nome']), strtolower($busca_modal_cliente)))
-                                    <li class="p-2 hover:bg-gray-200 cursor-pointer text-sm"
-                                        wire:click="selecionarCliente({{ $cliente['id'] }})">
-                                        {{ $cliente['nome'] }} – {{ $cliente['telefone'] }}
-                                    </li>
-                                @endif
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
+           @includeWhen($modalClientesAberto, 'components.modal-clientes')
 
             <!-- Modal Produtos -->
-            @if($modalProdutosAberto)
-                <div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div class="bg-white rounded-lg shadow-lg w-[22rem] max-h-[80vh] overflow-y-auto p-4 relative">
-                        <h3 class="text-lg font-semibold mb-2">Selecione um Produto</h3>
-                        <button
-                            wire:click="fecharModalProdutos"
-                            class="absolute top-1 right-2 text-gray-600 hover:text-gray-900 font-bold"
-                            title="Fechar"
-                        >&times;</button>
+            
+            @includeWhen($modalProdutosAberto, 'components.modal-produtos')
 
-                        <!-- Campo de busca -->
-                        <input
-                            type="text"
-                            wire:model.live="searchTerm"
-                            class="form-input w-full mb-3 text-sm"
-                            placeholder="Buscar produto..."
-                        >
-
-                        <ul class="divide-y">
-                            @foreach($todos_produtos as $produto)
-                                @if(
-                                        str_contains(strtolower($produto['nome']), strtolower($searchTerm)) ||
-                                        str_contains((string)$produto['codigo_barras'], $searchTerm)
-                                    )
-                                        <li
-                                            wire:click="selecionarProduto({{ $produto['id'] }})"
-                                            class="p-3 hover:bg-gray-100 cursor-pointer text-sm"
-                                        >
-                                            <div class="font-semibold text-gray-800">{{ $produto['nome'] }}</div>
-                                            <div class="text-gray-600 text-xs">
-                                                Código: <span class="font-mono">{{ $produto['codigo_barras'] }}</span> |
-                                                Estoque: <strong>{{ $produto['estoque'] }}</strong>
-                                            </div>
-                                            <div class="text-green-600 font-semibold text-sm mt-1">
-                                                R$ {{ number_format($produto['valor'], 2, ',', '.') }}
-                                            </div>
-                                        </li>
-                                    @endif
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
-
-
-
+            <!-- Carrinho -->
             @if (count($carrinho) > 0)
-                <table class="w-full text-sm text-left text-gray-700 border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-                    <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
-                        <tr>
-                            <th class="px-4 py-2">Código de Barras</th>
-                            <th class="px-4 py-2">Produto</th>
-                            <th class="px-4 py-2">Preço</th>
-                            <th class="px-4 py-2">Qtd</th>
-                            <th class="px-4 py-2">Total</th>
-                            <th class="px-4 py-2 text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-                        @foreach ($carrinho as $item)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-2">{{ $item['produto']->codigo_barras }}</td>
-                                <td class="px-4 py-2">{{ $item['produto']->nome }}</td>
-                                <td class="px-4 py-2">R$ {{ number_format($item['produto']->valor, 2, ',', '.') }}</td>
-                                <td class="px-4 py-2">
-                                    <input 
-                                        type="number" min="1"
-                                        wire:change="atualizarQuantidade({{ $item['produto']->id }}, $event.target.value)"
-                                        value="{{ $item['quantidade'] }}"
-                                        class="w-20 border-gray-300 rounded p-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                </td>
-                                <td class="px-4 py-2">R$ {{ number_format($item['valor_total'], 2, ',', '.') }}</td>
-                                <td class="px-4 py-2 text-center">
-                                    <button wire:click="removerItem({{ $item['produto']->id }})"
-                                        class="inline-flex items-center text-red-600 hover:text-red-800 font-medium text-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                        Remover
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <div class="mt-4 text-right">
-                    <strong>Total: R$ {{ number_format($total, 2, ',', '.') }}</strong>
-                </div>
+                @include('components.carrinho-itens')
+                
 
                 <!-- Seleção de pagamento -->
-<!-- Pagamentos múltiplos -->
-<div class="mt-4">
-    <h3 class="text-lg font-semibold mb-2">Métodos de Pagamento</h3>
-    
-    @foreach ($pagamentos as $index => $pagamento)
-        <div class="flex items-center gap-2 mb-2">
-            <select wire:model="pagamentos.{{ $index }}.tipo" class="border p-2 rounded w-1/2">
-                <option value="">Selecione</option>
-                <option value="dinheiro">Dinheiro</option>
-                <option value="debito">Débito</option>
-                <option value="credito">Crédito</option>
-                <option value="pix">Pix</option>
-                <option value="conta">Conta</option>
-            </select>
-
-            <input 
-                type="number" 
-                wire:model="pagamentos.{{ $index }}.valor" 
-                class="border p-2 rounded w-1/2"
-                min="0" step="0.01"
-                placeholder="Valor"
-            >
-
-            <button 
-                wire:click="removerPagamento({{ $index }})" 
-                class="text-red-500 hover:text-red-700 font-bold"
-                title="Remover"
-            >
-                &times;
-            </button>
-        </div>
-    @endforeach
-
-    <button wire:click="adicionarPagamento" class="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300">
-        + Adicionar Pagamento
-    </button>
-
-    <div class="mt-2 text-sm text-gray-600">
-        Total informado: R$ {{ number_format(array_sum(array_column($pagamentos, 'valor')), 2, ',', '.') }}
-    </div>
-</div>
+                <!-- Pagamentos múltiplos -->
+                @include('components.pagamentos')
 
                 <!-- Desconto Total -->
                 <div class="mt-4">
@@ -340,11 +187,16 @@
                     
                 </div>
                 @else
-                    <div class="text-center p-4">Carrinho vazio</div>
+                <div class="text-center p-4">Carrinho vazio</div>
             @endif
         </div> <!-- Fim do conteúdo principal -->
+       
 </div> <!-- Fim do flex -->
     <script>
+    Livewire.on('imprimir.cupom', vendaId => {
+        window.open(`/venda/${vendaId}/cupom`, '_blank');
+    });
+
     function produtoAutocomplete() {
         return {
             aberto: false,
@@ -378,4 +230,5 @@
         }
     }
 </script>
+
 </div> <!-- Fim da ml-64 pt-[72px] p-6 -->
