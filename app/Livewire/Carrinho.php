@@ -43,6 +43,8 @@ class Carrinho extends Component
     protected $listeners = ['clienteSelecionado'];
     public $todos_clientes = [];
     public $todos_produtos = [];
+    public $confirmarImpressaoCupom;
+
     public function mount()
     {
         $user = auth()->user()->fresh();
@@ -159,7 +161,7 @@ class Carrinho extends Component
             $this->metodo_pagamento = implode(' + ', array_column($this->pagamentos, 'tipo'));
 
             // 6. Cria venda
-            $venda = Venda::create([
+           $venda = Venda::create([
                 'user_id'         => $user_id,
                 'caixa_id'        => $caixa->id,
                 'cliente_id'      => $this->cliente_id,
@@ -167,6 +169,17 @@ class Carrinho extends Component
                 'desconto_total'  => $this->desconto_total,
                 'metodo_pagamento'=> $this->metodo_pagamento,
             ]);
+
+            /*if (!$venda || !$venda->id) {
+                throw new \Exception('Venda criada, mas sem ID. Debug: ' . json_encode($venda));
+            }
+
+            // Debug detalhado da venda criada
+            dd([
+                'Venda criada com ID' => $venda->id,
+                'Atributos salvos' => $venda->toArray(),
+            ]);
+            */
 
             // 7. Itens & estoque
             foreach ($this->carrinho as $item) {
@@ -220,8 +233,14 @@ class Carrinho extends Component
             ]);
             $this->pagamentos = [['tipo' => '', 'valor' => 0]];
 
-            session()->flash('message', 'Venda finalizada com sucesso!');
-            $this->dispatch('imprimir.cupom', vendaId: $venda->id);
+            session()->flash('message', 'Venda finalizada com sucesso!');          
+            
+            
+            
+            $this->confirmarImpressaoCupom = true;
+            //$this->dispatch('imprimir-cupom', venda_id: $this->vendaFinalizadaId); // Laravel 10+
+           // $this->vendaFinalizadaId = null;
+
             return;
             
         } catch (\Throwable $e) {
@@ -456,6 +475,7 @@ class Carrinho extends Component
             'desconto_total' => $this->desconto_total,
             'cliente_nome' => $this->cliente_nome,
             'sugestoes_clientes' => $this->sugestoes_clientes,
+            
         ]);
     }
 
@@ -512,5 +532,15 @@ class Carrinho extends Component
         if ($recebido > $esperado) {
             session()->flash('error', 'O valor informado excede o total da venda.');
         }
+    }
+
+    public function confirmarEImprimirCupom()
+    {
+        if ($this->vendaFinalizadaId) {
+            $this->dispatch('imprimir-cupom', venda_id: $this->vendaFinalizadaId);
+        }
+
+        $this->confirmarImpressaoCupom = false;
+        $this->vendaFinalizadaId = null;
     }
 }

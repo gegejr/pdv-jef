@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Venda extends Model
 {
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
     protected $fillable = [
         'user_id',
         'total',
@@ -16,7 +20,7 @@ class Venda extends Model
         'cliente_id', //
         'mesa_id',
     ];
-
+    
     // Relacionamento com o usuário (quem fez a venda)
     public function user()
     {

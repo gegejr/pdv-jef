@@ -9,28 +9,28 @@
 </head>
 <body class="bg-gray-100 font-sans leading-relaxed text-gray-800">
 
-<div class="ml-64 pt-[72px] p-6 min-h-screen">
+<div class="pt-[72px] p-6 min-h-screen md:ml-64 transition-all duration-300">
     <div class="flex">
         <!-- Sidebar -->
         <x-sidebar />
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300">
+        <div class="flex-1 p-6 transition-all duration-300">
             <!-- Topbar -->
             <x-topbar />
 
             <!-- Cabeçalho e botão -->
             <div class="flex items-center justify-between mb-6">
-            <h1 class="text-3xl font-extrabold text-gray-800 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="blue" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column">
-                    <path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
-                </svg>
-                Dashboard
-            </h1>
-            <button onclick="toggleSidebar()" class="md:hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                Menu
-            </button>
-        </div>
+                <h1 class="text-3xl font-extrabold text-gray-800 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="blue" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chart-column-icon lucide-chart-column">
+                        <path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
+                    </svg>
+                    Dashboard
+                </h1>
+                <button onclick="toggleSidebar()" class="md:hidden bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    Menu
+                </button>
+            </div>
 
         <!-- Filtro por Data -->
         <form method="GET" action="{{ route('painel') }}" class="bg-white p-6 rounded-lg shadow flex flex-col sm:flex-row items-end gap-4 mb-8">
@@ -42,20 +42,20 @@
                 <label for="fim" class="text-sm font-semibold">Data Fim</label>
                 <input type="date" name="fim" id="fim" value="{{ $fim ?? '' }}" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
             </div>
-            <button type="submit" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal-icon lucide-sliders-horizontal">
-                    <line x1="21" x2="14" y1="4" y2="4"/>
-                    <line x1="10" x2="3" y1="4" y2="4"/>
-                    <line x1="21" x2="12" y1="12" y2="12"/>
-                    <line x1="8" x2="3" y1="12" y2="12"/>
-                    <line x1="21" x2="16" y1="20" y2="20"/>
-                    <line x1="12" x2="3" y1="20" y2="20"/>
-                    <line x1="14" x2="14" y1="2" y2="6"/>
-                    <line x1="8" x2="8" y1="10" y2="14"/>
-                    <line x1="16" x2="16" y1="18" y2="22"/>
-                </svg>
-                Filtrar
-            </button>
+                <button type="submit" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal-icon lucide-sliders-horizontal">
+                        <line x1="21" x2="14" y1="4" y2="4"/>
+                        <line x1="10" x2="3" y1="4" y2="4"/>
+                        <line x1="21" x2="12" y1="12" y2="12"/>
+                        <line x1="8" x2="3" y1="12" y2="12"/>
+                        <line x1="21" x2="16" y1="20" y2="20"/>
+                        <line x1="12" x2="3" y1="20" y2="20"/>
+                        <line x1="14" x2="14" y1="2" y2="6"/>
+                        <line x1="8" x2="8" y1="10" y2="14"/>
+                        <line x1="16" x2="16" y1="18" y2="22"/>
+                    </svg>
+                    Filtrar
+                </button>
             @if ($caixa)
                 <div class="sm:ml-auto flex items-center gap-3 text-sm font-semibold text-gray-800 bg-gray-100 dark:bg-gray-800 px-6 py-4 rounded-xl shadow-inner">
                     <!-- Ícone Heroicons -->

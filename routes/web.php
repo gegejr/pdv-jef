@@ -135,7 +135,12 @@ Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 });
 
+/* impressao de cupom */
 Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->name('imprimir.cupom');
+
+Route::get('/venda/{venda}/cupom', function (Venda $venda) {
+    return view('impressao.cupom', ['vendaSelecionada' => $venda]);
+})->name('impressao.cupom');
 
 Route::middleware('auth')->get('/clientes', ClienteLista::class)->name('clientes');
 
@@ -143,10 +148,6 @@ Route::get('/cliente.conta', ClientesContas::class)->name('cliente.conta');
 
 Route::get('/relatorio/exportar', [ExportarRelatorioController::class, 'exportar'])->name('relatorio.exportar');
 
-
-Route::get('/venda/{venda}/cupom', function (Venda $venda) {
-    return view('impressao.cupom', ['vendaSelecionada' => $venda]);
-})->name('impressao.cupom');
 
 Route::middleware('auth')->get('/mesa', Mesas::class)->name('mesas');
 

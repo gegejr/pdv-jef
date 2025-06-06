@@ -190,12 +190,36 @@
                 <div class="text-center p-4">Carrinho vazio</div>
             @endif
         </div> <!-- Fim do conteúdo principal -->
-       
+        <!--Modal cupom-->
+        @if ($confirmarImpressaoCupom)
+            <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div class="bg-white p-6 rounded shadow-lg text-center">
+                    <p class="text-lg font-semibold mb-4">Deseja imprimir o cupom fiscal?</p>
+                    <div class="flex justify-center gap-4">
+                        <button wire:click="confirmarEImprimirCupom" class="bg-green-500 text-white px-4 py-2 rounded">Sim</button>
+                        <button wire:click="$set('confirmarImpressaoCupom', false)" class="bg-gray-400 text-white px-4 py-2 rounded">Não</button>
+                    </div>
+                </div>
+            </div>
+        @endif
 </div> <!-- Fim do flex -->
     <script>
-    Livewire.on('imprimir.cupom', vendaId => {
-        window.open(`/venda/${vendaId}/cupom`, '_blank');
-    });
+       document.addEventListener('DOMContentLoaded', function () {
+            window.addEventListener('imprimir-cupom', function (event) {
+                const venda_id = event.detail?.venda_id;
+
+                console.log("Evento imprimir-cupom recebido:", event.detail);
+
+                if (!venda_id) {
+                    alert("Erro: venda_id não recebido.");
+                    return;
+                }
+
+                const url = `/imprimir-cupom/${venda_id}`;
+                window.open(url, '_blank');
+            });
+        });
+
 
     function produtoAutocomplete() {
         return {
