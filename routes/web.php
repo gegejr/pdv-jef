@@ -23,6 +23,7 @@ use App\Http\Controllers\ComandaController;
 use App\Livewire\Search;
 use App\Livewire\UsuariosCrud;
 use App\Http\Controllers\ExportarProdutos;
+use App\Livewire\FinancialTransactions;
 
 // Página inicial
 Route::get('/', function () {
@@ -78,6 +79,11 @@ Route::get('/painel', function (Request $request) {
         ->limit(10)
         ->get();
 
+    $vendasHoje = Venda::whereDate('created_at', now()->toDateString())
+    ->where('status', '!=', 'estornada')
+    ->selectRaw('SUM(total - desconto_total) as total_corrigido')
+    ->value('total_corrigido') ?? 0;
+
     $vendas = Venda::with('caixa')->get();
     $caixa = Caixa::whereNull('fechado_em')->first();
 
@@ -91,7 +97,8 @@ Route::get('/painel', function (Request $request) {
         'valores',
         'historicoCaixas',
         'vendas',
-        'caixa'
+        'caixa',
+        'vendasHoje',
     ));
 })->middleware('auth')->name('painel');
 
@@ -164,3 +171,6 @@ Route::get('/search', Search::class)->name('search');
 
 
 Route::get('/relatorio-produtos', [ExportarProdutos::class, 'exportar'])->name('produtos.exportar');
+
+
+Route::get('/financeiro', FinancialTransactions::class)->name('financeiro.index');
