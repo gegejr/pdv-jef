@@ -21,6 +21,8 @@ use App\Http\Controllers\SubscriptionController;
 use App\Livewire\Mesas;
 use App\Http\Controllers\ComandaController;
 use App\Livewire\Search;
+use App\Livewire\UsuariosCrud;
+use App\Http\Controllers\ExportarProdutos;
 
 // Página inicial
 Route::get('/', function () {
@@ -124,9 +126,9 @@ Route::middleware('auth')->get('/relatorio-vendas', RelatorioVendas::class)->nam
 // Caixa e Sangria
 Route::middleware('auth')->get('/caixa-sangria', \App\Livewire\CaixaSangria::class)->name('caixa-sangria');
 
+Route::get('/usuarios', UsuariosCrud::class)->name('usuarios.index');
 
-
-Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function () {
+/*Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('index');
     Route::get('/criar', [UserController::class, 'create'])->name('criar');
     Route::post('/', [UserController::class, 'store'])->name('store');
@@ -134,7 +136,7 @@ Route::middleware('auth')->prefix('usuarios')->name('usuarios.')->group(function
     Route::put('/{id}', [UserController::class, 'update'])->name('update');
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 });
-
+*/
 /* impressao de cupom */
 Route::get('/imprimir-cupom/{venda_id}', [CupomController::class, 'imprimir'])->name('imprimir.cupom');
 
@@ -158,3 +160,7 @@ Route::get('/comanda/print/{venda}', function (\App\Models\Venda $venda) {
 });
 
 Route::get('/search', Search::class)->name('search');
+
+
+
+Route::get('/relatorio-produtos', [ExportarProdutos::class, 'exportar'])->name('produtos.exportar');

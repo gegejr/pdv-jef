@@ -10,17 +10,34 @@
                 <x-heroicon-o-cube class="w-6 h-6 text-indigo-500" />
                 Lista de Produtos
             </h2>
-            <div class="flex justify-between items-center mb-4">
-                <!-- Botão Produtos Mais Vendidos -->
-                <button wire:click="abrirMaisVendidos"
-                    class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 no-print">
-                    Produtos Mais Vendidos
-                </button>
-                <button wire:click="consultarFalta"
-                    class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 no-print">
-                    Consultar corte
-                </button>
-            </div>
+            <!-- Ações principais -->
+<!-- Ações principais -->
+<div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+    <!-- Grupo de ações (esquerda) -->
+    <div class="flex flex-wrap gap-3">
+        <button wire:click="abrirMaisVendidos"
+            class="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow transition">
+            <x-heroicon-o-fire class="w-5 h-5" />
+            Mais Vendidos
+        </button>
+
+        <button wire:click="consultarFalta"
+            class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow transition">
+            <x-heroicon-o-exclamation-circle class="w-5 h-5" />
+            Produtos em Falta
+        </button>
+    </div>
+
+    <!-- Botão de exportar (direita) -->
+    <a href="{{ route('produtos.exportar') }}" target="_blank"
+        class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow transition">
+        <x-heroicon-o-document-arrow-down class="w-5 h-5" />
+        Exportar Inventário
+    </a>
+</div>
+
+
+
             @if (session()->has('sucesso'))
                 <div class="bg-green-100 text-green-800 p-3 rounded shadow mb-4">
                     {{ session('sucesso') }}
@@ -97,175 +114,10 @@
 
             <div class="mt-6">
                 {{ $produtos->links() }}
-            </div>
-
-@if($produtoId)
-<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4 overflow-y-auto">
-    <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transition-all duration-300">
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <h2 class="text-2xl font-semibold text-gray-800 dark:text-white">Editar Produto</h2>
-            </div>
-            <button wire:click="fecharModal" class="text-gray-500 hover:text-red-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+            </div>  
+            <!-- Componentes adicionais (modais etc.) -->
+        @includeWhen($produtoId, 'components.modal-editar-produto')
+        @includeWhen($showMaisVendidos, 'components.modal-mais-vendidos')
+        @includeWhen($showFalta, 'components.modal-produtos-falta')
         </div>
-
-        <form wire:submit.prevent="salvar">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nome</label>
-                    <input type="text" wire:model.defer="nome" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm" />
-                    @error('nome') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Código de Barras</label>
-                    <input type="text" wire:model.defer="codigo_barras" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm" />
-                </div>
-
-                <div class="col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
-                    <textarea wire:model.defer="descricao" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor</label>
-                    <input type="number" step="0.01" wire:model.defer="valor" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm" />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estoque</label>
-                    <input type="number" wire:model.defer="estoque" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm" />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Desconto Padrão</label>
-                    <input type="number" step="0.01" wire:model.defer="desconto_padrao" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm" />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Imagem</label>
-                    <input type="file" wire:model="imagem" class="w-full text-gray-700 dark:text-white" />
-                    @error('imagem') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                    @if ($imagem_existente && !$imagem)
-                        <div class="mt-2">
-                            <img src="{{ asset('storage/' . $imagem_existente) }}" class="w-24 h-24 object-cover rounded shadow">
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <hr class="my-6 border-gray-300 dark:border-gray-700">
-
-            <div x-data="{ mostrarPerda: @entangle('registrar_perda') }">
-                <label class="inline-flex items-center space-x-2">
-                    <input type="checkbox" x-model="mostrarPerda" class="form-checkbox text-blue-600 rounded">
-                    <span class="font-medium text-gray-700 dark:text-gray-300">Registrar Perda</span>
-                </label>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
-                    Marque para registrar perda de estoque. Valor atual:
-                    <span x-text="mostrarPerda ? 'SIM' : 'NÃO'"></span>
-                </p>
-
-                <div x-show="mostrarPerda" class="grid grid-cols-1 gap-4 mt-4">
-                    <div>
-                        <label class="text-sm text-gray-700 dark:text-gray-300">Quantidade Perdida</label>
-                        <input type="number" wire:model="quantidade_perda" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm" />
-                    </div>
-                    <div>
-                        <label class="text-sm text-gray-700 dark:text-gray-300">Motivo da Perda</label>
-                        <select wire:model="motivo_perda" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-lg shadow-sm">
-                            <option value="">Selecione</option>
-                            <option value="quebra">Quebra</option>
-                            <option value="descarte">Descarte</option>
-                            <option value="perda">Perda</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end space-x-4 mt-8">
-                <button type="submit" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M17 16v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1h14zM6 2a2 2 0 00-2 2v10h12V4a2 2 0 00-2-2H6zm2 2h4v4H8V4z" />
-                    </svg>
-                    Salvar
-                </button>
-                <button type="button" wire:click="fecharModal" class="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg shadow transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Cancelar
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-@endif
-
-    </div>
-    @if($showMaisVendidos)
-    <div class="fixed inset-0 z-50 flex items-center justify-center">
-        <div class="absolute inset-0 bg-black/50" wire:click="fecharMaisVendidos"></div>
-
-        <div class="relative bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
-            <button class="absolute top-2 right-3 text-2xl" wire:click="fecharMaisVendidos">&times;</button>
-            <h3 class="text-lg font-semibold mb-4">Top 10 Produtos Mais Vendidos</h3>
-
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead>
-                    <tr>
-                        <th class="text-left px-4 py-2">Produto</th>
-                        <th class="text-left px-4 py-2">Quantidade Vendida</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($produtosMaisVendidos as $item)
-                        <tr>
-                            <td class="px-4 py-2">{{ $item->produto->nome ?? 'Produto excluído' }}</td>
-                            <td class="px-4 py-2">{{ $item->total_vendido }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="2" class="px-4 py-2 text-center text-gray-500">Nenhuma venda encontrada.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-@endif
-@if($showFalta)
-<div class="fixed inset-0 z-50 flex items-center justify-center">
-    <!-- Fundo escuro clicável para fechar -->
-    <div class="absolute inset-0 bg-black/50" wire:click="fecharFalta"></div>
-
-    <!-- Caixa branca do modal -->
-    <div class="relative bg-white p-6 rounded shadow-lg max-w-md w-full z-10">
-        <h3 class="text-lg font-bold mb-4">Produtos em falta (estoque &lt; 10)</h3>
-        <ul class="space-y-2">
-            @forelse($produtosEmFalta as $produto)
-                <li class="text-sm text-red-600">
-                    {{ $produto->nome }} — {{ $produto->estoque }} unidades restantes
-                </li>
-            @empty
-                <li class="text-sm text-gray-500">Nenhum produto em falta.</li>
-            @endforelse
-        </ul>
-
-        <!-- Botão fechar opcional -->
-        <button wire:click="fecharFalta"
-                class="mt-4 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded">
-            Fechar
-        </button>
-    </div>
-</div>
-@endif
-
 </div>

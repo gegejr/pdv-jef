@@ -102,7 +102,7 @@
                 </svg>
             </button>
             <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
-                <a href="{{ route('usuarios.criar') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Criar Usuário</a>
+                <a href="{{ route('usuarios.index') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Usuários</a>
             </div>
         </div>
     </nav>

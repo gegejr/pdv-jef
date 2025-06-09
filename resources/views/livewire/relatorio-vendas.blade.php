@@ -44,20 +44,20 @@
             <h2 class="text-xl font-bold mb-4">Relatório de Vendas</h2>
 
             <!-- Filtros -->
-            <div class="mb-4 no-print">
+           <div class="mb-4 no-print">
                 <form wire:submit.prevent="filtrarRelatorio">
-                    <div class="grid grid-cols-4 gap-4">
+                    <div class="grid grid-cols-6 gap-2 items-end">
                         <div>
-                            <label class="block text-sm">Data Inicial</label>
-                            <input type="date" wire:model="data_inicial" class="w-full border p-2 rounded">
+                            <label class="block text-xs font-medium">Data Inicial</label>
+                            <input type="date" wire:model="data_inicial" class="w-full border p-1 text-sm rounded">
                         </div>
                         <div>
-                            <label class="block text-sm">Data Final</label>
-                            <input type="date" wire:model="data_final" class="w-full border p-2 rounded">
+                            <label class="block text-xs font-medium">Data Final</label>
+                            <input type="date" wire:model="data_final" class="w-full border p-1 text-sm rounded">
                         </div>
                         <div>
-                            <label class="block text-sm">Método de Pagamento</label>
-                            <select wire:model="metodo_pagamento" class="w-full border p-2 rounded">
+                            <label class="block text-xs font-medium">Método de Pagamento</label>
+                            <select wire:model="metodo_pagamento" class="w-full border p-1 text-sm rounded">
                                 <option value="">Selecione...</option>
                                 <option value="credito">Crédito</option>
                                 <option value="debito">Débito</option>
@@ -66,20 +66,32 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm">Caixa</label>
-                            <select wire:model="caixa_id" class="w-full border p-2 rounded">
+                            <label class="block text-xs font-medium">Usuário</label>
+                            <select wire:model="usuario_id" class="w-full border p-1 text-sm rounded">
+                                <option value="">Todos</option>
+                                @foreach($usuarios as $usuario)
+                                    <option value="{{ $usuario->id }}">{{ $usuario->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium">Caixa</label>
+                            <select wire:model="caixa_id" class="w-full border p-1 text-sm rounded">
                                 <option value="">Selecione...</option>
                                 @foreach($caixas as $caixa)
                                     <option value="{{ $caixa->id }}">{{ $caixa->nome }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-span-4 mt-4">
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Filtrar</button>
+                        <div>
+                            <button type="submit" class="bg-blue-500 text-white text-sm px-3 py-1.5 rounded w-full">
+                                Filtrar
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
+
 
             <!-- ÁREA A SER IMPRESSA -->
             <div class="print-area">
@@ -98,7 +110,7 @@
                                     <th class="px-6 py-3">Caixa</th>
                                     {{-- nova coluna --}}
                                     <th class="px-6 py-3">NF-e</th>
-                                    <th class="px-6 py-3">Nota Fiscal</th>
+                                    <!-- <th class="px-6 py-3">Nota Fiscal</th>-->
                                     <th class="px-6 py-3">Estorno</th>
                                     <th class="px-6 py-3">Ações</th>
                                 </tr>
@@ -131,13 +143,19 @@
                                             @if($venda->status === 'estornada')
                                                 <span class="text-red-600 font-semibold">Estornada</span>
                                             @else
-                                                <span class="text-green-600">OK</span>
+                                                <div class="flex flex-col gap-1">
+                                                    <span class="text-green-600">OK</span>
+                                                    <button wire:click="confirmarEstorno({{ $venda->id }})"
+                                                            class="text-red-600 text-sm hover:underline w-fit">
+                                                        Estornar
+                                                    </button>
+                                                </div>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-500 relative">
                         
                                             <button wire:click="detalhesVenda({{ $venda->id }})" class="w-full text-left px-4 py-2 hover:bg-gray-100">Ver Detalhes</button>
-                                            <button wire:click="confirmarEstorno({{ $venda->id }})" class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">Estornar</button>
+                                           
                                         </td>
                                         
                                     </tr>

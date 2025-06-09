@@ -23,7 +23,8 @@ class RelatorioVendas extends Component
     public $confirmandoEstorno = false;
     public $motivoEstorno = '';
     public $vendaParaEstornar = null;
-    
+    public $usuario_id;
+
     protected $listeners = [
         'filtrarRelatorio',
         'imprimir-relatorio' => 'imprimirRelatorio',
@@ -60,12 +61,17 @@ class RelatorioVendas extends Component
         if ($this->caixa_id) {
             $query->where('caixa_id', $this->caixa_id);
         }
-    
+        if ($this->usuario_id) {
+            $query->where('user_id', $this->usuario_id);
+        }
+
+        $usuarios = \App\Models\User::all();
+
         $vendas = $query->with(['caixa', 'pagamentos', 'user'])->paginate(10);
         $caixas = Caixa::all();
         
     
-        return view('livewire.relatorio-vendas', compact('vendas', 'caixas'));
+        return view('livewire.relatorio-vendas', compact('vendas', 'caixas', 'usuarios'));
     }
 
     public function carregarVendas()
