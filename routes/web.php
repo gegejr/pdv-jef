@@ -174,3 +174,4 @@ Route::get('/relatorio-produtos', [ExportarProdutos::class, 'exportar'])->name('
 
 
 Route::get('/financeiro', FinancialTransactions::class)->name('financeiro.index');
+Route::get('/contas', FinancialTransactions::class)->name('contas-transacoes');

@@ -133,7 +133,7 @@
                             </tr>
                         </thead>
                         <tbody class="text-sm">
-                            @foreach($ultimasVendas as $venda)
+                            @forelse($ultimasVendas as $venda)
                                 <tr class="border-t hover:bg-gray-50">
                                     <td class="px-6 py-4 text-center">{{ $venda->id }}</td>
                                     <td class="px-6 py-4 text-center">{{ $venda->user->name }}</td>
@@ -146,8 +146,12 @@
                                     </td>
                                     <td class="px-6 py-4 text-center">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
                                 </tr>
-                                
-                            @endforeach
+                                 @empty
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">Nenhuma venda realizada.</td>
+                                </tr>
+                        
+                            @endforelse
 
                             
                         </tbody>

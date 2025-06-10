@@ -76,7 +76,7 @@
             </button>
             <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
                 <a href="{{ route('clientes') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Adicionar Cliente</a>
-                <a href="{{ route('cliente.conta') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Conta Cliente</a>
+                <a href="#" class="block px-2 py-1 rounded hover:bg-gray-100">Relacionamento Cliente</a>
             </div>
         </div>
         <div x-data="{ open: false }" class="space-y-1">
@@ -94,7 +94,7 @@
             </button>
             <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
                 <a href="{{ route('financeiro.index') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Contas a pagar/receber</a>
-                
+                <a href="{{ route('cliente.conta') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Conta Cliente</a>
             </div>
         </div>
 
