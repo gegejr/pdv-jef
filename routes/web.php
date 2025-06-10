@@ -24,7 +24,7 @@ use App\Livewire\Search;
 use App\Livewire\UsuariosCrud;
 use App\Http\Controllers\ExportarProdutos;
 use App\Livewire\FinancialTransactions;
-
+use App\Livewire\RelacionamentoClientes;
 // Página inicial
 Route::get('/', function () {
     /** @var \Illuminate\Contracts\Auth\Guard $auth */
@@ -175,3 +175,5 @@ Route::get('/relatorio-produtos', [ExportarProdutos::class, 'exportar'])->name('
 
 Route::get('/financeiro', FinancialTransactions::class)->name('financeiro.index');
 Route::get('/contas', FinancialTransactions::class)->name('contas-transacoes');
+
+Route::get('/relacionamento-clientes', RelacionamentoClientes::class)->name('relacionamento.clientes');

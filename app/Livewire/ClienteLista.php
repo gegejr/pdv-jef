@@ -6,6 +6,8 @@ use Livewire\Component;
 use App\Models\Cliente;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Http;
+use App\Models\RelacionamentoCliente;
+
 class ClienteLista extends Component
 {
     use WithPagination;
@@ -20,7 +22,7 @@ class ClienteLista extends Component
     public $modoEdicao = false;
     public $mensagemErro = '';
     public $cnae_id; // valor selecionado
-
+    public $temWhatsapp;
     protected function rules()
     {
         return [
@@ -61,38 +63,69 @@ class ClienteLista extends Component
         $this->clientes = Cliente::all();
     }
 
+
+
     public function salvar()
     {
         try {
             $this->validate($this->regrasValidacao());
 
-            Cliente::create([
-                'tipo_pessoa' => $this->tipo_pessoa,
-                'nome' => $this->nome,
-                'razao_social' => $this->razao_social,
-                'nome_fantasia' => $this->nome_fantasia,
-                'cnae_id' => $this->cnae_id,
-                'cpf_cnpj' => $this->cpf_cnpj,
+            // 1. Criar cliente
+            $cliente = Cliente::create([
+                'tipo_pessoa'     => $this->tipo_pessoa,
+                'nome'            => $this->nome,
+                'razao_social'    => $this->razao_social,
+                'nome_fantasia'   => $this->nome_fantasia,
+                'cnae_id'         => $this->cnae_id,
+                'cpf_cnpj'        => $this->cpf_cnpj,
                 'data_nascimento' => $this->data_nascimento,
-                'telefone' => $this->telefone,
-                'email' => $this->email,
-                'cep' => $this->cep,
-                'numero' => $this->numero,
-                'bairro' => $this->bairro,
-                'cidade' => $this->cidade,
-                'uf' => $this->uf,
-                'complemento' => $this->complemento,
-                'codigo_ibge' => $this->codigo_ibge,
-                'ie' => $this->ie,
-                'im' => $this->im,
+                'telefone'        => $this->telefone,
+                'email'           => $this->email,
+                'cep'             => $this->cep,
+                'numero'          => $this->numero,
+                'bairro'          => $this->bairro,
+                'cidade'          => $this->cidade,
+                'uf'              => $this->uf,
+                'complemento'     => $this->complemento,
+                'codigo_ibge'     => $this->codigo_ibge,
+                'ie'              => $this->ie,
+                'im'              => $this->im,
             ]);
 
+            // 2. Verificar se tem WhatsApp
+            $telefoneLimpo = preg_replace('/\D/', '', $cliente->telefone);
+            $response = Http::get("https://api.z-api.io/instances/3E28372FE24150EA84892A9B2850D0B6/token/3D1D1A89F97F705C7092ABC6/phone-exists", [
+                'phone' => $telefoneLimpo,
+            ]);
+
+            $temWhatsapp = false;
+            if ($response->ok()) {
+                $data = $response->json();
+                $temWhatsapp = isset($data[0]['exists']) && $data[0]['exists'] === 'true';
+            }
+
+            // 3. Criar relacionamento
+            RelacionamentoCliente::create([
+                'cliente_id'     => $cliente->id,
+                'tem_whatsapp'   => $temWhatsapp,
+            ]);
+
+            // 4. Se os componentes estiverem na mesma página
+            $this->dispatch('clienteAtualizado');
+
+            // 5. Limpar os campos
             $this->resetCampos();
-            $this->carregarClientes();
+
+            // 6. Opcional: redirecionar, se for outra página
+            // return redirect()->route('relacionamento-clientes.index');
+
         } catch (\Illuminate\Validation\ValidationException $e) {
-            $this->mensagemErro = json_encode($e->errors()); // ou use um log
+            $this->mensagemErro = json_encode($e->errors());
+        } catch (\Exception $e) {
+            $this->mensagemErro = 'Erro ao salvar: ' . $e->getMessage();
         }
     }
+
 
 
     protected function regrasValidacao()

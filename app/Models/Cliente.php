@@ -42,6 +42,11 @@ class Cliente extends Model
     {
         return $this->belongsTo(Cnae::class, 'cnae_id');
     }
+
+    public function relacionamento()
+    {
+        return $this->hasOne(RelacionamentoCliente::class);
+    }
 }
 
 

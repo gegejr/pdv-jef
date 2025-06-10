@@ -76,7 +76,9 @@
             </button>
             <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
                 <a href="{{ route('clientes') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Adicionar Cliente</a>
-                <a href="#" class="block px-2 py-1 rounded hover:bg-gray-100">Relacionamento Cliente</a>
+                <a href="{{ route('relacionamento.clientes') }}"class="block px-2 py-1 rounded hover:bg-gray-100">
+                    Relacionamento Cliente
+                </a>
             </div>
         </div>
         <div x-data="{ open: false }" class="space-y-1">

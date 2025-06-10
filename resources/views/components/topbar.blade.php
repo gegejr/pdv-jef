@@ -7,7 +7,11 @@
 
     <!-- Saudação + Logout -->
     <div class="flex items-center space-x-6">
-        <span class="text-sm font-medium text-gray-700">Olá, <span class="font-semibold text-gray-800">{{ Auth::user()->name }}</span></span>
+        @auth
+            <span class="text-sm font-medium text-gray-700">
+                Olá, <span class="font-semibold text-gray-800">{{ Auth::user()->name }}</span>
+            </span>
+        @endauth
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
