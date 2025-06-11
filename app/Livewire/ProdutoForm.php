@@ -53,7 +53,7 @@ class ProdutoForm extends Component
     public $registrar_perda = false;
     public $quantidade_perda;
     public $motivo_perda;
-
+    public $segmento;
     protected $listeners = ['editarProduto'];
 
     /* ----------------------------------- */
@@ -63,6 +63,7 @@ class ProdutoForm extends Component
     {
         // Verificação de assinatura (conforme seu fluxo)
         
+        $this->segmento = env('CLIENTE_SEGMENTO', 'geral'); // 'geral' como padrão caso não tenha
 
         // Carrega categorias 1× (evita consulta a cada render)
         $this->categorias = Categoria::orderBy('nome')->get()->toArray();
@@ -125,6 +126,10 @@ class ProdutoForm extends Component
     {
         $this->validate($this->rules());
 
+         if ($this->segmento !== 'loja' && empty($this->genero)) {
+        $this->genero = null;  // para garantir que não quebre no DB se for nullable
+        }
+
         // Upload (se existir imagem nova)
         $caminhoImagem = $this->imagem ?
             $this->imagem->store('produtos', 'public') :
@@ -143,7 +148,7 @@ class ProdutoForm extends Component
             'imagem'          => $caminhoImagem,
             'tamanho'  => $this->tamanho,
             'cor'      => $this->cor,
-            'genero'   => $this->genero,
+            'genero' => $this->genero,
             'marca'    => $this->marca,
             'material' => $this->material,
             'modelo'   => $this->modelo,
@@ -192,7 +197,7 @@ class ProdutoForm extends Component
     /* ----------------------------------- */
     protected function rules()
     {
-        return [
+        $rules = [
             'nome'            => 'required|string|max:255',
             'codigo_barras'   => 'nullable|string|max:100',
             'sku'             => 'nullable|string|max:100|unique:produtos,sku,' . $this->produto_id,
@@ -204,26 +209,37 @@ class ProdutoForm extends Component
             'categoria_id'    => 'required|exists:categorias,id',
             'status'          => 'required|in:ativo,inativo',
             'imagem'          => 'nullable|image|max:2048',
-            'tamanho'  => 'nullable|string|max:20',
-            'cor'      => 'nullable|string|max:30',
-            'genero' => 'required|in:masculino,feminino,unissex',
-            'marca'    => 'nullable|string|max:50',
-            'material' => 'nullable|string|max:50',
-            'modelo'   => 'nullable|string|max:50',
-            'colecao'  => 'nullable|string|max:50',
+            'marca'           => 'nullable|string|max:50',
+            'material'        => 'nullable|string|max:50',
+            'modelo'          => 'nullable|string|max:50',
+            'colecao'         => 'nullable|string|max:50',
             'desconto_padrao' => 'nullable|numeric|min:0',
             'quantidade_perda'=> 'nullable|integer|min:1',
             'motivo_perda'    => 'nullable|in:quebra,descarte,perda',
-            'cst_icms'    => 'nullable|string|max:3',
-            'icms_rate'   => 'nullable|numeric|min:0',
-            'cst_ipi'     => 'nullable|string|max:3',
-            'ipi_rate'    => 'nullable|numeric|min:0',
-            'cst_pis'     => 'nullable|string|max:3',
-            'pis_rate'    => 'nullable|numeric|min:0',
-            'cst_cofins'  => 'nullable|string|max:3',
-            'cofins_rate' => 'nullable|numeric|min:0',
+            'cst_icms'        => 'nullable|string|max:3',
+            'icms_rate'       => 'nullable|numeric|min:0',
+            'cst_ipi'         => 'nullable|string|max:3',
+            'ipi_rate'        => 'nullable|numeric|min:0',
+            'cst_pis'         => 'nullable|string|max:3',
+            'pis_rate'        => 'nullable|numeric|min:0',
+            'cst_cofins'      => 'nullable|string|max:3',
+            'cofins_rate'     => 'nullable|numeric|min:0',
         ];
+
+        // Se for loja, regras extras para moda:
+       if ($this->segmento === 'loja') {
+            $rules['tamanho'] = 'nullable|string|max:20';
+            $rules['cor'] = 'nullable|string|max:30';
+            $rules['genero'] = 'required|string';
+        } else {
+            $rules['tamanho'] = 'nullable|string|max:20';
+            $rules['cor'] = 'nullable|string|max:30';
+            $rules['genero'] = 'nullable|string';
+        }
+
+        return $rules;
     }
+
 
     protected function resetForm()
     {

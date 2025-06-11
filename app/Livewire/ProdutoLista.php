@@ -38,7 +38,37 @@ class ProdutoLista extends Component
     public $produtosEmFalta = [];
     public $showFalta = false;
     protected $listeners = ['editarProduto']; // Adicionando o listener para o evento
+    public $produto_id;      // usado para update
+       // compatibilidade com o emit anterior
 
+
+    public $sku;
+
+    public $ncm;
+
+    public $preco_custo;
+
+    public $unidade_medida = 'un';
+   
+    public $cst_icms;
+    public $icms_rate;
+    public $cst_ipi;
+    public $ipi_rate;
+    public $cst_pis;
+    public $pis_rate;
+    public $cst_cofins;
+    public $cofins_rate;
+    public $categoria_id;
+    public $status = 'ativo';
+    public $tamanho;
+    public $cor;
+    public $genero;
+    public $marca;
+    public $material;
+    public $modelo;
+    public $colecao;
+
+    public string $tipo_produto = 'geral';
     public function atualizarPagina()
     {
         $this->resetPage();
@@ -81,13 +111,35 @@ class ProdutoLista extends Component
         $produto = Produto::findOrFail($id);
     
         // Preencher os campos do formulário com os dados do produto
-        $this->nome = $produto->nome;
-        $this->codigo_barras = $produto->codigo_barras;
-        $this->descricao = $produto->descricao;
-        $this->valor = $produto->valor;
-        $this->estoque = $produto->estoque;
-        $this->desconto_padrao = $produto->desconto_padrao;
+        $this->produto_id       = $produto->id;
+        $this->nome             = $produto->nome;
+        $this->codigo_barras    = $produto->codigo_barras;
+        $this->sku              = $produto->sku;
+        $this->descricao        = $produto->descricao;
+        $this->ncm              = $produto->ncm;
+        $this->valor            = $produto->valor;
+        $this->preco_custo      = $produto->preco_custo;
+        $this->estoque          = $produto->estoque;
+        $this->unidade_medida   = $produto->unidade_medida;
+        $this->desconto_padrao  = $produto->desconto_padrao;
+        $this->categoria_id     = $produto->categoria_id;
+        $this->status           = $produto->status;
         $this->imagem_existente = $produto->imagem;
+        $this->tamanho = $produto->tamanho;
+        $this->cor = $produto->cor;
+        $this->genero = $produto->genero;
+        $this->marca = $produto->marca;
+        $this->material = $produto->material;
+        $this->modelo = $produto->modelo;
+        $this->colecao = $produto->colecao;
+        $this->cst_icms     = $produto->cst_icms;
+        $this->icms_rate    = $produto->icms_rate;
+        $this->cst_ipi      = $produto->cst_ipi;
+        $this->ipi_rate     = $produto->ipi_rate;
+        $this->cst_pis      = $produto->cst_pis;
+        $this->pis_rate     = $produto->pis_rate;
+        $this->cst_cofins   = $produto->cst_cofins;
+        $this->cofins_rate  = $produto->cofins_rate;
     
         // Emitir o evento para abrir o modal
         $this->dispatch('openModal');
