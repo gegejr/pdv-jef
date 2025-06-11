@@ -68,8 +68,10 @@
                                 <button wire:click="excluir({{ $cliente->id }})" class="text-red-600 hover:underline">Excluir</button>
                             </td>
                         </tr>
-                    @empty
-                        <tr><td colspan="4" class="px-4 py-2 text-center">Nenhum cliente encontrado.</td></tr>
+                      @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-4 text-center text-gray-500">Nenhum cliente encontrado.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
@@ -106,6 +108,7 @@
                                 <select wire:model.live="tipo_pessoa"
                                     class="w-full border px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     @if($modoVisualizacao || $modoEdicao) disabled @endif>
+                                    <option value="#">Selecione o tipo de cliente</option>
                                     <option value="fisica" @if($modoVisualizacao || $modoEdicao) disabled @endif>Física</option>
                                     <option value="juridica" class="" @if($modoVisualizacao || $modoEdicao) disabled @endif>Jurídica</option>
                                 </select>

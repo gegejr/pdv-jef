@@ -79,6 +79,9 @@
                 <a href="{{ route('relacionamento.clientes') }}"class="block px-2 py-1 rounded hover:bg-gray-100">
                     Relacionamento Cliente
                 </a>
+                <a href="{{ route('reserva.cliente') }}"class="block px-2 py-1 rounded hover:bg-gray-100">
+                    Reservas
+                </a>
             </div>
         </div>
         <div x-data="{ open: false }" class="space-y-1">

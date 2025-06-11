@@ -7,6 +7,7 @@ use App\Models\Cliente;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Http;
 use App\Models\RelacionamentoCliente;
+use Illuminate\Support\Facades\Log;
 
 class ClienteLista extends Component
 {
@@ -93,21 +94,22 @@ class ClienteLista extends Component
             ]);
 
             // 2. Verificar se tem WhatsApp
-            $telefoneLimpo = preg_replace('/\D/', '', $cliente->telefone);
-            $response = Http::get("https://api.z-api.io/instances/3E28372FE24150EA84892A9B2850D0B6/token/3D1D1A89F97F705C7092ABC6/phone-exists", [
-                'phone' => $telefoneLimpo,
-            ]);
+           $telefoneLimpo = preg_replace('/\D/', '', $cliente->telefone);
+
+            $response = Http::withHeaders([
+                'Client-Token' => 'F72e79ed4e6244e699f85d5186dda9e0cS',
+            ])->get("https://api.z-api.io/instances/3E28372FE24150EA84892A9B2850D0B6/token/58283665433F6AC13F7C9AED/phone-exists/{$telefoneLimpo}");
 
             $temWhatsapp = false;
             if ($response->ok()) {
                 $data = $response->json();
-                $temWhatsapp = isset($data[0]['exists']) && $data[0]['exists'] === 'true';
+                Log::info('Resposta da API: ' . print_r($data, true));
+                $temWhatsapp = $data['exists'] ?? false;
             }
-
-            // 3. Criar relacionamento
+           // dd($temWhatsapp); // <- isso deve ser true
             RelacionamentoCliente::create([
-                'cliente_id'     => $cliente->id,
-                'tem_whatsapp'   => $temWhatsapp,
+                'cliente_id' => $cliente->id,
+                'tem_whatsapp' => $temWhatsapp,
             ]);
 
             // 4. Se os componentes estiverem na mesma página
@@ -243,15 +245,18 @@ class ClienteLista extends Component
     {
         $cliente = Cliente::findOrFail($clienteId);
 
-        // Verifica se o relacionamento existe antes de tentar acessá-lo
         if (method_exists($cliente, 'vendas') && $cliente->vendas()->exists()) {
             $this->mensagemErro = "Não é possível excluir o cliente '{$cliente->nome}' porque ele possui vendas registradas.";
             return;
         }
 
         $cliente->delete();
-        $this->mensagemErro = ''; // Limpa a mensagem se for bem-sucedido
+        $this->mensagemErro = '';
+
+        // Atualiza a lista de clientes
+        $this->clientes = Cliente::all();
     }
+
     public function ver($id)
     {
         $cliente = Cliente::findOrFail($id);

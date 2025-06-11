@@ -62,9 +62,7 @@ class ProdutoForm extends Component
     public function mount($id = null)
     {
         // Verificação de assinatura (conforme seu fluxo)
-        if (!auth()->user()->hasValidSubscription()) {
-            return redirect()->route('subscription.expired');
-        }
+        
 
         // Carrega categorias 1× (evita consulta a cada render)
         $this->categorias = Categoria::orderBy('nome')->get()->toArray();
@@ -199,7 +197,7 @@ class ProdutoForm extends Component
             'codigo_barras'   => 'nullable|string|max:100',
             'sku'             => 'nullable|string|max:100|unique:produtos,sku,' . $this->produto_id,
             'valor'           => 'required|numeric|min:0',
-            'preco_custo'     => 'required|numero|min:0',
+            'preco_custo'     => 'required|numeric|min:0',
             'estoque'         => 'required|integer|min:0',
             'unidade_medida'  => 'required|in:un,kg,l,cx',
             'ncm'             => 'required|string|max:255',
@@ -208,7 +206,7 @@ class ProdutoForm extends Component
             'imagem'          => 'nullable|image|max:2048',
             'tamanho'  => 'nullable|string|max:20',
             'cor'      => 'nullable|string|max:30',
-            'genero'   => 'nullable|in:masculino,feminino,unissex',
+            'genero' => 'required|in:masculino,feminino,unissex',
             'marca'    => 'nullable|string|max:50',
             'material' => 'nullable|string|max:50',
             'modelo'   => 'nullable|string|max:50',

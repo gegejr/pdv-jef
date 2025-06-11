@@ -47,6 +47,11 @@ class Cliente extends Model
     {
         return $this->hasOne(RelacionamentoCliente::class);
     }
+    
+    public function reservas()
+    {
+        return $this->hasMany(Reserva::class);
+    }
 }
 
 

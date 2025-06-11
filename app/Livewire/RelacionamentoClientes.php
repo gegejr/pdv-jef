@@ -44,4 +44,18 @@ class RelacionamentoClientes extends Component
 
         $this->carregarClientes();
     }
+
+    public function registrarInteracao($relacionamentoId, $telefone)
+    {
+        $rel = RelacionamentoCliente::find($relacionamentoId);
+
+        if ($rel) {
+            $rel->ultima_interacao = now();
+            $rel->save();
+
+            $this->dispatch('abrir-whatsapp', ['telefone' => $telefone]);
+        }
+    }
+
+
 }

@@ -25,6 +25,7 @@ use App\Livewire\UsuariosCrud;
 use App\Http\Controllers\ExportarProdutos;
 use App\Livewire\FinancialTransactions;
 use App\Livewire\RelacionamentoClientes;
+use App\Livewire\ReservaForm;
 // Página inicial
 Route::get('/', function () {
     /** @var \Illuminate\Contracts\Auth\Guard $auth */
@@ -177,3 +178,6 @@ Route::get('/financeiro', FinancialTransactions::class)->name('financeiro.index'
 Route::get('/contas', FinancialTransactions::class)->name('contas-transacoes');
 
 Route::get('/relacionamento-clientes', RelacionamentoClientes::class)->name('relacionamento.clientes');
+
+
+Route::get('/reservas', ReservaForm::class)->name('reserva.cliente');

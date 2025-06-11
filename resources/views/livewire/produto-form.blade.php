@@ -13,9 +13,15 @@
                         {{ $produto_id ? 'Editar Produto' : 'Cadastrar Produto' }}
                     </h2>
 
+                    
                     @if (session()->has('sucesso'))
-                        <div class="flex items-center gap-2 bg-green-100 text-green-800 p-3 rounded shadow">
-                            <x-heroicon-o-check-circle class="w-5 h-5" />
+                        <div 
+                            x-data="{ show: true }"
+                            x-init="setTimeout(() => show = false, 3000)" 
+                            x-show="show"
+                            x-transition
+                            class="fixed top-4 right-4 p-4 bg-green-100 text-green-800 rounded shadow-lg z-50"
+                        >
                             {{ session('sucesso') }}
                         </div>
                     @endif
