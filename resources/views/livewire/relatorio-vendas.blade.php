@@ -94,7 +94,7 @@
 
 
             <!-- ÁREA A SER IMPRESSA -->
-            <div class="print-area">
+            <div wire:loading.class="opacity-50 pointer-events-none relative">
                 <div class="overflow-x-auto bg-white shadow rounded-lg max-w-full">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -162,11 +162,21 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        
                     </div>
                 </div>
 
                 <div class="mt-4">
                     {{ $vendas->links() }}
+                </div>
+                <div wire:loading
+                    class="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center">
+                    <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
                 </div>
             </div>
         </div>
