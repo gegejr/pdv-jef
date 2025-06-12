@@ -32,12 +32,27 @@
             </span>
         </a>
 
-        <a href="{{ route('relatorio-vendas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
-            <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M19 7l-7 7-7-7m7 4V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-            </svg>
-            <span>Relatório de Vendas</span>
-        </a>
+        
+        <!-- Relatorios Dropdown -->
+        <div x-data="{ open: false }" class="space-y-1">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                <span class="flex items-center gap-3 text-gray-700">
+                    <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 7l-7 7-7-7m7 4V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    </svg>
+                    Relatórios
+                </span>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+            <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
+                <a href="{{ route('relatorio-vendas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                    <span>Relatório de Vendas</span>
+                </a>
+                
+            </div>
+        </div>
 
         <!-- Produtos Dropdown -->
         <div x-data="{ open: false }" class="space-y-1">

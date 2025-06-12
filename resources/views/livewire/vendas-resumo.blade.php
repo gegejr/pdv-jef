@@ -13,15 +13,5 @@
         <canvas id="chartTotalVendas" class="mt-4" style="height:70px;"></canvas>
     </div>
 
-    <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-5 rounded-xl shadow hover:shadow-xl transition transform hover:scale-105 duration-300">
-        <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-md font-semibold text-green-900 dark:text-green-100">Número de Vendas</h3>
-                <p class="text-3xl font-bold text-green-700 dark:text-green-200 mt-2">{{ $numeroVendas }}</p>
-            </div>
-            <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-200/50 dark:bg-green-700/30">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-1-0"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M17 10V4h-2"/><path d="M15 10h4"/><rect x="15" y="14" width="4" height="6" ry="2"/></svg>
-            </div>
-        </div>
-    </div>
+    
 </div>

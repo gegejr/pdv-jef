@@ -9,6 +9,7 @@ use App\Models\Venda;
 use App\Models\Pagamento;
 use App\Models\Cliente;
 use App\Services\NFeService;
+use App\Models\FinancialTransaction;
 use Illuminate\Support\Facades\DB;
 
 class Carrinho extends Component
@@ -233,6 +234,17 @@ class Carrinho extends Component
             ]);
             $this->pagamentos = [['tipo' => '', 'valor' => 0]];
 
+            FinancialTransaction::create([
+            'descricao'       => 'Recebimento da venda #' . $venda->id,
+            'tipo'            => 'receber',
+            'valor'           => $venda->total - $venda->desconto_total,
+            'data_vencimento' => now(), // ou outra lógica se quiser definir recebimento futuro
+            'data_pagamento'  => now(), // se foi pago na hora
+            'pago'            => true,
+            'categoria'       => 'Venda',
+            'cliente_id'      => $venda->cliente_id,
+        ]);
+
             session()->flash('message', 'Venda finalizada com sucesso!');          
             
             
@@ -241,8 +253,11 @@ class Carrinho extends Component
             //$this->dispatch('imprimir-cupom', venda_id: $this->vendaFinalizadaId); // Laravel 10+
            // $this->vendaFinalizadaId = null;
 
+
             return;
-            
+
+        
+
         } catch (\Throwable $e) {
             DB::rollBack();
             session()->flash('error', 'Erro ao finalizar a venda: ' . $e->getMessage());

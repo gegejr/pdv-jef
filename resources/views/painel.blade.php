@@ -86,7 +86,20 @@
 
        <!-- Cards Resumo -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <!-- Vendas do Dia -->
+           
+             <!-- Card Livewire -->
+            @livewire('vendas-resumo', ['inicio' => request('inicio'), 'fim' => request('fim')])
+
+            <div class="bg-red-100 p-4 rounded shadow">
+                <p class="text-red-700 font-semibold">Total de Despesas</p>
+                <p class="text-2xl text-red-800">R$ {{ number_format($totalPago, 2, ',', '.') }}</p>
+            </div>
+
+            <div class="bg-green-100 p-4 rounded shadow">
+                <p class="text-green-700 font-semibold">Fluxo de Caixa</p>
+                <p class="text-2xl text-green-800">R$ {{ number_format($fluxoCaixa, 2, ',', '.') }}</p>
+            </div>
+             <!-- Vendas do Dia -->
             <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-5 rounded-xl shadow hover:shadow-xl transition transform hover:scale-105 duration-300">
                 <div class="flex items-center justify-between">
                     <div>
@@ -100,24 +113,11 @@
                     </div>
                 </div>
             </div>
-
             <!-- Relatório -->
-            <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-5 rounded-xl shadow hover:shadow-xl transition transform hover:scale-105 duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="text-md font-semibold text-yellow-900 mb-6">Relatório</h3>
-                        <a href="{{ route('relatorio-vendas') }}" class="text-yellow-700 font-bold hover:underline">Ver Relatório →</a>
-                    </div>
-                    <div class="flex items-center justify-center w-12 h-12 bg-yellow-200/50 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 8h7"/><path d="M8 12h6"/><path d="M11 16h5"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
+            
 
-            <!-- Card Livewire -->
-            @livewire('vendas-resumo', ['inicio' => request('inicio'), 'fim' => request('fim')])
+            
+           
         </div>
 
         <!-- Últimas Vendas -->

@@ -26,6 +26,7 @@ use App\Http\Controllers\ExportarProdutos;
 use App\Livewire\FinancialTransactions;
 use App\Livewire\RelacionamentoClientes;
 use App\Livewire\ReservaForm;
+use Illuminate\Support\Facades\DB;
 // Página inicial
 Route::get('/', function () {
     /** @var \Illuminate\Contracts\Auth\Guard $auth */
@@ -87,6 +88,21 @@ Route::get('/painel', function (Request $request) {
 
     $vendas = Venda::with('caixa')->get();
     $caixa = Caixa::whereNull('fechado_em')->first();
+    
+   // Entradas reais (dinheiro que entrou)
+    $totalRecebido = \App\Models\FinancialTransaction::where('tipo', 'receber')
+        ->where('pago', true)
+        ->when($inicio && $fim, fn($q) => $q->whereBetween('data_pagamento', [$inicio, $fim]))
+        ->sum('valor');
+
+    // Saídas (dinheiro que saiu)
+    $totalPago = \App\Models\FinancialTransaction::where('tipo', 'pagar')
+        ->where('pago', true)
+        ->when($inicio && $fim, fn($q) => $q->whereBetween('data_pagamento', [$inicio, $fim]))
+        ->sum('valor');
+
+    // Saldo final
+    $fluxoCaixa = $totalRecebido - $totalPago;
 
     return view('painel', compact(
         'totalVendas',
@@ -100,6 +116,8 @@ Route::get('/painel', function (Request $request) {
         'vendas',
         'caixa',
         'vendasHoje',
+        'fluxoCaixa',
+        'totalPago',
     ));
 })->middleware('auth')->name('painel');
 
