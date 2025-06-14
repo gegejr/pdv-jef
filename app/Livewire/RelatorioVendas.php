@@ -9,6 +9,7 @@ use App\Models\ItemVenda;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use App\Jobs\EmitirNotaJob; // coloque isso no topo do seu componente
+use App\Models\Servico;
 
 class RelatorioVendas extends Component
 {
@@ -24,7 +25,7 @@ class RelatorioVendas extends Component
     public $motivoEstorno = '';
     public $vendaParaEstornar = null;
     public $usuario_id;
-
+    public $servicos;
     protected $listeners = [
         'filtrarRelatorio',
         'imprimir-relatorio' => 'imprimirRelatorio',
@@ -38,6 +39,7 @@ class RelatorioVendas extends Component
         }
         $this->resetModal();   // ← toda vez que o componente é montado
         $this->carregarVendas();
+        $this->servicos = Servico::orderBy('nome')->get();
     }
 
     public function render()

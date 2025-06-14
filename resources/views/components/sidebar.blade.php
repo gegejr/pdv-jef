@@ -32,53 +32,6 @@
             </span>
         </a>
 
-        
-        <!-- Relatorios Dropdown -->
-        <div x-data="{ open: false }" class="space-y-1">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
-                <span class="flex items-center gap-3 text-gray-700">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M19 7l-7 7-7-7m7 4V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                    </svg>
-                    Relatórios
-                </span>
-                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-            <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
-                <a href="{{ route('relatorio-vendas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
-                    <span>Relatório de Vendas</span>
-                </a>
-                <a href="{{ route('relatorio.financeiro') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
-                    <span>Relatório Pagar/Receber</span>
-                </a>
-                
-            </div>
-        </div>
-
-        <!-- Produtos Dropdown -->
-        <div x-data="{ open: false }" class="space-y-1">
-            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
-                <span class="flex items-center gap-3 text-gray-700">
-                    <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-                        <path d="M3 9h18M3 15h18" />
-                    </svg>
-                    Produtos
-                </span>
-                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M9 5l7 7-7 7" />
-                </svg>
-            </button>
-            <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
-                <a href="{{ route('produtos.lista') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Listar Produtos</a>
-                <a href="{{ route('adicionar-produto') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Adicionar Produto</a>
-                <a href="{{ route('produtos-perda-lista') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Ver Perdas</a>
-            </div>
-        </div>
-
-        <!-- Clientes Dropdown -->
         <div x-data="{ open: false }" class="space-y-1">
             <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
                 <span class="flex items-center gap-3 text-gray-700">
@@ -102,6 +55,59 @@
                 </a>
             </div>
         </div>
+
+        <!-- Produtos Dropdown -->
+        <div x-data="{ open: false }" class="space-y-1">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                <span class="flex items-center gap-3 text-gray-700">
+                    <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                        <path d="M3 9h18M3 15h18" />
+                    </svg>
+                    Produtos
+                </span>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+            <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
+                <a href="{{ route('produtos.lista') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Listar Produtos</a>
+                <a href="{{ route('adicionar-produto') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Adicionar Produto</a>
+                <a href="{{ route('produtos-perda-lista') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Ver Perdas</a>
+            </div>
+        </div>
+        <div x-data="{ open: false }" class="space-y-1">
+            <button @click="open = !open"
+                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                <span class="flex items-center gap-3 text-gray-700">
+                    <!-- Ícone de engrenagem (Heroicons outline) -->
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-gray-500 group-hover:text-indigo-600"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11.25 2.25c.621 0 1.125.504 1.125 1.125v1.08a8.25 8.25 0 012.76.983l.766-.767a1.125 1.125 0 111.591 1.591l-.767.766a8.25 8.25 0 01.983 2.76h1.08a1.125 1.125 0 110 2.25h-1.08a8.25 8.25 0 01-.983 2.76l.767.766a1.125 1.125 0 11-1.591 1.591l-.766-.767a8.25 8.25 0 01-2.76.983v1.08a1.125 1.125 0 11-2.25 0v-1.08a8.25 8.25 0 01-2.76-.983l-.766.767a1.125 1.125 0 11-1.591-1.591l.767-.766a8.25 8.25 0 01-.983-2.76H2.25a1.125 1.125 0 110-2.25h1.08a8.25 8.25 0 01.983-2.76l-.767-.766a1.125 1.125 0 111.591-1.591l.766.767a8.25 8.25 0 012.76-.983V3.375c0-.621.504-1.125 1.125-1.125zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" />
+                    </svg>
+                    Serviços
+                </span>
+
+                <!-- Chevron -->
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 text-gray-500 transition-transform duration-200"
+                    :class="{ 'rotate-90': open }"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
+            <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
+                <a href="{{ route('listar-servicos') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Listar Serviços</a>
+                <a href="{{ route('adicionar-servico') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Adicionar Serviços</a>
+                
+            </div>
+        </div>
+        <!-- Clientes Dropdown -->
+        @if(auth()->user()->role === 'admin')
         <div x-data="{ open: false }" class="space-y-1">
             <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
                 <span class="flex items-center gap-3 text-gray-700">
@@ -120,6 +126,31 @@
                 <a href="{{ route('cliente.conta') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Conta Cliente</a>
             </div>
         </div>
+        @endif
+        <!-- Relatorios Dropdown -->
+        <div x-data="{ open: false }" class="space-y-1">
+            <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                <span class="flex items-center gap-3 text-gray-700">
+                    <svg class="w-5 h-5 text-gray-500 group-hover:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 7l-7 7-7-7m7 4V3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                    </svg>
+                    Relatórios
+                </span>
+                <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+            <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
+                <a href="{{ route('relatorio-vendas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                    <span>Relatório de Vendas</span>
+                </a>
+                @if(auth()->user()->role === 'admin')
+                <a href="{{ route('relatorio.financeiro') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
+                    <span>Relatório Pagar/Receber</span>
+                </a>
+                @endif
+            </div>
+        </div>
 
         <!-- Mesas -->
         <a href="{{ route('mesas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
@@ -128,7 +159,7 @@
             </svg>
             <span>Mesas</span>
         </a>
-
+        @if(auth()->user()->role === 'admin')
         <!-- Configurações -->
         <div x-data="{ open: false }" class="space-y-1">
             <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
@@ -147,6 +178,7 @@
                 <a href="{{ route('usuarios.index') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Usuários</a>
             </div>
         </div>
+        @endif
     </nav>
    
 </div>

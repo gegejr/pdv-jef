@@ -24,20 +24,25 @@
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     @foreach ($mesasFree as $mesa)
-                        <div class="bg-white p-4 rounded-xl shadow-md text-center space-y-2">
-                            <div class="text-lg font-semibold text-gray-700">Mesa: {{ $mesa->numero }}</div>
-                            <div><img src="{{ asset('build/assets/mesa.png') }}" alt="Ícone" class="w-16 h-16 rounded-md shadow inline-flex items-center"></div>
-                            <button wire:click="abrirPedido({{ $mesa->id }})"
-                                    class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                     viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M8 7v10l8-5-8-5z"/>
-                                </svg>
-                                Abrir pedido
-                            </button>
-                        </div>
-                    @endforeach
+    <div class="bg-white p-4 rounded-xl shadow-md space-y-2">
+        <div class="text-lg font-semibold text-gray-700 text-center">Mesa: {{ $mesa->numero }}</div>
+
+        <div class="flex items-center justify-center gap-4 mt-2">
+            <img src="{{ asset('build/assets/mesa.png') }}" alt="Ícone" class="w-16 h-16 rounded-md shadow" />
+
+            <button wire:click="abrirPedido({{ $mesa->id }})"
+                    class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7v10l8-5-8-5z"/>
+                </svg>
+                Abrir pedido
+            </button>
+        </div>
+    </div>
+@endforeach
+
                 </div>
             </div>
 

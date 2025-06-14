@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Redirecionar com base na função do usuário
-        if (auth::user()->role === 'admin') {
+        if (Auth::user()->role === 'admin') {
             return redirect()->route('painel'); // Redireciona para o painel admin
         }
 

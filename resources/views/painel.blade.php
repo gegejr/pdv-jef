@@ -83,22 +83,23 @@
         </form>
 
 
-
+    
        <!-- Cards Resumo -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-           
+        @if(auth()->user()->role === 'admin')
              <!-- Card Livewire -->
             @livewire('vendas-resumo', ['inicio' => request('inicio'), 'fim' => request('fim')])
 
-            <div class="bg-red-100 p-4 rounded shadow">
+            <div class="bg-red-100 p-4 rounded-xl shadow hover:shadow-xl transition transform hover:scale-105 duration-300">
                 <p class="text-red-700 font-semibold">Total de Despesas</p>
                 <p class="text-2xl text-red-800">R$ {{ number_format($totalPago, 2, ',', '.') }}</p>
             </div>
 
-            <div class="bg-green-100 p-4 rounded shadow">
+            <div class="bg-green-100 p-4 rounded-xl shadow hover:shadow-xl transition transform hover:scale-105 duration-300">
                 <p class="text-green-700 font-semibold">Fluxo de Caixa</p>
                 <p class="text-2xl text-green-800">R$ {{ number_format($fluxoCaixa, 2, ',', '.') }}</p>
             </div>
+        @endif
              <!-- Vendas do Dia -->
             <div class="bg-gradient-to-r from-purple-50 to-purple-100 p-5 rounded-xl shadow hover:shadow-xl transition transform hover:scale-105 duration-300">
                 <div class="flex items-center justify-between">
@@ -153,7 +154,7 @@
                 </tbody>
             </table>
         </div>
-
+@if(auth()->user()->role === 'admin')
         <!-- Últimos Caixas -->
         <h2 class="text-2xl font-semibold mt-10 mb-4">Últimos Caixas Fechados</h2>
         <div class="overflow-x-auto">
@@ -184,6 +185,7 @@
                 </tbody>
             </table>
         </div>
+@endif
     </div>
 </div>
 

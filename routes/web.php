@@ -28,6 +28,9 @@ use App\Livewire\RelacionamentoClientes;
 use App\Livewire\ReservaForm;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\RelatorioFinanceiroController;
+use App\Livewire\ServicoForm;
+use App\Livewire\ServicosLista;
+
 // Página inicial
 Route::get('/', function () {
     /** @var \Illuminate\Contracts\Auth\Guard $auth */
@@ -206,3 +209,7 @@ Route::get('/relatorio-financeiro', \App\Livewire\RelatorioFinanceiro::class)
     ->middleware('auth');
 
 Route::get('/relatorio-financeiro/pdf', [RelatorioFinanceiroController::class, 'exportarPdf'])->name('exportar-financeiro-pdf');
+
+Route::get('/servico-form', ServicoForm::class)->name('adicionar-servico');
+
+Route::get('/servicos', ServicosLista::class)->name('listar-servicos');

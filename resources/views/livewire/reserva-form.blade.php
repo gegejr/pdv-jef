@@ -90,6 +90,9 @@
                                         class="text-blue-600 hover:underline">Editar</button>
                                     <button wire:click="cancelar({{ $reserva->id }})"
                                         class="text-red-600 hover:underline">Cancelar</button>
+                                    <button wire:click="abrirModalPagamento({{ $reserva->id }})" class="text-indigo-600 hover:underline">
+                                        Finalizar
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -125,9 +128,14 @@
                                 @error('cliente_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Serviço</label>
-                                <input type="text" wire:model="servico" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" />
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Serviço</label>
+                                <select wire:model="servico" class="w-full border rounded px-3 py-2">
+                                    <option value="">Selecione um serviço</option>
+                                    @foreach($servicos as $servico)
+                                        <option value="{{ $servico->nome }}">{{ $servico->nome }}</option>
+                                    @endforeach
+                                </select>
                                 @error('servico') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
@@ -162,6 +170,29 @@
                                     Salvar
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            @if($showPagamentoModal)
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 w-96 shadow-lg">
+                        <h3 class="text-lg font-semibold mb-4">Selecione o método de pagamento</h3>
+
+                        <select wire:model="metodoPagamentoSelecionado" class="w-full border rounded px-3 py-2 mb-4">
+                            <option value="">-- Selecione --</option>
+                            @foreach($metodosPagamento as $metodo)
+                                <option value="{{ $metodo }}">{{ ucfirst($metodo) }}</option>
+                            @endforeach
+                        </select>
+
+                        @error('metodoPagamentoSelecionado') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+
+                        <div class="flex justify-end space-x-3">
+                            <button wire:click="$set('showPagamentoModal', false)" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
+                            <button wire:click="finalizarServico" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                                Confirmar
+                            </button>
                         </div>
                     </div>
                 </div>

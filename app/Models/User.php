@@ -15,6 +15,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // adicionado
     ];
 
     protected $hidden = [
@@ -32,4 +33,10 @@ class User extends Authenticatable
         return $this->subscription_ends_at 
             && Carbon::parse($this->subscription_ends_at)->isFuture();
     }
+    
+    /*public function getIsAdminAttribute()
+    {
+        return $this->role === 'admin';
+    }
+    */
 }
