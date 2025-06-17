@@ -1,7 +1,8 @@
-<div class="ml-64 pt-[72px] p-6">
+@section('title', 'Clientes')
+<div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
         <x-sidebar />
 
-        <div class="p-6">
+        <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
                     <x-topbar />
                     @if (session()->has('message'))
                         <div class="alert alert-success">
@@ -39,6 +40,7 @@
                 });
             </script>
             @endpush
+            <div class="p-6 space-y-6 bg-white shadow rounded-xl">
             <h2 class="text-xl font-bold mb-4">Clientes</h2>
 
             <button wire:click="$set('modalAberto', true)" class="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700">
@@ -302,4 +304,6 @@
                 </div>
             @endif
         </div>
+        </div>
+</div>
 </div>

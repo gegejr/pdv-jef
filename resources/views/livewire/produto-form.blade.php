@@ -1,10 +1,11 @@
-<div class="ml-64 pt-[72px] p-6 bg-gray-50 min-h-screen">
+@section('title', 'Cadastro de Produtos')
+<div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
     <div class="flex">
         <x-sidebar />
-        <div class="flex-1 p-6  md:ml-0 transition-all duration-300">
+        <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
             <x-topbar />
 
-            <div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-2xl space-y-8">
+            <div class="p-6 space-y-6 bg-white shadow rounded-xl">
                 <form wire:submit.prevent="salvar" class="space-y-6">
                     @csrf
 

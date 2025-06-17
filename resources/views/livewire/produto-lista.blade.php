@@ -1,4 +1,4 @@
-
+@section('title', 'Lista de Produtos')
 <div class="ml-64 pt-[72px] p-6 bg-gray-50 min-h-screen">
     <div class="flex">
         <x-sidebar />

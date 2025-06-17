@@ -107,7 +107,10 @@
             </div>
         </div>
         <!-- Clientes Dropdown -->
-        @if(auth()->user()->role === 'admin')
+        @auth
+            @if(auth()->user()->role === 'admin')
+                <!-- conteúdo -->
+        
         <div x-data="{ open: false }" class="space-y-1">
             <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
                 <span class="flex items-center gap-3 text-gray-700">
@@ -124,9 +127,11 @@
             <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
                 <a href="{{ route('financeiro.index') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Contas a pagar/receber</a>
                 <a href="{{ route('cliente.conta') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Conta Cliente</a>
+                <a href="#" class="block px-2 py-1 rounded hover:bg-gray-100">Funcionário</a>
             </div>
         </div>
-        @endif
+            @endif
+        @endauth
         <!-- Relatorios Dropdown -->
         <div x-data="{ open: false }" class="space-y-1">
             <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
@@ -144,11 +149,13 @@
                 <a href="{{ route('relatorio-vendas') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
                     <span>Relatório de Vendas</span>
                 </a>
-                @if(auth()->user()->role === 'admin')
+                 @auth
+                 @if(auth()->user()->role === 'admin')
                 <a href="{{ route('relatorio.financeiro') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition group">
                     <span>Relatório Pagar/Receber</span>
                 </a>
-                @endif
+                    @endif
+                @endauth
             </div>
         </div>
 
@@ -159,6 +166,7 @@
             </svg>
             <span>Mesas</span>
         </a>
+        @auth
         @if(auth()->user()->role === 'admin')
         <!-- Configurações -->
         <div x-data="{ open: false }" class="space-y-1">
@@ -179,6 +187,7 @@
             </div>
         </div>
         @endif
+        @endauth
     </nav>
    
 </div>

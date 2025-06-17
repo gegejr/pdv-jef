@@ -25,9 +25,7 @@ class ClientesContas extends Component
 
     public function mount()
     {
-        if (!auth()->user()->hasValidSubscription()) {
-            return redirect()->route('subscription.expired');
-        }
+        
         $this->carregarContas();
     }
 

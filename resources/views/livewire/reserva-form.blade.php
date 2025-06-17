@@ -1,12 +1,25 @@
-<div class="max-w-7xl mx-auto px-6 pt-24">
+@section('title', 'Reservas')
+<div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
     <div class="flex">
         <!-- Sidebar -->
         <x-sidebar class="no-print" />
         <x-topbar class="no-print" />
         <!-- Conteúdo -->
-        <div class="flex-1 space-y-8 ml-0 md:ml-28">
+         
+         @if (session()->has('sucesso'))
+            <<div 
+                x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 3000)" 
+                x-show="show"
+                x-transition
+                class="fixed top-4 right-4 p-4 bg-green-100 text-green-800 rounded shadow-lg z-50"
+            >
+                {{ session('sucesso') }}
+            </div>
+        @endif
+        <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
             
-
+            <div class="p-6 space-y-6 bg-white shadow rounded-xl">
             <h2 class="text-3xl font-bold text-gray-800 flex items-center gap-2">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2"
                     viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
@@ -50,26 +63,28 @@
             @endif
 
             <!-- Lista -->
-            <div class="overflow-x-auto bg-white rounded-xl shadow-md">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-indigo-50">
+           
+                <div wire:loading.class="opacity-50 pointer-events-none relative">
+                     
+                    <table class="w-full text-sm text-left border rounded shadow overflow-hidden">
+                        <thead class="bg-gray-200 text-center text-gray-600 uppercase text-xs">
                         <tr>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-700 uppercase text-center">Serviço</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-700 uppercase text-center">Cliente</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-700 uppercase text-center">Data</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-700 uppercase text-center">Horário</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-700 uppercase text-center">Status</th>
-                            <th class="px-4 py-3 text-xs font-semibold text-gray-700 uppercase text-center">Ações</th>
+                            <th class="p-2 border">Serviço</th>
+                            <th class="p-2 border">Cliente</th>
+                            <th class="p-2 border">Data</th>
+                            <th class="p-2 border">Horário</th>
+                            <th class="p-2 border">Status</th>
+                            <th class="p-2 border">Ações</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-sm">
                         @forelse ($reservas as $reserva)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-4 py-2 text-center">{{ $reserva->servico }}</td>
-                                <td class="px-4 py-2 text-center">{{ $reserva->cliente->nome }}</td>
-                                <td class="px-4 py-2 text-center">{{ \Carbon\Carbon::parse($reserva->data)->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2 text-center">{{ $reserva->hora_inicio }} - {{ $reserva->hora_fim }}</td>
-                                <td class="px-4 py-2 text-center">
+                                <td class="p-2 border">{{ $reserva->servico }}</td>
+                                <td class="p-2 border">{{ $reserva->cliente->nome }}</td>
+                                <td class="p-2 border">{{ \Carbon\Carbon::parse($reserva->data)->format('d/m/Y') }}</td>
+                                <td class="p-2 border">{{ $reserva->hora_inicio }} - {{ $reserva->hora_fim }}</td>
+                                <td class="p-2 border">
                                     @php
                                         $cores = [
                                             'pendente' => 'bg-yellow-100 text-yellow-800',
@@ -93,6 +108,9 @@
                                     <button wire:click="abrirModalPagamento({{ $reserva->id }})" class="text-indigo-600 hover:underline">
                                         Finalizar
                                     </button>
+                                    <button wire:click="excluir({{ $reserva->id }})" class="inline-flex items-center gap-1 px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs shadow">
+                                        <x-heroicon-o-trash class="w-4 h-4" /> Excluir
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -105,7 +123,17 @@
                 <div class="p-4">
                     {{ $reservas->links() }}
                 </div>
-            </div>
+                     </div>
+                    <div wire:loading
+                        class="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center">
+                        <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                    </div>
+                </div>
 
             <!-- Modal -->
             @if($showModal)
@@ -193,10 +221,12 @@
                             <button wire:click="finalizarServico" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                                 Confirmar
                             </button>
+
                         </div>
                     </div>
                 </div>
             @endif
+        </div>
         </div>
     </div>
 </div>

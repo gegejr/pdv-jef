@@ -1,4 +1,5 @@
-<div class="max-w-6xl mx-auto p-6">
+@section('title', 'Contas Pagar | Receber')
+<div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
     <div class="flex">
         <!-- Menu lateral -->
         <div>
@@ -7,8 +8,8 @@
         <x-topbar class="no-print" />
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 flex justify-center items-start mt-24 transition-all duration-300">
-            <div class="w-full max-w-4xl">
+        <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
+            <div class="p-6 space-y-6 bg-white shadow rounded-xl">
 
                 @if (session()->has('message'))
                     <div class="flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">

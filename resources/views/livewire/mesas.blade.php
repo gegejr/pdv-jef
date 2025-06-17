@@ -1,14 +1,16 @@
+@section('title', 'Mesas')
 <div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
     <div class="flex">
         <!-- Menu lateral -->
         <x-sidebar />
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 p-6 ml-64 md:ml-0 transition-all duration-300 space-y-8">
+        <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
             <!-- Topbar -->
             <x-topbar />
 
             <!-- MESAS LIVRES -->
+             <div class="p-6 space-y-6 bg-white shadow rounded-xl">
             <div>
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-2xl font-bold text-gray-800">Mesas Livres</h3>
@@ -21,7 +23,7 @@
                         Cadastrar Mesa
                     </button>
                 </div>
-
+             
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                     @foreach ($mesasFree as $mesa)
     <div class="bg-white p-4 rounded-xl shadow-md space-y-2">
@@ -249,4 +251,5 @@
             const printWindow = window.open(url, '_blank');
         });
     </script>
+    </div>
 </div>

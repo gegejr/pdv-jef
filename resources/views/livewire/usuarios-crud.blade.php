@@ -1,3 +1,5 @@
+@section('title', 'Usuários')
+
 <div class="ml-64 pt-[72px] p-6">
         <x-sidebar />
 

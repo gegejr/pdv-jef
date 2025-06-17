@@ -1,22 +1,25 @@
-<div class="ml-64 pt-[72px] p-6">
+@section('title', 'Conta Clientes')
+<div class="ml-64 pt-[72px] p-6 bg-gray-100 min-h-screen">
     <x-sidebar />
 
-    <div class="p-6">
+    <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
         <x-topbar />
-
-        <h2 class="text-xl font-bold mb-4">Clientes com Vendas em Conta</h2>
+        <div class="p-6 space-y-6 bg-white shadow rounded-xl">
+        <h2 class="text-2xl font-bold text-gray-800">Clientes com Vendas em Conta</h2>
 
         {{-- Contas Pendentes --}}
-        <h3 class="text-lg font-semibold mb-2">Contas Pendentes</h3>
-        <table class="w-full table-auto border mb-8">
-            <thead class="bg-gray-50">
+        <h3 class="text-lg font-semibold text-gray-800">Contas Pendentes</h3>
+        <div wire:loading.class="opacity-50 pointer-events-none relative">
+            <table class="w-full text-sm text-center border rounded shadow overflow-hidden">
+            <thead class="bg-gray-200 text-gray-600 uppercase text-xs">
                 <tr>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Data</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Cliente</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Telefone</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Valor</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Status</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Ação</th>
+                    <th class="p-2 border">Data</th>
+                    <th class="p-2 border">Data</th>
+                    <th class="p-2 border">Cliente</th>
+                    <th class="p-2 border">Telefone</th>
+                    <th class="p-2 border">Valor</th>
+                    <th class="p-2 border">Status</th>
+                    <th class="p-2 border">Ação</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,12 +29,12 @@
                         $pagamentoConta = $venda->pagamentos->firstWhere('tipo', 'conta');
                     @endphp
                     <tr class="border-t">
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->nome }}</td>
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->telefone }}</td>
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
-                        <td class="px-4 py-2 text-center text-sm font-bold text-red-600">Pendente</td>
-                        <td class="px-4 py-2">
+                        <td class="p-2 border">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="p-2 border">{{ $cliente->nome }}</td>
+                        <td class="p-2 border">{{ $cliente->telefone }}</td>
+                        <td class="p-2 border">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
+                        <td class="p-2 border">Pendente</td>
+                        <td class="p-2 border">
                             <button wire:click="openModal({{ $venda->id }})"
                                     class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
                                 Marcar como Pago
@@ -49,15 +52,15 @@
         </div>
         
         {{-- Contas Pagas --}}
-        <h3 class="text-lg font-semibold mb-2">Contas Pagas</h3>
-        <table class="w-full table-auto border">
-            <thead class="bg-gray-50">
+        <h3 class="text-lg font-semibold text-gray-800">Contas Pagas</h3>
+        <table class="w-full text-sm text-center border rounded shadow overflow-hidden">
+            <thead class="bg-gray-200 text-gray-600 uppercase text-xs">
                 <tr>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Data</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Cliente</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Telefone</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Valor</th>
-                    <th class="px-4 py-2 text-center text-sm text-gray-700">Status</th>
+                    <th class="p-2 border">Data</th>
+                    <th class="p-2 border">Cliente</th>
+                    <th class="p-2 border">Telefone</th>
+                    <th class="p-2 border">Valor</th>
+                    <th class="p-2 border">Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,11 +70,11 @@
                         $pagamentoConta = $venda->pagamentos->firstWhere('tipo', 'conta');
                     @endphp
                     <tr class="border-t">
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->nome }}</td>
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">{{ $cliente->telefone }}</td>
-                        <td class="px-4 py-2 text-center text-sm text-gray-700">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
-                        <td class="px-4 py-2 text-center text-sm font-bold text-green-600">Pago</td>
+                        <td class="p-2 border">{{ $venda->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="p-2 border">{{ $cliente->nome }}</td>
+                        <td class="p-2 border">{{ $cliente->telefone }}</td>
+                        <td class="p-2 border">R$ {{ number_format($pagamentoConta->valor, 2, ',', '.') }}</td>
+                        <td class="p-2 border">Pago</td>
                     </tr>
                 @empty
                     <tr><td colspan="5" class="text-center py-4">Nenhuma conta paga encontrada.</td></tr>
@@ -80,6 +83,16 @@
         </table>
         <div class="mt-4">
             {{ $contasPagas->links() }}
+        </div>
+        <div wire:loading
+            class="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center">
+            <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10"
+                        stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+        </div>
         </div>
         <!-- Modal -->
         @if($modalOpen)
@@ -146,6 +159,6 @@
             </div>
         </div>
         @endif
-
+        </div>
     </div>
 </div>

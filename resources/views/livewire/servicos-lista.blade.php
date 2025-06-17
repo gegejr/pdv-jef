@@ -1,3 +1,4 @@
+@section('title', 'Lista | Serviços')
 <div class="ml-64 pt-[72px] p-6 bg-gray-50 min-h-screen">
     <div class="flex">
         <x-sidebar />
@@ -32,7 +33,7 @@
                 <!-- Tabela -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left border border-gray-200 rounded-lg shadow">
-                        <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+                        <thead class="bg-gray-100 text-gray-700 text-center uppercase text-xs">
                             <tr>
                                 <th class="p-3">Nome</th>
                                 <th class="p-3">Preço</th>

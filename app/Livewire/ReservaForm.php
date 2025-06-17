@@ -227,4 +227,11 @@ class ReservaForm extends Component
         $this->metodoPagamentoSelecionado = null;
         $this->showPagamentoModal = true;
     }
+
+        public function excluir($id)
+    {
+        $reserva = Reserva::findOrFail($id);
+        $reserva->delete();
+        session()->flash('sucesso', 'reserva excluída com sucesso.');
+    }
 }

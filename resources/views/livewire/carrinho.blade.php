@@ -1,3 +1,4 @@
+@section('title', 'Venda')
 <div class="pt-[80px] p-4">
     <div class="flex justify-center">
         <!-- Menu lateral -->

@@ -1,3 +1,4 @@
+@section('title', 'Caixa | Sangria')
 <div class="ml-64 pt-[72px] p-6">
     <div class="flex">
         <!-- Menu lateral -->
