@@ -6,6 +6,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     @livewireStyles
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('build/assets/jef.ico') }}" type="image/x-icon" />
 </head>
 <body class="bg-gray-100 font-sans text-gray-800">
 

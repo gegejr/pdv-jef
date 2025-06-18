@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\RelatorioFinanceiroController;
 use App\Livewire\ServicoForm;
 use App\Livewire\ServicosLista;
+use App\Livewire\Funcionarios;
 
 // Página inicial
 Route::get('/', function () {
@@ -213,3 +214,4 @@ Route::get('/relatorio-financeiro/pdf', [RelatorioFinanceiroController::class, '
 Route::get('/servico-form', ServicoForm::class)->name('adicionar-servico');
 
 Route::get('/servicos', ServicosLista::class)->name('listar-servicos');
+Route::get('/funcionarios', Funcionarios::class)->name('funcionarios');

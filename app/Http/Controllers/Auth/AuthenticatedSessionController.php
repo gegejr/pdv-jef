@@ -54,9 +54,8 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('login');
+        return redirect('login'); // <- Aqui é onde você define para onde vai após o logout
     }
 }

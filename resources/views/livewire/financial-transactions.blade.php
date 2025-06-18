@@ -84,7 +84,7 @@
                 </div>
 
                 <!-- Listagem -->
-                <div class="overflow-x-auto">
+                <div wire:loading.class="opacity-50 pointer-events-none relative">
                     <table class="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden text-sm">
                         <thead class="bg-gray-100 text-gray-700">
                             <tr>
@@ -137,8 +137,19 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <div class="mt-4">
+                        {{ $transactions->links() }}
+                    </div>
+                    <div wire:loading
+                        class="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center">
+                        <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                    stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                    </div>
                 </div>
-
             </div> <!-- fecha max-w-4xl -->
         </div> <!-- fecha justify-center -->
     </div>

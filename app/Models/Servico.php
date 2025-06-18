@@ -12,5 +12,11 @@ class Servico extends Model
         'valor',
         'duracao',
         'ativo',
+        'user_id', // <- aqui sim, depois que a coluna existir
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

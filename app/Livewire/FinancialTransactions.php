@@ -4,11 +4,13 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\FinancialTransaction;
-
+use Livewire\WithPagination;
 class FinancialTransactions extends Component
 {
+    use WithPagination;
     public $descricao, $tipo = 'pagar', $valor, $data_vencimento, $categoria;
     public $filtro = 'todos';
+    protected $paginationTheme = 'tailwind'; // ou 'bootstrap' se estiver usando bootstrap
 
     public function rules()
     {
@@ -70,7 +72,7 @@ class FinancialTransactions extends Component
             $query->where('tipo', 'receber')->where('pago', false);
         }
 
-        $transactions = $query->orderBy('data_vencimento', 'asc')->get();
+        $transactions = $query->orderBy('data_vencimento', 'asc')->paginate(10);
 
         return view('livewire.financial-transactions', [
             'transactions' => $transactions,

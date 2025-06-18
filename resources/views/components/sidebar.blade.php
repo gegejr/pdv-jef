@@ -127,7 +127,7 @@
             <div x-show="open" x-cloak class="pl-8 space-y-1 text-sm">
                 <a href="{{ route('financeiro.index') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Contas a pagar/receber</a>
                 <a href="{{ route('cliente.conta') }}" class="block px-2 py-1 rounded hover:bg-gray-100">Conta Cliente</a>
-                <a href="#" class="block px-2 py-1 rounded hover:bg-gray-100">Funcionário</a>
+                <a href="{{ route('funcionarios')}}" class="block px-2 py-1 rounded hover:bg-gray-100">Funcionário</a>
             </div>
         </div>
             @endif
