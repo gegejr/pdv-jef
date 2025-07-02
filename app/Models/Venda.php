@@ -19,6 +19,7 @@ class Venda extends Model
         'data_venda',
         'cliente_id', //
         'mesa_id',
+        'reserva_id',
     ];
     
     // Relacionamento com o usuário (quem fez a venda)
@@ -72,5 +73,9 @@ class Venda extends Model
     public function notaFiscalErro()
     {
         return $this->hasMany(NotaFiscalErro::class);
+    }
+    public function reserva()
+    {
+        return $this->belongsTo(Reserva::class);
     }
 }

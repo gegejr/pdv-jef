@@ -4,6 +4,7 @@
 
         <div class="flex-1 ml-64 md:ml-0 transition-all duration-300">
                     <x-topbar />
+                    <!--
                     @if (session()->has('message'))
                         <div class="alert alert-success">
                             {{ session('message') }}
@@ -18,6 +19,29 @@
                     @if ($mensagemErro)
                         <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
                             {{ $mensagemErro }}
+                        </div>
+                    @endif
+                    -->
+                    @if (session()->has('error'))
+                        <div 
+                            x-data="{ show: true }"
+                            x-init="setTimeout(() => show = false, 3000)" 
+                            x-show="show"
+                            x-transition
+                            class="fixed top-4 right-4 p-4 bg-green-100 text-green-800 rounded shadow-lg z-50"
+                        >
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if (session()->has('message'))
+                        <div 
+                            x-data="{ show: true }"
+                            x-init="setTimeout(() => show = false, 3000)" 
+                            x-show="show"
+                            x-transition
+                            class="fixed top-4 right-4 p-4 bg-green-100 text-green-800 rounded shadow-lg z-50"
+                        >
+                            {{ session('message') }}
                         </div>
                     @endif
             @push('scripts')

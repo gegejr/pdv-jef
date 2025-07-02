@@ -43,6 +43,7 @@ class Produto extends Model
         'pis_rate',
         'cst_cofins',
         'cofins_rate',
+        'csosn',
     ];
 
     /**

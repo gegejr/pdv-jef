@@ -34,6 +34,7 @@ class ProdutoForm extends Component
     public $pis_rate;
     public $cst_cofins;
     public $cofins_rate;
+    public $csosn;
     public $categoria_id;
     public $status = 'ativo';
     public $tamanho;
@@ -118,6 +119,7 @@ class ProdutoForm extends Component
         $this->pis_rate     = $produto->pis_rate;
         $this->cst_cofins   = $produto->cst_cofins;
         $this->cofins_rate  = $produto->cofins_rate;
+        $this->csosn = $produto->csosn;
 
         $this->dispatch('openModal');
     }
@@ -164,6 +166,7 @@ class ProdutoForm extends Component
             'pis_rate'    => $this->pis_rate,
             'cst_cofins'  => $this->cst_cofins,
             'cofins_rate' => $this->cofins_rate,
+            'csosn' => $this->csosn,
         ];
 
         if ($this->produto_id) {
@@ -224,6 +227,7 @@ class ProdutoForm extends Component
             'pis_rate'        => 'nullable|numeric|min:0',
             'cst_cofins'      => 'nullable|string|max:3',
             'cofins_rate'     => 'nullable|numeric|min:0',
+            'csosn'           => 'nullable|numeric|min:0',
         ];
 
         // Se for loja, regras extras para moda:

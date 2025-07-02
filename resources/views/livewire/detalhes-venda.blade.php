@@ -7,15 +7,26 @@
         </div>
 
         <section>
-            <h4 class="text-lg font-semibold text-blue-600 mb-2">Itens Vendidos</h4>
-            <ul class="list-disc list-inside space-y-1 max-h-48 overflow-y-auto border border-blue-300 rounded-md p-4 bg-blue-50">
-                @foreach ($venda->itens as $item)
-                    <li class="flex justify-between text-blue-800 font-medium">
-                        <span>{{ $item->produto->nome }} — Qtde: {{ $item->quantidade }}</span>
-                        <span class="font-mono bg-blue-100 rounded px-2 py-0.5">R$ {{ number_format($item->valor_unitario, 2, ',', '.') }}</span>
-                    </li>
-                @endforeach
-            </ul>
+            <h4 class="text-lg font-semibold text-blue-600 mb-2">Detalhes da Venda</h4>
+
+            @if ($venda->itens->isNotEmpty())
+                <!-- Venda com produtos -->
+                <ul class="list-disc list-inside space-y-1 max-h-48 overflow-y-auto border border-blue-300 rounded-md p-4 bg-blue-50">
+                    @foreach ($venda->itens as $item)
+                        <li class="flex justify-between text-blue-800 font-medium">
+                            <span>{{ $item->produto->nome }} — Qtde: {{ $item->quantidade }}</span>
+                            <span class="font-mono bg-blue-100 rounded px-2 py-0.5">R$ {{ number_format($item->valor_unitario, 2, ',', '.') }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @else
+                <!-- Venda de serviço -->
+                <div class="border border-blue-300 rounded-md p-4 bg-blue-50 text-blue-800 font-medium space-y-2">
+                    <p><strong>Serviço:</strong> {{ optional($venda->reserva)->servico ?? $venda->descricao ?? 'N/A' }}</p>
+                    <p><strong>Cliente:</strong> {{ optional($venda->cliente)->nome ?? 'N/A' }}</p>
+                    <p><strong>Valor do Serviço:</strong> R$ {{ number_format($venda->total, 2, ',', '.') }}</p>
+                </div>
+            @endif
         </section>
 
         <section>

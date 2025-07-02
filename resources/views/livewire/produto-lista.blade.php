@@ -38,8 +38,14 @@
 
 
 
-            @if (session()->has('sucesso'))
-                <div class="bg-green-100 text-green-800 p-3 rounded shadow mb-4">
+             @if (session()->has('sucesso'))
+                <div 
+                    x-data="{ show: true }"
+                    x-init="setTimeout(() => show = false, 3000)" 
+                    x-show="show"
+                    x-transition
+                    class="fixed top-4 right-4 p-4 bg-green-100 text-green-800 rounded shadow-lg z-50"
+                >
                     {{ session('sucesso') }}
                 </div>
             @endif
@@ -72,7 +78,7 @@
                                 <td class="px-4 py-3 text-center text-gray-700">{{ $produto->id }}</td>
                                 <td class="px-4 py-3 text-center">
                                     @if ($produto->imagem)
-                                        <img src="{{ asset('storage/' . $produto->imagem) }}" class="w-10 h-10 rounded object-cover mx-auto" />
+                                        <img src="{{ asset('storage/' . $produto->imagem) }}" class="w-12 h-12 object-cover rounded-full mx-auto shadow-sm" />
                                     @else
                                         <span class="text-gray-400">—</span>
                                     @endif

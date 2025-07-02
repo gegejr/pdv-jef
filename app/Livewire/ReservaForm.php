@@ -146,79 +146,82 @@ class ReservaForm extends Component
     }
 
     public function finalizarServico()
-{
-    $reservaId = $this->reservaSelecionadaId;
-    $metodoPagamento = $this->metodoPagamentoSelecionado;
+    {
+        $reservaId = $this->reservaSelecionadaId;
+        $metodoPagamento = $this->metodoPagamentoSelecionado;
 
-    if (!$metodoPagamento) {
-        session()->flash('error', 'Selecione um método de pagamento.');
-        return;
-    }
+        if (!$metodoPagamento) {
+            session()->flash('error', 'Selecione um método de pagamento.');
+            return;
+        }
 
-    $user_id = auth()->id();
-    $reserva = Reserva::findOrFail($reservaId);
+        $user_id = auth()->id();
+        $reserva = Reserva::findOrFail($reservaId);
 
-    if ($reserva->status !== 'pendente') {
-        session()->flash('error', 'Essa reserva já foi finalizada ou cancelada.');
+        if ($reserva->status !== 'pendente') {
+            session()->flash('error', 'Essa reserva já foi finalizada ou cancelada.');
+            $this->showPagamentoModal = false;
+            return;
+        }
+
+        $servico = \App\Models\Servico::where('nome', $reserva->servico)->first();
+        $valorServico = $servico?->valor ?? 0;
+
+        if ($valorServico <= 0) {
+            session()->flash('error', 'Valor do serviço não encontrado ou inválido.');
+            $this->showPagamentoModal = false;
+            return;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $caixa = \App\Models\Caixa::firstOrCreate(
+                ['user_id' => $user_id, 'fechado_em' => null],
+                ['nome' => 'Caixa', 'valor_inicial' => 0, 'aberto_em' => now()]
+            );
+
+            $venda = \App\Models\Venda::create([
+                'user_id'         => $user_id,
+                'caixa_id'        => $caixa->id,
+                'cliente_id'      => $reserva->cliente_id,
+                'total'           => $valorServico,
+                'desconto_total'  => 0,
+                'tipo'=> $metodoPagamento,
+                'reserva_id' => $reserva->id,
+                'descricao'       => 'Serviço: ' . $reserva->servico // já é uma string com o nome do serviço, ex: "Lavagem completa"
+                
+            ]);
+
+            \App\Models\Pagamento::create([
+                'venda_id' => $venda->id,
+                'tipo'     => $metodoPagamento,
+                'valor'    => $valorServico,
+            ]);
+
+            \App\Models\FinancialTransaction::create([
+                'descricao'       => 'Recebimento de serviço: ' . $reserva->servico,
+                'tipo'            => 'receber',
+                'valor'           => $valorServico,
+                'data_vencimento' => now(),
+                'data_pagamento'  => now(),
+                'pago'            => true,
+                'categoria'       => 'Serviço',
+                'cliente_id'      => $reserva->cliente_id,
+            ]);
+
+            $reserva->update(['status' => 'concluida']);
+
+            DB::commit();
+
+            session()->flash('message', 'Serviço finalizado e venda registrada com sucesso!');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'Erro ao finalizar serviço: ' . $e->getMessage());
+        }
+
         $this->showPagamentoModal = false;
-        return;
     }
-
-    $servico = \App\Models\Servico::where('nome', $reserva->servico)->first();
-    $valorServico = $servico?->valor ?? 0;
-
-    if ($valorServico <= 0) {
-        session()->flash('error', 'Valor do serviço não encontrado ou inválido.');
-        $this->showPagamentoModal = false;
-        return;
-    }
-
-    try {
-        DB::beginTransaction();
-
-        $caixa = \App\Models\Caixa::firstOrCreate(
-            ['user_id' => $user_id, 'fechado_em' => null],
-            ['nome' => 'Caixa', 'valor_inicial' => 0, 'aberto_em' => now()]
-        );
-
-        $venda = \App\Models\Venda::create([
-            'user_id'         => $user_id,
-            'caixa_id'        => $caixa->id,
-            'cliente_id'      => $reserva->cliente_id,
-            'total'           => $valorServico,
-            'desconto_total'  => 0,
-            'metodo_pagamento'=> $metodoPagamento,
-        ]);
-
-        \App\Models\Pagamento::create([
-            'venda_id' => $venda->id,
-            'tipo'     => $metodoPagamento,
-            'valor'    => $valorServico,
-        ]);
-
-        \App\Models\FinancialTransaction::create([
-            'descricao'       => 'Recebimento de serviço: ' . $reserva->servico,
-            'tipo'            => 'receber',
-            'valor'           => $valorServico,
-            'data_vencimento' => now(),
-            'data_pagamento'  => now(),
-            'pago'            => true,
-            'categoria'       => 'Serviço',
-            'cliente_id'      => $reserva->cliente_id,
-        ]);
-
-        $reserva->update(['status' => 'concluida']);
-
-        DB::commit();
-
-        session()->flash('message', 'Serviço finalizado e venda registrada com sucesso!');
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        session()->flash('error', 'Erro ao finalizar serviço: ' . $e->getMessage());
-    }
-
-    $this->showPagamentoModal = false;
-}
 
 
     public function abrirModalPagamento($reservaId)

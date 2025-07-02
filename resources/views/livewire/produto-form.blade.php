@@ -111,6 +111,8 @@
                             <x-form.input type="number" step="0.01" label="PIS (%)" model="pis_rate" />
                             <x-form.input label="CST COFINS" model="cst_cofins" />
                             <x-form.input type="number" step="0.01" label="COFINS (%)" model="cofins_rate" />
+                            <x-form.input label="CSOSN (Simples Nacional)" model="csosn" />
+
                         </div>
                     </div>
 

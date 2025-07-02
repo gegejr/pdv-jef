@@ -173,10 +173,10 @@ class RelatorioVendas extends Component
 
     public function emitirNota($vendaId)
     {
-        $venda = Venda::with('itens.produto')->find($vendaId);
-        $resultado = app(\App\Services\NFeService::class)->emitirNota($venda);
+        EmitirNotaJob::dispatch($vendaId);
 
-        dd($resultado);
+        // Recarrega a página para forçar atualização (quando o job terminar)
+        $this->resetPage();
     }
 
     }
